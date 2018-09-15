@@ -9,15 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".MammutApplication"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppStart.SplashStyle">
+
+        <activity android:name=".feature.joininstance.JoinInstanceActivity"/>
+
+        <activity android:name=".feature.splash.SplashActivity"
+            android:theme="@style/AppStart.SplashStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".feature.joininstance.JoinInstanceActivity" />
     </application>
 
 </manifest>

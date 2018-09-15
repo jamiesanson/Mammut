@@ -1,11 +1,16 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="AppStart.Transparent" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+    </style>
+
+    <style name="AppStart.SplashStyle" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">@drawable/drawable_splash_background</item>
+        <item name="android:statusBarColor">@color/standardPrimaryColor</item>
+    </style>
+
+    <style name="Mammut.Base" parent="Theme.MaterialComponents.NoActionBar">
     </style>
 
 </resources>

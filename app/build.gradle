@@ -53,7 +53,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko:0.10.5"
 
     // Material
-    implementation 'com.google.android.material:material:1.0.0-rc01'
+    implementation 'com.google.android.material:material:1.0.0-rc02'
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
@@ -70,4 +70,8 @@ dependencies {
     implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
     implementation "io.arrow-kt:arrow-optics:$arrow_version"
     kapt "io.arrow-kt:arrow-annotations-processor:$arrow_version"
+
+    // Calligraphy
+    def calligraphy_version = "2.3.0"
+    implementation "uk.co.chrisjenx:calligraphy:$calligraphy_version"
 }
