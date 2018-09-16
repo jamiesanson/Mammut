@@ -9,6 +9,9 @@ import io.github.jamiesanson.mammut.data.database.entities.InstanceRegistrationE
 @Dao
 interface InstanceRegistrationDao {
 
+    @Query("SELECT * FROM instanceregistrationentity")
+    fun getAllRegistrations(): List<InstanceRegistrationEntity>
+
     @Query("SELECT * FROM instanceregistrationentity WHERE instanceName = :name")
     fun getRegistrationByName(name: String): InstanceRegistrationEntity?
 

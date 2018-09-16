@@ -8,7 +8,7 @@ import io.github.jamiesanson.mammut.data.database.MammutDatabase
 import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 
-@Module
+@Module(includes = [ ApplicationViewModelModule::class ])
 class ApplicationModule(private val appContext: Context) {
 
 

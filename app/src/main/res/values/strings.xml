@@ -11,4 +11,7 @@
     <string name="error_no_browser">Looks like you don\'t have a browser \uD83D\uDC40</string>
     <string name="error_non_existant_instance">It looks like this instance doesn\'t exist - is this right?</string>
     <string name="error_generic">Something went wrong when logging in, try again</string>
+    <string name="instances">INSTANCES</string>
+    <string name="add_instance">ADD INSTANCE</string>
+    <string name="more_information">More information</string>
 </resources>

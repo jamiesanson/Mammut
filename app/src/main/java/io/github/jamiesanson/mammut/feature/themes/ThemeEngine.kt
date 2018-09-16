@@ -1,7 +1,9 @@
 package io.github.jamiesanson.mammut.feature.themes
 
+import android.graphics.Typeface
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
@@ -31,5 +33,13 @@ class ThemeEngine(
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         )
+    }
+
+    fun applyFontToCollapsingLayout(collapsingToolbarLayout: CollapsingToolbarLayout) {
+        val typeface = Typeface.createFromAsset(collapsingToolbarLayout.context.assets, currentTheme.primaryFont.path)
+        with(collapsingToolbarLayout) {
+            setCollapsedTitleTypeface(typeface)
+            setExpandedTitleTypeface(typeface)
+        }
     }
 }

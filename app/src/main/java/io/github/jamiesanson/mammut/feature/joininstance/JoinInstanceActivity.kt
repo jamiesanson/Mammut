@@ -16,10 +16,12 @@ import io.github.jamiesanson.mammut.extension.provideViewModel
 import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
 import io.github.jamiesanson.mammut.feature.base.InputError
+import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.joininstance.dagger.JoinInstanceModule
 import kotlinx.android.synthetic.main.activity_join_instance.*
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 
 class JoinInstanceActivity: BaseActivity() {
@@ -83,8 +85,8 @@ class JoinInstanceActivity: BaseActivity() {
             registrationCompleteEvent.observe(this@JoinInstanceActivity) {
                 if (!it.hasBeenHandled) {
                     it.getContentIfNotHandled()
-                    // TODO - Navigate to instance browser/main activity
-                    showError("Logged in successfully")
+                    startActivity<InstanceBrowserActivity>()
+                    finish()
                 }
             }
         }

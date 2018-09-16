@@ -21,4 +21,10 @@ class RegistrationRepository @Inject constructor(
 
     suspend fun getRegistrationForName(name: String): InstanceRegistration?
         = database.instanceRegistrationDao().getRegistrationByName(name)?.toModel()
+
+    suspend fun hasRegistrations(): Boolean
+        = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
+
+    suspend fun getAllRegistrations(): List<InstanceRegistration>
+        = database.instanceRegistrationDao().getAllRegistrations().map { it.toModel() }
 }

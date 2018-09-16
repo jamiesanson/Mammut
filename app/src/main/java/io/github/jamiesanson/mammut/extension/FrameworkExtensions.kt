@@ -14,6 +14,12 @@ import kotlinx.android.synthetic.main.design_layout_snackbar_include.view.*
 import org.jetbrains.anko.contentView
 import androidx.annotation.ColorInt
 import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.LayoutRes
+import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.RecyclerView
 import org.jetbrains.anko.textColor
 
 
@@ -39,3 +45,12 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
         view.snackbar_text.textColor = lightAccentColor
     }.show()
 }
+
+/**
+ * Helper function for allowing simple ViewHolder view inflation
+ */
+internal fun ViewGroup.inflate(@LayoutRes resource: Int): View =
+        LayoutInflater.from(context).inflate(resource, this, false)
+
+val RecyclerView.ViewHolder.lifecycleOwner: LifecycleOwner
+    get() = itemView.context as LifecycleOwner
