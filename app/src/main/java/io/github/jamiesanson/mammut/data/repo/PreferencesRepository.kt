@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.repo
+package io.github.jamiesanson.mammut.data.repo
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -15,6 +15,7 @@ class PreferencesRepository(appContext: Context) {
 
     var themeId by preferences.string(defaultReturn = StandardTheme.themeId)
 
+    var loginDomain by preferences.string(defaultReturn = "")
 }
 
 

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.jamiesanson.mammut">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,7 +13,20 @@
         android:name=".MammutApplication"
         android:theme="@style/AppStart.SplashStyle">
 
-        <activity android:name=".feature.joininstance.JoinInstanceActivity"/>
+
+        <activity android:name=".feature.joininstance.JoinInstanceActivity"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${applicationId}"
+                    android:scheme="@string/oauth_scheme" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".feature.splash.SplashActivity"
             android:theme="@style/AppStart.SplashStyle">

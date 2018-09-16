@@ -74,4 +74,25 @@ dependencies {
     // Calligraphy
     def calligraphy_version = "2.3.0"
     implementation "uk.co.chrisjenx:calligraphy:$calligraphy_version"
+
+    // m4j
+    def m4j_version = "1.7.0"
+    implementation "com.github.sys1yagi.mastodon4j:mastodon4j:$m4j_version"
+    implementation "com.github.sys1yagi.mastodon4j:mastodon4j-rx:$m4j_version"
+
+    // Room
+    def room_version = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
+androidExtensions {
+    experimental = true
 }

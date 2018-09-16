@@ -3,7 +3,7 @@ package io.github.jamiesanson.mammut.feature.themes
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.repo.PreferencesRepository
+import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 class ThemeEngine(

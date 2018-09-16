@@ -1,10 +1,12 @@
 package io.github.jamiesanson.mammut.dagger.application
 
 import android.content.Context
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
+import io.github.jamiesanson.mammut.data.database.MammutDatabase
 import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
-import io.github.jamiesanson.mammut.repo.PreferencesRepository
+import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 
 @Module
 class ApplicationModule(private val appContext: Context) {
@@ -23,4 +25,9 @@ class ApplicationModule(private val appContext: Context) {
     @ApplicationScope
     fun provideThemeEngine(preferencesRepository: PreferencesRepository): ThemeEngine =
             ThemeEngine(preferencesRepository)
+
+    @Provides
+    @ApplicationScope
+    fun provideMammutDatabase(context: Context): MammutDatabase =
+            Room.databaseBuilder(context, MammutDatabase::class.java, "mammut-db").build()
 }

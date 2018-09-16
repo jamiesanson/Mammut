@@ -3,4 +3,12 @@
     <string name="join_instance">Join instance</string>
     <string name="mammut">Mammut</string>
     <string name="instance_url">Instance URL</string>
+    <string name="oauth_scheme">oauth2redirect</string>
+    <string name="logging_you_in">Logging you in</string>
+    <string name="app_client_name">Mammut for Android</string>
+    <string name="error_url_empty">URL can\'t be empty</string>
+    <string name="error_empty_url">You need to enter an instance URL</string>
+    <string name="error_no_browser">Looks like you don\'t have a browser \uD83D\uDC40</string>
+    <string name="error_non_existant_instance">It looks like this instance doesn\'t exist - is this right?</string>
+    <string name="error_generic">Something went wrong when logging in, try again</string>
 </resources>
