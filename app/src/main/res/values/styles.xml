@@ -11,6 +11,7 @@
     </style>
 
     <style name="Mammut.Base" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">?attr/colorPrimary</item>
     </style>
 
 </resources>

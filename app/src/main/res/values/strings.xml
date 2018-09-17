@@ -14,4 +14,9 @@
     <string name="instances">INSTANCES</string>
     <string name="add_instance">ADD INSTANCE</string>
     <string name="more_information">More information</string>
+    <string name="statuses">Statuses</string>
+    <string name="connections">Connections</string>
+    <string name="users">Users</string>
+    <string name="log_out">LOG OUT</string>
+    <string name="uptime_percent">Reporting an uptime of $.2d%</string>
 </resources>

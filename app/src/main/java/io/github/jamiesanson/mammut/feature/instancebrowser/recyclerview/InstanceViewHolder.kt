@@ -9,6 +9,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
+import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
 import io.github.jamiesanson.mammut.extension.inflate
 import io.github.jamiesanson.mammut.extension.lifecycleOwner
 import io.github.jamiesanson.mammut.extension.observe
@@ -17,7 +18,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_instance_card)) {
 
-    fun bind(instanceCardViewModel: InstanceCardViewModel) {
+    fun bind(instanceCardViewModel: InstanceCardViewModel, onAboutClicked: (InstanceDetail) -> Unit) {
         instanceCardViewModel.registrationInformation.observe(lifecycleOwner) {
             itemView.instanceTitleTextView.text = it.instanceName
         }
@@ -37,7 +38,7 @@ class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.infl
 
                 moreInformationButton.visibility = View.VISIBLE
                 moreInformationButton.onClick {
-                    // TODO - Show more information
+                    onAboutClicked(detail)
                 }
 
                 parentLayout.onClick {

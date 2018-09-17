@@ -5,13 +5,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import io.github.jamiesanson.mammut.data.models.InstanceRegistration
+import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
 
 /**
  * RecyclerView adapter for displaying instances
  */
 class InstanceBrowserAdapter(
-        private val viewModelProvider: ViewModelProvider
+        private val viewModelProvider: ViewModelProvider,
+        private val onAboutInstanceClicked: (InstanceDetail, Long) -> Unit
 ): ListAdapter<InstanceRegistration, InstanceViewHolder>(DIFF_CALLBACK) {
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InstanceViewHolder =
             InstanceViewHolder(parent)
@@ -21,8 +27,11 @@ class InstanceBrowserAdapter(
         val viewModel = viewModelProvider.get(item.id.toString(), InstanceCardViewModel::class.java)
         viewModel.initialise(item)
 
-        holder.bind(viewModel)
+        holder.bind(viewModel) { onAboutInstanceClicked(it, item.id) }
     }
+
+    override fun getItemId(position: Int): Long =
+            getItem(position).id
 
     companion object {
         val DIFF_CALLBACK = object: DiffUtil.ItemCallback<InstanceRegistration>() {

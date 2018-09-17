@@ -1,5 +1,7 @@
 package io.github.jamiesanson.mammut.data.repo
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
 import io.github.jamiesanson.mammut.data.converters.toEntity
 import io.github.jamiesanson.mammut.data.converters.toModel
@@ -27,4 +29,10 @@ class RegistrationRepository @Inject constructor(
 
     suspend fun getAllRegistrations(): List<InstanceRegistration>
         = database.instanceRegistrationDao().getAllRegistrations().map { it.toModel() }
+
+    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>>
+        = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toModel() }}
+
+    suspend fun logOut(id: Long)
+        = database.instanceRegistrationDao().deleteRegistration(id)
 }
