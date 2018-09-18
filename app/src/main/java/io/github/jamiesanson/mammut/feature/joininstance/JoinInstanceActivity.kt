@@ -3,13 +3,18 @@ package io.github.jamiesanson.mammut.feature.joininstance
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupWindow
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.jamiesanson.mammut.BuildConfig
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
+import io.github.jamiesanson.mammut.data.models.InstanceSearchResult
 import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.provideViewModel
@@ -18,6 +23,7 @@ import io.github.jamiesanson.mammut.feature.base.BaseActivity
 import io.github.jamiesanson.mammut.feature.base.InputError
 import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.joininstance.dagger.JoinInstanceModule
+import io.github.jamiesanson.mammut.feature.joininstance.suggestion.InstanceSuggestionPopupWindow
 import kotlinx.android.synthetic.main.activity_join_instance.*
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -30,6 +36,10 @@ class JoinInstanceActivity: BaseActivity() {
 
     @Inject lateinit var viewModelFactory: MammutViewModelFactory
 
+    private lateinit var resultsPopupWindow: InstanceSuggestionPopupWindow
+
+    private var resultRecentlySelected: Boolean = false
+
     private val redirectUrl: String
         get() = "${getString(R.string.oauth_scheme)}://${BuildConfig.APPLICATION_ID}"
 
@@ -40,10 +50,26 @@ class JoinInstanceActivity: BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_instance)
         viewModel = provideViewModel(viewModelFactory)
+        resultsPopupWindow = InstanceSuggestionPopupWindow(this, ::onResultSelected)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
+        instanceUrlTextInputLayout.editText?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(query: Editable?) {
+                query?.let {
+                    if (!resultRecentlySelected) {
+                        viewModel.onQueryChanged(it.toString())
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        })
 
         joinInstanceButton.onClick {
             if (instanceUrlTextInputLayout.editText?.text?.isEmpty() == true) {
@@ -51,9 +77,7 @@ class JoinInstanceActivity: BaseActivity() {
                 return@onClick
             }
 
-            instanceUrlTextInputLayout.editText?.text?.toString()?.let { url ->
-                onLoginClicked(url)
-            } ?: showInstanceUrlEmptyError()
+            processLogin()
         }
 
         with (viewModel) {
@@ -89,7 +113,42 @@ class JoinInstanceActivity: BaseActivity() {
                     finish()
                 }
             }
+
+            searchResults.observe(this@JoinInstanceActivity) {
+                if (it.isEmpty()) {
+                    resultsPopupWindow.onNewResults(it)
+                    resultsPopupWindow.dismiss()
+                } else {
+                    resultsPopupWindow.onNewResults(it)
+                    resultsPopupWindow.show()
+                }
+            }
         }
+    }
+
+    private fun InstanceSuggestionPopupWindow.show() {
+        isOutsideTouchable = true
+        inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+        setBackgroundDrawable(null)
+        height = ViewGroup.LayoutParams.WRAP_CONTENT
+        width = instanceUrlTextInputLayout.width
+
+        contentView = LayoutInflater.from(this@JoinInstanceActivity).inflate(R.layout.instance_suggestion_popup_window, null)
+        showAsDropDown(instanceUrlTextInputLayout.editText)
+        update()
+    }
+
+    private fun onResultSelected(result: InstanceSearchResult) {
+        resultRecentlySelected = true
+        resultsPopupWindow.dismiss()
+        instanceUrlTextInputLayout.editText?.setText(result.name)
+        processLogin()
+    }
+
+    private fun processLogin() {
+        instanceUrlTextInputLayout.editText?.text?.toString()?.let { url ->
+            onLoginClicked(url)
+        } ?: showInstanceUrlEmptyError()
     }
 
     private fun showInstanceUrlEmptyError() {

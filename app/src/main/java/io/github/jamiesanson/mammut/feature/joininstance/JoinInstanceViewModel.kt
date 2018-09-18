@@ -13,10 +13,8 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.models.Account
-import io.github.jamiesanson.mammut.data.models.Emoji
-import io.github.jamiesanson.mammut.data.models.InstanceAccessToken
-import io.github.jamiesanson.mammut.data.models.InstanceRegistration
+import io.github.jamiesanson.mammut.data.models.*
+import io.github.jamiesanson.mammut.data.repo.InstancesRepository
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
 import io.github.jamiesanson.mammut.extension.postSafely
@@ -29,7 +27,8 @@ import javax.inject.Inject
 
 class JoinInstanceViewModel @Inject constructor(
         private val registrationRepository: RegistrationRepository,
-        private val preferencesRepository: PreferencesRepository
+        private val preferencesRepository: PreferencesRepository,
+        private val instancesRepository: InstancesRepository
 ) : ViewModel() {
 
     val isLoading: LiveData<Boolean> = MutableLiveData()
@@ -39,6 +38,14 @@ class JoinInstanceViewModel @Inject constructor(
     val oauthUrl: LiveData<Event<String>> = MutableLiveData()
 
     val registrationCompleteEvent: LiveData<Event<Unit?>> = MutableLiveData()
+
+    val searchResults: LiveData<List<InstanceSearchResult>> = MutableLiveData()
+
+    init {
+        launch {
+            instancesRepository.initialiseResults()
+        }
+    }
 
     fun login(dirtyUrl: String, redirectUrl: String, clientName: String) {
         launch {
@@ -93,6 +100,13 @@ class JoinInstanceViewModel @Inject constructor(
             preferencesRepository.loginDomain = url
 
             this@JoinInstanceViewModel.oauthUrl.postSafely(Event(oauthUrl))
+        }
+    }
+
+    fun onQueryChanged(query: String) {
+        launch {
+            val results = instancesRepository.searchInstances(query)
+            searchResults.postSafely(results)
         }
     }
 
