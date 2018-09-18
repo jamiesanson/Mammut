@@ -14,7 +14,7 @@ class InstanceCardViewModel @Inject constructor(
     private val instancesRepository: InstancesRepository
 ) : ViewModel() {
 
-    val isLoading: LiveData<Boolean> = MutableLiveData()
+    val title: LiveData<String> = MutableLiveData()
 
     val instanceInformation: LiveData<InstanceDetail?> = MutableLiveData()
 
@@ -24,13 +24,12 @@ class InstanceCardViewModel @Inject constructor(
         // Only reload information if the current instance isn't correct
         if (registrationInformation.value != instanceRegistration) {
             registrationInformation.postSafely(instanceRegistration)
+            title.postSafely("@${instanceRegistration.account?.userName}@${instanceRegistration.instanceName}")
 
             launch {
-                isLoading.postSafely(true)
                 val info = instancesRepository.getInstanceInformation(instanceRegistration.instanceName)
 
                 instanceInformation.postSafely(info)
-                isLoading.postSafely(false)
             }
         }
     }

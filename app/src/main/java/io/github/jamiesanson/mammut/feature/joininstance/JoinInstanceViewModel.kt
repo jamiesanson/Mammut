@@ -9,9 +9,12 @@ import arrow.core.Either
 import com.google.gson.Gson
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Scope
+import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.jamiesanson.mammut.R
+import io.github.jamiesanson.mammut.data.models.Account
+import io.github.jamiesanson.mammut.data.models.Emoji
 import io.github.jamiesanson.mammut.data.models.InstanceAccessToken
 import io.github.jamiesanson.mammut.data.models.InstanceRegistration
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
@@ -134,6 +137,20 @@ class JoinInstanceViewModel @Inject constructor(
                 }
             }
 
+            // Get the users account and save it with the registration
+            val authenticatedClient = getClientForUrl(instanceName, accessToken.accessToken)
+            val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()
+
+            val account = when (accountResult) {
+                is Either.Right -> accountResult.b
+                is Either.Left -> {
+                    isLoading.postSafely(false)
+                    errorMessage.postSafely(Event({ _ -> accountResult.a }))
+
+                    return@launch
+                }
+            }
+
             // Save access token with registration
             val completedRegistration = registration.copy(
                     accessToken = InstanceAccessToken(
@@ -141,9 +158,28 @@ class JoinInstanceViewModel @Inject constructor(
                             tokenType = accessToken.tokenType,
                             scope = accessToken.scope,
                             createdAt = accessToken.createdAt
-                    )
+                    ),
+                    account = account.run {
+                        Account(
+                                id,
+                                userName,
+                                acct,
+                                displayName,
+                                note,
+                                url,
+                                avatar,
+                                header,
+                                isLocked,
+                                createdAt,
+                                followersCount,
+                                followingCount,
+                                statusesCount,
+                                emojis = emojis.map { it.run { Emoji(shortcode, staticUrl, url, visibleInPicker) } }
+                        )
+                    }
             )
 
+            // Update the registration repo
             registrationRepository.addOrUpdateRegistration(completedRegistration)
 
             isLoading.postSafely(false)
@@ -151,7 +187,13 @@ class JoinInstanceViewModel @Inject constructor(
         }
     }
 
-    private fun getClientForUrl(url: String): MastodonClient = MastodonClient.Builder(url, OkHttpClient.Builder(), Gson()).build()
+    private fun getClientForUrl(url: String, accessToken: String? = null): MastodonClient = MastodonClient.Builder(url, OkHttpClient.Builder(), Gson())
+            .run {
+                accessToken?.let {
+                    accessToken(it)
+                } ?: this
+            }
+            .build()
 
     private fun String.canonicalize(): String {
         // Strip any schemes out.

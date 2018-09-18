@@ -27,7 +27,6 @@ class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.infl
             detail ?: return@observe
             with (itemView) {
                 TransitionManager.beginDelayedTransition(itemView as ViewGroup, AutoTransition())
-                instanceTitleTextView.text = detail.name
                 descriptionTextView.text = detail.info.shortDescription
                 GlideApp.with(itemView)
                         .asBitmap()
@@ -45,6 +44,11 @@ class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.infl
                     // TODO - Navigate
                 }
             }
+        }
+
+        instanceCardViewModel.title.observe(lifecycleOwner) {
+            itemView.instanceTitleTextView.text = it
+            itemView.instanceTitleTextView.isSelected = true
         }
     }
 }

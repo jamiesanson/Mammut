@@ -4,7 +4,7 @@ import io.github.jamiesanson.mammut.data.database.entities.InstanceRegistrationE
 import io.github.jamiesanson.mammut.data.models.InstanceRegistration
 
 fun InstanceRegistrationEntity.toModel(): InstanceRegistration
-        = InstanceRegistration(id, clientId, clientSecret, redirectUri, instanceName, accessToken)
+        = InstanceRegistration(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account)
 
 fun InstanceRegistration.toEntity(): InstanceRegistrationEntity
-        = InstanceRegistrationEntity(id, clientId, clientSecret, redirectUri, instanceName, accessToken)
+        = InstanceRegistrationEntity(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account)
