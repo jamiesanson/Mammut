@@ -101,10 +101,7 @@ class InstanceBrowserActivity: BaseActivity(), NestedScrollListener {
         val instanceAboutFragment = (supportFragmentManager.findFragmentById(instanceAboutPageLayout.id) as InstanceAboutFragment?) ?: return
         showAbout(itemId)
         appBarLayout.setExpanded(false, true)
-        instanceAboutFragment.populate(instanceDetail) {
-            collapseAbout()
-            logOut(itemId)
-        }
+        instanceAboutFragment.populate(instanceDetail, itemId)
     }
 
     private fun collapseAbout() {
@@ -115,7 +112,8 @@ class InstanceBrowserActivity: BaseActivity(), NestedScrollListener {
         instanceRecyclerView.expandItem(itemId)
     }
 
-    private fun logOut(itemId: Long) {
+    fun logOut(itemId: Long) {
+        collapseAbout()
         launch {
             registrationRepository.logOut(itemId)
         }
