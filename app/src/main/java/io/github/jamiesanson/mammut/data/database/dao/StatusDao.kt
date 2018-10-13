@@ -2,10 +2,7 @@ package io.github.jamiesanson.mammut.data.database.dao
 
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 @Dao
@@ -22,4 +19,10 @@ interface StatusDao {
 
     @Query("SELECT * FROM status ORDER BY createdAt ASC LIMIT 1")
     fun getEarliest(): Status?
+
+    @Query("DELETE FROM status WHERE id == :id")
+    fun deleteById(id: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertStatus(status: Status)
 }

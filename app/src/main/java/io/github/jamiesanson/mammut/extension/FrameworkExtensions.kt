@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import org.jetbrains.anko.textColor
@@ -44,6 +45,10 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
         view.background.setTint(primaryDarkColor)
         view.snackbar_text.textColor = lightAccentColor
     }.show()
+}
+
+fun Fragment.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
+    requireActivity().snackbar(message, length)
 }
 
 /**

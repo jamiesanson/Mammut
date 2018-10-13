@@ -9,7 +9,8 @@ import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceComponent
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceModule
-import io.github.jamiesanson.mammut.feature.instance.subfeature.Tab
+import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
+import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.Tab
 import kotlinx.android.synthetic.main.activity_instance.*
 
 private const val EXTRA_INSTANCE_NAME = "instance_name"
@@ -51,6 +52,12 @@ class InstanceActivity : BaseActivity() {
                 else -> return@setOnNavigationItemSelectedListener false
             }
             return@setOnNavigationItemSelectedListener true
+        }
+
+        bottomNavigationView.setOnNavigationItemReselectedListener {
+            // Current tab reselected - let the fragment know
+            (supportFragmentManager.findFragmentByTag(currentTab::class.java.simpleName) as? ReselectListener)
+                    ?.onTabReselected()
         }
     }
 

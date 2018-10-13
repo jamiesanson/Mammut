@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature
+package io.github.jamiesanson.mammut.feature.instance.subfeature.navigation
 
 import android.os.Parcelable
 import androidx.annotation.IdRes

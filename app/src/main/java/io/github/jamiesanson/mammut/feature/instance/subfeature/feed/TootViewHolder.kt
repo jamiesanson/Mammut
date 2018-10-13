@@ -1,6 +1,5 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
-import android.annotation.SuppressLint
 import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
@@ -49,7 +48,7 @@ class TootViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(
             this > Duration.of(1, ChronoUnit.DAYS) -> "${toDays()} days ago"
             this > Duration.of(1, ChronoUnit.HOURS) -> "${toHours()} hours ago"
             this > Duration.of(1, ChronoUnit.MINUTES) -> "${toMinutes()} mins ago"
-            this > Duration.of(10, ChronoUnit.SECONDS) -> "${toMillis() / 1000} secs ago"
+            this > Duration.of(1, ChronoUnit.SECONDS) -> "${toMillis() / 1000} secs ago"
             else -> "Just now"
         }
 
