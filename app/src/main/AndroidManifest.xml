@@ -38,6 +38,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".feature.instancebrowser.InstanceBrowserActivity" />
+        <activity android:name=".feature.instance.InstanceActivity" />
     </application>
 
 </manifest>

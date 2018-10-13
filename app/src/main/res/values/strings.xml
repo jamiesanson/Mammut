@@ -19,4 +19,8 @@
     <string name="users">Users</string>
     <string name="log_out">LOG OUT</string>
     <string name="uptime_percent">Reporting an uptime of $.2d%</string>
+    <string name="home">Home</string>
+    <string name="local">Local</string>
+    <string name="federated">Federated</string>
+    <string name="notifications">Notifications</string>
 </resources>

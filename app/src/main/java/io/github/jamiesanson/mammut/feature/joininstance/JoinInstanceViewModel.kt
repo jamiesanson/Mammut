@@ -17,6 +17,7 @@ import io.github.jamiesanson.mammut.data.models.*
 import io.github.jamiesanson.mammut.data.repo.InstancesRepository
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
+import io.github.jamiesanson.mammut.extension.ClientBuilder
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.base.Event
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class JoinInstanceViewModel @Inject constructor(
         private val registrationRepository: RegistrationRepository,
         private val preferencesRepository: PreferencesRepository,
-        private val instancesRepository: InstancesRepository
+        private val instancesRepository: InstancesRepository,
+        private val clientBuilder: ClientBuilder
 ) : ViewModel() {
 
     val isLoading: LiveData<Boolean> = MutableLiveData()
@@ -201,7 +203,7 @@ class JoinInstanceViewModel @Inject constructor(
         }
     }
 
-    private fun getClientForUrl(url: String, accessToken: String? = null): MastodonClient = MastodonClient.Builder(url, OkHttpClient.Builder(), Gson())
+    private fun getClientForUrl(url: String, accessToken: String? = null): MastodonClient = clientBuilder.getInstanceBuilder(url)
             .run {
                 accessToken?.let {
                     accessToken(it)

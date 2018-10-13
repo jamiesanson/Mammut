@@ -16,6 +16,8 @@ class PreferencesRepository(appContext: Context) {
     var themeId by preferences.string(defaultReturn = StandardTheme.themeId)
 
     var loginDomain by preferences.string(defaultReturn = "")
+
+    var isAdvancedUser by preferences.boolean(defaultReturn = false)
 }
 
 

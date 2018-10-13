@@ -15,6 +15,7 @@ import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
 import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
+import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instancebrowser.about.InstanceAboutFragment
 import io.github.jamiesanson.mammut.feature.instancebrowser.recyclerview.InstanceBrowserAdapter
 import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
@@ -46,7 +47,13 @@ class InstanceBrowserActivity: BaseActivity(), NestedScrollListener {
         setupAboutFragment()
 
         instanceRecyclerView.layoutManager = LinearLayoutManager(this)
-        instanceRecyclerView.adapter = InstanceBrowserAdapter(ViewModelProviders.of(this, viewModelFactory)) { detail, id ->
+        instanceRecyclerView.adapter = InstanceBrowserAdapter(ViewModelProviders.of(this, viewModelFactory), onInstanceClicked = {
+            with (it) {
+                InstanceActivity.launch(this@InstanceBrowserActivity,
+                        instanceName = instanceName,
+                        authCode = accessToken!!.accessToken)
+            }
+        }) { detail, id ->
             expandAboutFragment(detail, id)
         }
         instanceRecyclerView.setExpandablePage(instanceAboutPageLayout)

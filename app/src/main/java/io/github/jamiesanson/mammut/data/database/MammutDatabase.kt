@@ -6,8 +6,10 @@ import androidx.room.TypeConverters
 import io.github.jamiesanson.mammut.data.converters.RoomConverters
 import io.github.jamiesanson.mammut.data.database.dao.InstanceRegistrationDao
 import io.github.jamiesanson.mammut.data.database.dao.InstanceSearchDao
+import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.database.entities.InstanceRegistrationEntity
 import io.github.jamiesanson.mammut.data.database.entities.InstanceSearchResultEntity
+import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 @Database(
         entities = [

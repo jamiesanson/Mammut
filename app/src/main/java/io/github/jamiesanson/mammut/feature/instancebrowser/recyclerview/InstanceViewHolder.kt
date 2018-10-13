@@ -39,10 +39,6 @@ class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.infl
                 moreInformationButton.onClick {
                     onAboutClicked(detail)
                 }
-
-                parentLayout.onClick {
-                    // TODO - Navigate
-                }
             }
         }
 

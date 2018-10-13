@@ -2,8 +2,10 @@ package io.github.jamiesanson.mammut.feature.splash
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
 import io.github.jamiesanson.mammut.extension.applicationComponent
+import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
 import kotlinx.coroutines.experimental.android.UI
@@ -12,23 +14,36 @@ import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 
-class SplashActivity: AppCompatActivity() {
+class SplashActivity : AppCompatActivity() {
 
-    @Inject lateinit var registrationRepository: RegistrationRepository
+    @Inject
+    lateinit var registrationRepository: RegistrationRepository
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applicationComponent.inject(this)
 
         launch {
-            val hasRegistrations = registrationRepository.hasRegistrations()
+            val registration = registrationRepository
+                    .getAllRegistrations()
+                    .firstOrNull()
 
             withContext(UI) {
-                if (hasRegistrations) {
-                    startActivity<InstanceBrowserActivity>()
-                } else {
-                    startActivity<JoinInstanceActivity>()
-                }
+                registration?.run {
+                    when {
+                        preferencesRepository.isAdvancedUser && accessToken != null ->
+                            startActivity<InstanceBrowserActivity>()
+                        accessToken != null ->
+                            InstanceActivity.launch(this@SplashActivity,
+                                    instanceName = instanceName,
+                                    authCode = accessToken.accessToken)
+                        else ->
+                            startActivity<JoinInstanceActivity>()
+                    }
+                } ?: startActivity<JoinInstanceActivity>()
 
                 finish()
             }
