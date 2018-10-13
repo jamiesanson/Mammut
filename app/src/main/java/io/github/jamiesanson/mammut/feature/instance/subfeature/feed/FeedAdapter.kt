@@ -8,12 +8,12 @@ import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
         private val feedPagingManager: FeedPagingManager
-): PagedListAdapter<Status, FeedViewHolder>(DIFF_CALLBACK) {
+): PagedListAdapter<Status, TootViewHolder>(DIFF_CALLBACK) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder =
-            FeedViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TootViewHolder =
+            TootViewHolder(parent)
 
-    override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TootViewHolder, position: Int) {
         val current = getItem(position) ?: run {
             holder.clear()
             return

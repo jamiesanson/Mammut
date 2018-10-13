@@ -1,6 +1,7 @@
 package io.github.jamiesanson.mammut
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.jamiesanson.mammut.dagger.application.ApplicationComponent
 import io.github.jamiesanson.mammut.dagger.application.ApplicationModule
 import io.github.jamiesanson.mammut.dagger.application.DaggerApplicationComponent
@@ -22,5 +23,7 @@ class MammutApplication: Application() {
                 .also { it.inject(this) }
 
         themeEngine.updateFontDefaults()
+
+        AndroidThreeTen.init(this)
     }
 }
