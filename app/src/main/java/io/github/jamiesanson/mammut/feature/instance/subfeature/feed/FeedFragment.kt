@@ -2,6 +2,7 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +27,8 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.Feed
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
 import kotlinx.android.synthetic.main.fragment_feed.*
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -95,6 +94,8 @@ class FeedFragment: Fragment(), ReselectListener {
         }
 
         recyclerView.onScrollChange { _,_,_,_,_ ->
+            recyclerView ?: return@onScrollChange
+
             if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
                 if (newTootButton.translationY == 0F) {
                     hideNewTootsIndicator()

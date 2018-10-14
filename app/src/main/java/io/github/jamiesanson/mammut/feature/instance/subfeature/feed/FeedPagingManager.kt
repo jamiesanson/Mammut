@@ -15,7 +15,6 @@ class FeedPagingManager(
         private val getCallForRange: (Range) -> MastodonRequest<Pageable<Status>>
 ) {
 
-    private lateinit var currentRange: Range
     private lateinit var getLatestId: suspend () -> Long?
     private lateinit var getEarliestId: suspend () -> Long?
 
@@ -45,8 +44,6 @@ class FeedPagingManager(
             feedResults.postSafely(results)
         } else {
             isInitialised = true
-            // If the starting range isn't empty, we're loading some items from the DB so leave as is
-            currentRange = startingRange
         }
     }
 
@@ -90,7 +87,6 @@ class FeedPagingManager(
             }
             is Either.Right -> {
                 if (results.b.part.isNotEmpty()) {
-                    currentRange = results.b.toRange()
                     results.b.part
                 } else {
                     emptyList()

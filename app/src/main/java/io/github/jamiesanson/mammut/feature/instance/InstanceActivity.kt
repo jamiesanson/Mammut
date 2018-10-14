@@ -102,7 +102,7 @@ class InstanceActivity : BaseActivity() {
                 }
                 .attach(fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit()
+                .commitNow()
     }
 
     override fun injectDependencies() {

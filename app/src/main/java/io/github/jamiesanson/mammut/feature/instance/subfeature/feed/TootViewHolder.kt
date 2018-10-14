@@ -12,11 +12,8 @@ import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
-import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
