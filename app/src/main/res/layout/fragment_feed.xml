@@ -19,4 +19,17 @@
         android:indeterminate="true"
         android:layout_gravity="center"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/newTootButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        app:icon="@drawable/ic_sync_black_24dp"
+        app:iconGravity="start"
+        android:paddingEnd="16dp"
+        android:paddingStart="8dp"
+        android:text="@string/new_toots"
+        app:cornerRadius="48dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

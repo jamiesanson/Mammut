@@ -5,11 +5,14 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.retention.retained
@@ -26,7 +29,10 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk25.coroutines.onScrollChange
 import javax.inject.Inject
 
 class FeedFragment: Fragment(), ReselectListener {
@@ -72,20 +78,31 @@ class FeedFragment: Fragment(), ReselectListener {
         TransitionManager.beginDelayedTransition(view as ViewGroup)
         progressBar.visibility = View.VISIBLE
 
-        // TODO - Base this on network state
-        viewModel.startStreaming()
+        newTootButton.executeOnMeasure {
+            newTootButton.translationY = -(newTootButton.y + newTootButton.height)
+        }
+
+        recyclerView.onScrollChange { _,_,_,_,_ ->
+            if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
+                if (newTootButton.translationY == 0F) {
+                    hideNewTootsIndicator()
+                }
+            }
+        }
 
         viewModel.onStreamedResult.observe(this) {
             it.getContentIfNotHandled()
             // Only scroll to the top if the first item is completely visible. Note, this is
             // invoked before the streamed item is inserted
-            if ((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() == 0) {
+            if (recyclerView.isNearTop()) {
                 launch(UI) {
                     delay(200)
                     recyclerView?.smoothScrollToPosition(0)
                 }
             } else {
-                // TODO - Show new items indicator
+                if (newTootButton.translationY != 0F) {
+                    showNewTootsIndicator()
+                }
             }
         }
 
@@ -102,6 +119,8 @@ class FeedFragment: Fragment(), ReselectListener {
 
                 if (!adapterStateRestored) {
                     savedInstanceState?.let(::restoreAdapterState)
+
+                    viewModel.startStreaming()
                 }
             }
         }
@@ -128,12 +147,36 @@ class FeedFragment: Fragment(), ReselectListener {
         }
     }
 
+    private fun showNewTootsIndicator() {
+        newTootButton.animate()
+                .translationY(0F)
+                .setInterpolator(OvershootInterpolator())
+                .setDuration(300L)
+                .start()
+
+        newTootButton.onClick {
+            hideNewTootsIndicator()
+            recyclerView?.smoothScrollToPosition(0)
+        }
+    }
+
+    private fun hideNewTootsIndicator() {
+        newTootButton.animate()
+                .translationY(-(newTootButton.y + newTootButton.height))
+                .setInterpolator(AccelerateInterpolator())
+                .setDuration(150L)
+                .start()
+    }
+
     private fun restoreAdapterState(savedInstanceState: Bundle) {
         savedInstanceState.getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)?.let { state ->
             (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
         }
         adapterStateRestored = true
     }
+
+    private fun RecyclerView.isNearTop(): Boolean =
+            (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() <= 1
 
     companion object {
 

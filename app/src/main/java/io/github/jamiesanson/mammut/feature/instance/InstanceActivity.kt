@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentTransaction
+import arrow.data.invalidNel
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
@@ -23,7 +24,7 @@ class InstanceActivity : BaseActivity() {
 
     lateinit var component: InstanceComponent
 
-    private lateinit var currentTab: Tab
+    private var currentTab: Tab? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,33 +45,51 @@ class InstanceActivity : BaseActivity() {
 
     private fun setupBottomNavigation() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                Tab.Home.menuItemId -> selectTab(Tab.Home)
-                Tab.Local.menuItemId -> selectTab(Tab.Local)
-                Tab.Federated.menuItemId -> selectTab(Tab.Federated)
-                Tab.Notifications.menuItemId -> selectTab(Tab.Notifications)
-                else -> return@setOnNavigationItemSelectedListener false
-            }
-            return@setOnNavigationItemSelectedListener true
+            selectTabById(item.itemId)
         }
 
-        bottomNavigationView.setOnNavigationItemReselectedListener {
+        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+            // On first initialisation, this is called instead of the navigation selected listener
+            // Set up the current tab here if that's the case
+            if (supportFragmentManager.fragments.none { !it.isDetached }) {
+                selectTabById(item.itemId)
+            }
+
             // Current tab reselected - let the fragment know
-            (supportFragmentManager.findFragmentByTag(currentTab::class.java.simpleName) as? ReselectListener)
+            (supportFragmentManager.findFragmentByTag(currentTab!!::class.java.simpleName) as? ReselectListener)
                     ?.onTabReselected()
         }
     }
 
+    private fun selectTabById(menuItemId: Int): Boolean {
+        when (menuItemId) {
+            Tab.Home.menuItemId -> selectTab(Tab.Home)
+            Tab.Local.menuItemId -> selectTab(Tab.Local)
+            Tab.Federated.menuItemId -> selectTab(Tab.Federated)
+            Tab.Notifications.menuItemId -> selectTab(Tab.Notifications)
+            else -> return false
+        }
+
+        return true
+    }
+
+    private fun setupProfileButton() {
+
+    }
+
     private fun restoreTabState(savedInstanceState: Bundle) {
         currentTab = savedInstanceState.getParcelable(STATE_CURRENT_TAB)
-                ?: throw IllegalStateException("Attempting to restore tab state but nothing found")
 
-        bottomNavigationView.selectedItemId = currentTab.menuItemId
+        currentTab?.let {
+            bottomNavigationView.selectedItemId = it.menuItemId
+        } ?: throw IllegalStateException("Attempting to restore tab state but nothing found")
     }
 
     private fun initialiseTabs() {
         currentTab = Tab.Home
-        bottomNavigationView.selectedItemId = currentTab.menuItemId
+        currentTab?.let {
+            bottomNavigationView.selectedItemId = it.menuItemId
+        }
     }
 
     private fun selectTab(tab: Tab) {

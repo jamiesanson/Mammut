@@ -22,6 +22,7 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.coroutines.experimental.CoroutineContext
 
 class FeedViewModel @Inject constructor(
         @FeedScope
