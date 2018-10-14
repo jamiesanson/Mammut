@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentTransaction
-import arrow.data.invalidNel
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
@@ -66,15 +65,11 @@ class InstanceActivity : BaseActivity() {
             Tab.Home.menuItemId -> selectTab(Tab.Home)
             Tab.Local.menuItemId -> selectTab(Tab.Local)
             Tab.Federated.menuItemId -> selectTab(Tab.Federated)
-            Tab.Notifications.menuItemId -> selectTab(Tab.Notifications)
+            Tab.Profile.menuItemId -> selectTab(Tab.Profile)
             else -> return false
         }
 
         return true
-    }
-
-    private fun setupProfileButton() {
-
     }
 
     private fun restoreTabState(savedInstanceState: Bundle) {

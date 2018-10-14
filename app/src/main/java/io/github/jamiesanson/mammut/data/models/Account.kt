@@ -1,5 +1,9 @@
 package io.github.jamiesanson.mammut.data.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Account(val accountId: Long = 0L,
                    val userName: String = "",
                    val acct: String = "",
@@ -13,4 +17,5 @@ data class Account(val accountId: Long = 0L,
                    val followersCount: Int = 0,
                    val followingCount: Int = 0,
                    val statusesCount: Int = 0,
-                   val emojis: List<Emoji> = emptyList())
+                   val emojis: List<Emoji> = emptyList()
+): Parcelable

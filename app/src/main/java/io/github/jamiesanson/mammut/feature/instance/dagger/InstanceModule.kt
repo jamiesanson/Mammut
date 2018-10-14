@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import io.github.jamiesanson.mammut.BuildConfig
 import io.github.jamiesanson.mammut.extension.ClientBuilder
+import javax.inject.Named
 
 @Module
 class InstanceModule(private val instanceName: String, private val accessToken: String) {
@@ -22,4 +23,9 @@ class InstanceModule(private val instanceName: String, private val accessToken: 
                 }
                 .build()
     }
+
+    @Provides
+    @InstanceScope
+    @Named("instance_name")
+    fun provideInstanceName(): String = instanceName
 }

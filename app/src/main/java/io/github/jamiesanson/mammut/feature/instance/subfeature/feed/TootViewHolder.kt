@@ -27,7 +27,7 @@ class TootViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(
         val submissionTime = ZonedDateTime.parse(status.createdAt)
 
         with (itemView) {
-            displayNameTextView.text = status.account?.displayName
+            displayNameTextView.text = if (status.account?.displayName?.isEmpty() == true) status.account.acct else status.account?.displayName
             usernameTextView.text = "@${status.account?.userName}"
             contentTextView.text = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
 

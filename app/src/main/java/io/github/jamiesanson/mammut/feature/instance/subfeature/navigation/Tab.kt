@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedFragment
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileFragment
 import kotlinx.android.parcel.Parcelize
 
 sealed class Tab(@IdRes val menuItemId: Int, val fragment: Fragment): Parcelable {
@@ -16,5 +17,5 @@ sealed class Tab(@IdRes val menuItemId: Int, val fragment: Fragment): Parcelable
     @Parcelize
     object Federated: Tab(fragment = FeedFragment.newInstance(FeedType.Federated), menuItemId = R.id.federatedTimelineDestination)
     @Parcelize
-    object Notifications: Tab(fragment = Fragment(), menuItemId = R.id.notificationDestination)
+    object Profile: Tab(fragment = ProfileFragment.newInstance(isMe = true), menuItemId = R.id.profileDestination)
 }

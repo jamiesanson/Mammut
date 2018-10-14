@@ -22,7 +22,7 @@
     <string name="home">Home</string>
     <string name="local">Local</string>
     <string name="federated">Federated</string>
-    <string name="notifications">Notifications</string>
+    <string name="profile">Profile</string>
     <string name="profile_button_content_description">Profile button</string>
     <string name="profile_picture_content_descrption">Profile picture</string>
     <string name="new_toots">New toots</string>
