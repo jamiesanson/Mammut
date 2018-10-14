@@ -25,10 +25,6 @@ class FeedModule(private val feedType: FeedType) {
 
     @Provides
     @FeedScope
-    fun provideFeedAdapter(manager: FeedPagingManager) = FeedAdapter(manager)
-
-    @Provides
-    @FeedScope
     @Named("in_memory_feed_db")
     fun provideStatusDao(context: Context): StatusDao =
             Room.inMemoryDatabaseBuilder(context, StatusInMemoryDatabase::class.java).build().statusDao()

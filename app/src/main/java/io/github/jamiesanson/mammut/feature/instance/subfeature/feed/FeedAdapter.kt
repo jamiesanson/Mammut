@@ -1,13 +1,12 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
 import android.view.ViewGroup
-import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
-        private val feedPagingManager: FeedPagingManager
+        private val onLoadAround: (Long) -> Unit
 ): PagedListAdapter<Status, TootViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TootViewHolder =
@@ -23,12 +22,8 @@ class FeedAdapter(
         holder.bind(current)
     }
 
-    override fun submitList(pagedList: PagedList<Status>?) {
-        super.submitList(pagedList)
-    }
-
     private fun loadAround(id: Long) {
-        feedPagingManager.loadAroundId(id)
+        onLoadAround(id)
     }
 
     companion object {

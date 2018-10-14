@@ -1,75 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:clipToPadding="false"/>
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/app_name">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:collapsedTitleGravity="center"
-            app:expandedTitleGravity="center"
-            app:title="@string/app_name"
-            app:titleEnabled="true"
-            app:layout_scrollFlags="scroll|enterAlways">
-
-            <Space
-                android:id="@+id/space"
-                android:layout_width="match_parent"
-                android:layout_height="57dp"/>
-
-            <androidx.appcompat.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="56dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_gravity="center"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                        android:text="@string/app_name"/>
-
-                    <ImageView
-                        android:id="@+id/profileImageView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/circular_accent_ripple"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:contentDescription="@string/profile_button_content_description"
-                        android:src="@drawable/ic_notifications_black_24dp"
-                        android:padding="8dp"
-                        android:layout_margin="8dp"
-                        android:tint="@android:color/white"
-                        android:layout_gravity="center_vertical|end"/>
-                </FrameLayout>
-
-            </androidx.appcompat.widget.Toolbar>
-
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:clipToPadding="false"
+        android:layout_marginTop="-54dp"
+        android:clipChildren="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -77,19 +21,19 @@
         android:layout_height="54dp"
         android:layout_gravity="bottom"
         android:elevation="8dp"
-        app:menu="@menu/instance_bottom_navigation"
-        app:labelVisibilityMode="labeled"
         app:itemHorizontalTranslationEnabled="false"
-        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"/>
+        app:labelVisibilityMode="labeled"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+        app:menu="@menu/instance_bottom_navigation" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
+        android:src="@drawable/ic_add_black_24dp"
         app:layout_anchor="@id/bottomNavigationView"
         app:layout_anchorGravity="end|top"
-        app:useCompatPadding="true"
-        android:src="@drawable/ic_add_black_24dp"/>
+        app:useCompatPadding="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

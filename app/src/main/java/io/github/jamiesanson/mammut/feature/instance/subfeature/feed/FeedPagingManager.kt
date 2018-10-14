@@ -1,6 +1,5 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import arrow.core.Either
@@ -10,7 +9,6 @@ import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
-import kotlinx.coroutines.experimental.CoroutineExceptionHandler
 import kotlinx.coroutines.experimental.launch
 
 class FeedPagingManager(
@@ -63,19 +61,13 @@ class FeedPagingManager(
                 when (id) {
                     getLatestId() -> {
                         // Load start
-                        launch {
-                            val results = loadForRange(Range(sinceId = id))
-                            Log.d("FeedPaging", "Loaded start: ${results.map { it.id }}")
-                            feedResults.postSafely(results)
-                        }
+                        val results = loadForRange(Range(sinceId = id))
+                        feedResults.postSafely(results)
                     }
                     getEarliestId() -> {
                         // Load end
-                        launch {
-                            val results = loadForRange(Range(maxId = id))
-                            Log.d("FeedPaging", "Loaded end: ${results.map { it.id }}")
-                            feedResults.postSafely(results)
-                        }
+                        val results = loadForRange(Range(maxId = id))
+                        feedResults.postSafely(results)
                     }
                     else -> {
                         // Ignore this
@@ -89,7 +81,8 @@ class FeedPagingManager(
      * Function for loading results for a given range. Returns an empty list
      */
     private suspend fun loadForRange(range: Range): List<Status> {
-        val results = getCallForRange(range).run(retryCount = 3)
+        val maxLengthRange = Range(maxId = range.maxId, sinceId = range.sinceId, limit = 40)
+        val results = getCallForRange(maxLengthRange).run(retryCount = 3)
         return when (results) {
             is Either.Left -> {
                 errors.postSafely(results.a)

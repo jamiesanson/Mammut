@@ -22,7 +22,6 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.coroutines.experimental.CoroutineContext
 
 class FeedViewModel @Inject constructor(
         @FeedScope
@@ -46,6 +45,10 @@ class FeedViewModel @Inject constructor(
     private var shutdownable: Shutdownable? = null
 
     private var streamStartJob: Job? = null
+
+    fun loadAround(id: Long) {
+        feedPagingManager.loadAroundId(id)
+    }
 
     private suspend fun initialise() {
         val earliest = statusDao.getEarliest()
@@ -99,7 +102,7 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun stopStreaming() {
+    private fun stopStreaming() {
         streamStartJob?.cancel()
         shutdownable?.shutdown()
         shutdownable = null

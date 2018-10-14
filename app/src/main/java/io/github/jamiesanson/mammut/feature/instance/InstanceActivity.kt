@@ -79,10 +79,6 @@ class InstanceActivity : BaseActivity() {
 
     private fun restoreTabState(savedInstanceState: Bundle) {
         currentTab = savedInstanceState.getParcelable(STATE_CURRENT_TAB)
-
-        currentTab?.let {
-            bottomNavigationView.selectedItemId = it.menuItemId
-        } ?: throw IllegalStateException("Attempting to restore tab state but nothing found")
     }
 
     private fun initialiseTabs() {
