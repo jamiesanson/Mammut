@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
-        private val onLoadAround: (Long) -> Unit
+        private val onLoadAround: (Long) -> Unit,
+        private val tootCallbacks: TootCallbacks
 ): PagedListAdapter<Status, TootViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TootViewHolder =
@@ -19,7 +20,7 @@ class FeedAdapter(
         }
 
         loadAround(current.id)
-        holder.bind(current)
+        holder.bind(current, tootCallbacks)
     }
 
     private fun loadAround(id: Long) {

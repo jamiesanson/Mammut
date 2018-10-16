@@ -37,7 +37,10 @@ class ProfileController(args: Bundle): BaseController(args) {
     @ProfileScope
     lateinit var viewModelFactory: MammutViewModelFactory
 
-    private val profileModule: ProfileModule by retained(key = { "Profile_${profileOpenCount.incrementAndGet()}" }) {
+    private val key: String
+        get() = "Profile_${args.getParcelable<Account>(ARG_ACCOUNT)}_${profileOpenCount.incrementAndGet()}"
+
+    private val profileModule: ProfileModule by retained(key = { key }) {
         val account: Account? = args.getParcelable(ARG_ACCOUNT)
         if (account == null && !args.getBoolean(ARG_IS_ME)) throw IllegalArgumentException("No Account or isMe flag set")
         ProfileModule(account)
@@ -53,7 +56,7 @@ class ProfileController(args: Bundle): BaseController(args) {
                 .plus(profileModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, viewModelFactory)[ProfileViewModel::class.java]
+        viewModel = ViewModelProviders.of(context, viewModelFactory).get(key, ProfileViewModel::class.java)
     }
 
     override fun onAttach(view: View) {

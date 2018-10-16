@@ -64,6 +64,10 @@ class InstanceController : BaseController(), BottomNavigationView.OnNavigationIt
 
         view.bottomNavigationView.setOnNavigationItemSelectedListener(this)
 
+        view.bottomNavigationView.setOnNavigationItemReselectedListener {
+            (childRouter.backstack.last().controller() as? ReselectListener)?.onTabReselected()
+        }
+
         // We have not a single bundle/state saved.
         // Looks like this [HomeController] was created for the first time
         if (routerStates.size() == 0) {

@@ -14,6 +14,7 @@ import io.github.jamiesanson.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
@@ -23,7 +24,7 @@ class TootViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(
 
     private var countJob = Job()
 
-    fun bind(status: Status) {
+    fun bind(status: Status, callbacks: TootCallbacks) {
         val submissionTime = ZonedDateTime.parse(status.createdAt)
 
         with (itemView) {
@@ -39,6 +40,12 @@ class TootViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(
                         timeTextView.text = timeSinceSubmission.toElapsedTime()
                     }
                     delay(1, TimeUnit.SECONDS)
+                }
+            }
+
+            status.account?.let { account ->
+                profileImageView.onClick {
+                    callbacks.onProfileClicked(account)
                 }
             }
 
@@ -74,6 +81,7 @@ class TootViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(
             usernameTextView.text = null
             contentTextView.text = null
             timeTextView.text = null
+            profileImageView.setOnClickListener(null)
             GlideApp.with(itemView)
                     .clear(profileImageView)
         }

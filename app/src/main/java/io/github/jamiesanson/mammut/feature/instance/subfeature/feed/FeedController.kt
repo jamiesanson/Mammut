@@ -15,16 +15,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.bluelinelabs.conductor.RouterTransaction
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
+import io.github.jamiesanson.mammut.data.models.Account
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_feed.*
@@ -43,7 +46,7 @@ import javax.inject.Inject
  * Controller used to display a feed
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class FeedController(args: Bundle) : BaseController(args) {
+class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private lateinit var viewModel: FeedViewModel
 
@@ -87,7 +90,7 @@ class FeedController(args: Bundle) : BaseController(args) {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context).apply {
             initialPrefetchItemCount = 20
         }
-        recyclerView.adapter = FeedAdapter(viewModel::loadAround)
+        recyclerView.adapter = FeedAdapter(viewModel::loadAround, this)
 
         // The following ensures we only change animate the display of the progress bar if
         // showing for the first time, i.e don't transition again after a rotation
@@ -146,6 +149,10 @@ class FeedController(args: Bundle) : BaseController(args) {
 
     override fun onTabReselected() {
         recyclerView?.smoothScrollToPosition(0)
+    }
+
+    override fun onProfileClicked(account: Account) {
+        router.pushController(RouterTransaction.with(ProfileController.newInstance(account)))
     }
 
     private fun onResultsReady(resultLiveData: LiveData<PagedList<Status>>) {
@@ -224,7 +231,9 @@ class FeedController(args: Bundle) : BaseController(args) {
     }
 
     private fun RecyclerView.isNearTop(): Boolean =
-            (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() <= 1
+            (layoutManager as LinearLayoutManager?)?.run {
+                return@run findFirstVisibleItemPosition() <= 1
+            } ?: false
 
 
     companion object {
