@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import kotlin.reflect.KProperty
 
 /**
@@ -13,16 +14,19 @@ import kotlin.reflect.KProperty
  * in the Android support library.
  */
 class RetentionDelegate<T>(
-        private val viewModelStoreOwner: ViewModelStoreOwner,
+        private val viewModelStoreOwnerGetter: () -> ViewModelStoreOwner,
+        private val key: () -> String? = { null },
         private val initializer: (() -> T)? = null
 ) {
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         val (uniqueId, viewModel) = storeInformationFor(property)
 
+        val key = this.key() ?: uniqueId
+
         // If the value is in the ViewModel, return it
         @Suppress("UNCHECKED_CAST")
-        if (viewModel.values.containsKey(uniqueId)) return viewModel.values[uniqueId] as T
+        if (viewModel.values.containsKey(key)) return viewModel.values[key] as T
 
         // If the viewModel doesn't hold the value and the initialiser is null, we're in an illegal state
         initializer ?: throw IllegalStateException("Attempting to invoke getValue when no value is present")
@@ -30,7 +34,7 @@ class RetentionDelegate<T>(
         val value = initializer.invoke() // Note - Smartcast doesn't work when using a regular function call
 
         // Add the value to the ViewModel
-        viewModel.values[uniqueId] = value as Any
+        viewModel.values[key] = value as Any
 
         return value
     }
@@ -38,8 +42,10 @@ class RetentionDelegate<T>(
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         val (uniqueId, viewModel) = storeInformationFor(property)
 
+        val key = this.key() ?: uniqueId
+
         // Add the value to the ViewModel
-        viewModel.values[uniqueId] = value as Any
+        viewModel.values[key] = value as Any
     }
 
     /**
@@ -47,7 +53,7 @@ class RetentionDelegate<T>(
      */
     private fun storeInformationFor(property: KProperty<*>): Pair<String, RetentionViewModel> {
         // Get ViewModel
-        val viewModel = ViewModelProvider(viewModelStoreOwner, FACTORY)[RetentionViewModel::class.java]
+        val viewModel = ViewModelProvider(viewModelStoreOwnerGetter(), FACTORY)[RetentionViewModel::class.java]
 
         // Use the property as a unique ID for the viewModel value map
         val uniqueId = property.toString() + property.hashCode()
@@ -75,6 +81,9 @@ class RetentionViewModel(
 /**
  * Extension properties for ease of use
  */
-fun <T> Fragment.retained(valInitializer: (() -> T)? = null) = RetentionDelegate(this, valInitializer)
+fun <T> Fragment.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
 
-fun <T> AppCompatActivity.retained(valInitializer: (() -> T)? = null) = RetentionDelegate(this, valInitializer)
+fun <T> AppCompatActivity.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
+
+// Controller stuff
+fun <T> BaseController.retained(key: () -> String, valInitializer: (() -> T)? = null) = RetentionDelegate({ activity as ViewModelStoreOwner }, key, valInitializer)

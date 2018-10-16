@@ -1,5 +1,6 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
@@ -24,17 +24,26 @@ import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
+import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_feed.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.android.synthetic.main.fragment_feed.view.*
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onScrollChange
 import javax.inject.Inject
 
-class FeedFragment: Fragment(), ReselectListener {
+/**
+ * Controller used to display a feed
+ */
+@ContainerOptions(cache = CacheImplementation.NO_CACHE)
+class FeedController(args: Bundle) : BaseController(args) {
 
     private lateinit var viewModel: FeedViewModel
 
@@ -48,39 +57,43 @@ class FeedFragment: Fragment(), ReselectListener {
     private var tootButtonVisible: Boolean = false
     // END REGION
 
-    private val feedModule: FeedModule by retained {
-        val type: FeedType = arguments?.getParcelable(ARG_TYPE) ?: throw IllegalArgumentException("Missing feed type for feed fragment")
+    private val type: FeedType
+        get() = args.getParcelable(FeedController.ARG_TYPE)
+                ?: throw IllegalArgumentException("Missing feed type for feed fragment")
+
+    private val feedModule: FeedModule by retained(key = {
+        type.toString()
+    }) {
         FeedModule(type)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        (requireActivity() as InstanceActivity)
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        (context as InstanceActivity)
                 .component
                 .plus(feedModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(this, factory)[FeedViewModel::class.java]
+        viewModel = ViewModelProviders.of(context, factory).get(type.toString(), FeedViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
             inflater.inflate(R.layout.fragment_feed, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        recyclerView.layoutManager = LinearLayoutManager(context).apply {
+    override fun initialise(savedInstanceState: Bundle?) {
+        adapterStateRestored = false
+        firstSmoothScrollSkipped = false
+
+        recyclerView.layoutManager = LinearLayoutManager(view!!.context).apply {
             initialPrefetchItemCount = 20
         }
         recyclerView.adapter = FeedAdapter(viewModel::loadAround)
 
         // The following ensures we only change animate the display of the progress bar if
         // showing for the first time, i.e don't transition again after a rotation
-        if (savedInstanceState == null) {
-            val transition = AutoTransition()
-            transition.excludeTarget(recyclerView, true)
-            TransitionManager.beginDelayedTransition(view as ViewGroup, transition)
-        }
+        val transition = AutoTransition()
+        transition.excludeTarget(recyclerView, true)
+        TransitionManager.beginDelayedTransition(view as ViewGroup, transition)
 
         progressBar.visibility = View.VISIBLE
 
@@ -92,7 +105,7 @@ class FeedFragment: Fragment(), ReselectListener {
             }
         }
 
-        recyclerView.onScrollChange { _,_,_,_,_ ->
+        recyclerView.onScrollChange { _, _, _, _, _ ->
             recyclerView ?: return@onScrollChange
 
             if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
@@ -102,11 +115,12 @@ class FeedFragment: Fragment(), ReselectListener {
             }
         }
 
-        viewModel.errors.observe(this) { event ->
+        viewModel.errors.observe(this@FeedController) { event ->
             event.getContentIfNotHandled()?.let {
                 snackbar(it)
             }
         }
+
 
         launch {
             val liveData = viewModel.results.await()
@@ -123,9 +137,9 @@ class FeedFragment: Fragment(), ReselectListener {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val state = (recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        super.onSaveViewState(view, outState)
+        val state = (view.recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
         outState.putParcelable(STATE_LAYOUT_MANAGER, state)
         outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, tootButtonVisible)
     }
@@ -135,7 +149,7 @@ class FeedFragment: Fragment(), ReselectListener {
     }
 
     private fun onResultsReady(resultLiveData: LiveData<PagedList<Status>>) {
-        resultLiveData.observe(this@FeedFragment) {
+        resultLiveData.observe(this) {
             (recyclerView?.adapter as FeedAdapter?)?.submitList(it)
 
             if (progressBar.visibility == View.VISIBLE) {
@@ -212,15 +226,14 @@ class FeedFragment: Fragment(), ReselectListener {
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() <= 1
 
+
     companion object {
 
         @JvmStatic
-        fun newInstance(type: FeedType): FeedFragment =
-                FeedFragment().apply {
-                    arguments = bundleOf(
-                            ARG_TYPE to type
-                    )
-                }
+        fun newInstance(type: FeedType): FeedController =
+                FeedController(bundleOf(
+                        ARG_TYPE to type
+                ))
 
         private const val ARG_TYPE = "arg_feedback_type"
         private const val STATE_LAYOUT_MANAGER = "state_layout_manager"

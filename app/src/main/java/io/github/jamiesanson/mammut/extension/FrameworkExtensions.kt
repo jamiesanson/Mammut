@@ -21,6 +21,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.bluelinelabs.conductor.Controller
 import org.jetbrains.anko.textColor
 
 
@@ -49,6 +50,10 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 
 fun Fragment.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     requireActivity().snackbar(message, length)
+}
+
+fun Controller.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
+    activity!!.snackbar(message, length)
 }
 
 /**

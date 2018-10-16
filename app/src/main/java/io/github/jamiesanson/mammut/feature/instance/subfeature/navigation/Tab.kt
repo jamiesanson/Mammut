@@ -2,20 +2,16 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.navigation
 
 import android.os.Parcelable
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
 import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedFragment
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileFragment
 import kotlinx.android.parcel.Parcelize
 
-sealed class Tab(@IdRes val menuItemId: Int, val fragment: Fragment): Parcelable {
+sealed class Tab(@IdRes val menuItemId: Int): Parcelable {
     @Parcelize
-    object Home: Tab(fragment = FeedFragment.newInstance(FeedType.Home), menuItemId = R.id.homeDestination)
+    object Home: Tab(menuItemId = R.id.homeDestination)
     @Parcelize
-    object Local: Tab(fragment = FeedFragment.newInstance(FeedType.Local), menuItemId = R.id.localTimelineDestination)
+    object Local: Tab(menuItemId = R.id.localTimelineDestination)
     @Parcelize
-    object Federated: Tab(fragment = FeedFragment.newInstance(FeedType.Federated), menuItemId = R.id.federatedTimelineDestination)
+    object Federated: Tab(menuItemId = R.id.federatedTimelineDestination)
     @Parcelize
-    object Profile: Tab(fragment = ProfileFragment.newInstance(isMe = true), menuItemId = R.id.profileDestination)
+    object Profile: Tab(menuItemId = R.id.profileDestination)
 }

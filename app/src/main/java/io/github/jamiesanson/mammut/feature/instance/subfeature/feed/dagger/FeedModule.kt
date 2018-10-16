@@ -39,6 +39,10 @@ class FeedModule(private val feedType: FeedType) {
 
         }
     }
+
+    @Provides
+    @FeedScope
+    fun provideType(): FeedType = feedType
 }
 
 interface StreamingBuilder {
