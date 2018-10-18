@@ -3,6 +3,7 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_feed.view.*
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
@@ -124,8 +126,9 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             }
         }
 
-
-        launch {
+        // This crashes with `launch`, but I've been unable to find the exception
+        // thrown in here so `async` it is!
+        async {
             val liveData = viewModel.results.await()
             withContext(UI) {
                 onResultsReady(liveData)
@@ -137,7 +140,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
                 observeStream()
             }
-        }
+        }.start()
     }
 
     override fun onSaveViewState(view: View, outState: Bundle) {
