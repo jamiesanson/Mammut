@@ -33,11 +33,8 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_feed.view.*
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -111,7 +108,9 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
+            containerView ?: return@onScrollChange
             recyclerView ?: return@onScrollChange
+            newTootButton ?: return@onScrollChange
 
             if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
                 if (newTootButton.translationY == 0F) {
@@ -126,21 +125,20 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             }
         }
 
-        // This crashes with `launch`, but I've been unable to find the exception
-        // thrown in here so `async` it is!
-        async {
+        launch {
             val liveData = viewModel.results.await()
             withContext(UI) {
                 onResultsReady(liveData)
 
                 if (!adapterStateRestored) {
+                    containerView ?: return@withContext
                     savedInstanceState?.let(::restoreAdapterState)
                     viewModel.startStreaming()
                 }
 
                 observeStream()
             }
-        }.start()
+        }
     }
 
     override fun onSaveViewState(view: View, outState: Bundle) {
