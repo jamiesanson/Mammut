@@ -29,6 +29,8 @@
         android:src="@drawable/ic_add_black_24dp"
         app:layout_anchor="@id/bottomNavigationView"
         app:layout_anchorGravity="end|top"
+        android:tint="?attr/colorControlNormal"
+        android:tintMode="src_in"
         app:useCompatPadding="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

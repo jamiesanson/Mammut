@@ -18,5 +18,6 @@
         <item name="colorAccentLight">@color/standardSecondaryLightColor</item>
         <item name="colorAccentDark">@color/standardSecondaryDarkColor</item>
         <item name="colorPrimaryTransparency">@color/standardPrimaryTransparentColor</item>
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 </resources>

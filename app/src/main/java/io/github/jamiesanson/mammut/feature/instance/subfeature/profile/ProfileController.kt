@@ -1,20 +1,18 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.profile
 
 import android.content.Context
-import android.graphics.BlurMaskFilter
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.component.GlideOptions.*
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.models.Account
@@ -29,13 +27,11 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.bundleOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
-import android.R.attr.data
-import android.text.Html
 import androidx.annotation.ColorInt
 import android.util.TypedValue
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 
 
@@ -72,7 +68,29 @@ class ProfileController(args: Bundle): BaseController(args) {
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        setupToolbar()
         viewModel.accountLiveData.observe(this, ::bindAccount)
+    }
+
+    private fun setupToolbar() {
+        val context = view?.context ?: return
+
+        // Resolve colors
+        val typedValue = TypedValue()
+        val theme = context.theme
+        theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
+        @ColorInt val color = typedValue.data
+
+        // Set icon
+        toolbar.navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_black_24dp)?.apply {
+            setTint(color)
+            setTintMode(PorterDuff.Mode.SRC_IN)
+        }
+
+        // Setup back button
+        toolbar.setNavigationOnClickListener {
+            router.popCurrentController()
+        }
     }
 
     private fun bindAccount(account: Account) {
