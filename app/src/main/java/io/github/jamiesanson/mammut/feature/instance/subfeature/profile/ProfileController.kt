@@ -1,6 +1,7 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.profile
 
 import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
+import io.github.jamiesanson.mammut.component.GlideOptions.*
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.models.Account
@@ -20,6 +23,8 @@ import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
+import jp.wasabeef.glide.transformations.BlurTransformation
+import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -27,6 +32,12 @@ import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
+import android.R.attr.data
+import android.text.Html
+import androidx.annotation.ColorInt
+import android.util.TypedValue
+import androidx.core.text.HtmlCompat
+
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
 class ProfileController(args: Bundle): BaseController(args) {
@@ -62,21 +73,21 @@ class ProfileController(args: Bundle): BaseController(args) {
     override fun onAttach(view: View) {
         super.onAttach(view)
         viewModel.accountLiveData.observe(this, ::bindAccount)
-
-        settingsButton.onClick {
-            // TODO - open settings
-        }
     }
 
     private fun bindAccount(account: Account) {
+        // Resolve colors
+        val typedValue = TypedValue()
+        val theme = view?.context?.theme ?: return
+        theme.resolveAttribute(R.attr.colorPrimaryTransparency, typedValue, true)
+        @ColorInt val color = typedValue.data
+
         // Profile image
         GlideApp.with(profileImageView)
                 .load(account.avatar)
                 .thumbnail(
                         GlideApp.with(profileImageView)
-                                .load(ColorDrawable(
-                                        ResourcesCompat.getColor(resources!!, R.color.standardPrimaryLightColor, activity!!.theme))
-                                )
+                                .load(ColorDrawable(color))
                                 .apply(RequestOptions.circleCropTransform())
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -88,16 +99,20 @@ class ProfileController(args: Bundle): BaseController(args) {
                 .load(account.header)
                 .thumbnail(
                         GlideApp.with(coverPhotoImageView)
-                                .load(ColorDrawable(
-                                        ResourcesCompat.getColor(resources!!, R.color.standardPrimaryColor, activity!!.theme))
-                                )
+                                .load(ColorDrawable(color))
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(RequestOptions.centerCropTransform())
+                .transforms(CenterCrop(), BlurTransformation(25), ColorFilterTransformation(color))
                 .into(coverPhotoImageView)
 
         usernameTextView.text = "@${account.userName}"
         displayNameTextView.text = if (account.displayName.isEmpty()) account.acct else account.displayName
+        descriptionTextView.text = HtmlCompat.fromHtml(account.note, HtmlCompat.FROM_HTML_MODE_COMPACT)
+
+        tootCountTextView.text = account.statusesCount.toString()
+        followingCountTextView.text = account.followingCount.toString()
+        followerCountTextView.text = account.followersCount.toString()
+
     }
 
     companion object {

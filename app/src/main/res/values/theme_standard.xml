@@ -3,6 +3,7 @@
     <color name="standardPrimaryColor">#263238</color>
     <color name="standardPrimaryLightColor">#4f5b62</color>
     <color name="standardPrimaryDarkColor">#000a12</color>
+    <color name="standardPrimaryTransparentColor">#8A263238</color>
     <color name="standardSecondaryColor">#29b6f6</color>
     <color name="standardSecondaryLightColor">#73e8ff</color>
     <color name="standardSecondaryDarkColor">#0086c3</color>
@@ -16,5 +17,6 @@
         <item name="colorAccent">@color/standardSecondaryColor</item>
         <item name="colorAccentLight">@color/standardSecondaryLightColor</item>
         <item name="colorAccentDark">@color/standardSecondaryDarkColor</item>
+        <item name="colorPrimaryTransparency">@color/standardPrimaryTransparentColor</item>
     </style>
 </resources>

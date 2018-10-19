@@ -3,7 +3,6 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,8 +30,8 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseC
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.fragment_feed.*
-import kotlinx.android.synthetic.main.fragment_feed.view.*
+import kotlinx.android.synthetic.main.controller_feed.*
+import kotlinx.android.synthetic.main.controller_feed.view.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
 import me.saket.inboxrecyclerview.executeOnMeasure
@@ -80,7 +79,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-            inflater.inflate(R.layout.fragment_feed, container, false)
+            inflater.inflate(R.layout.controller_feed, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
         adapterStateRestored = false

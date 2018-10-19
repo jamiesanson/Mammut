@@ -26,4 +26,11 @@
     <string name="profile_button_content_description">Profile button</string>
     <string name="profile_picture_content_descrption">Profile picture</string>
     <string name="new_toots">New toots</string>
+    <string name="profile_image">Profile image</string>
+    <string name="follow">Follow</string>
+    <string name="toots">Toots</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="w_replies">w/ Replies</string>
+    <string name="media">Media</string>
 </resources>
