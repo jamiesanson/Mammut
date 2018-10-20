@@ -28,9 +28,7 @@ class FeedViewModel @Inject constructor(
         @Named("in_memory_feed_db")
         private val statusDao: StatusDao,
         @FeedScope
-        private val streamingBuilder: StreamingBuilder?,
-        @FeedScope
-        private val type: FeedType
+        private val streamingBuilder: StreamingBuilder?
 ) : ViewModel() {
 
     val results: Deferred<LiveData<PagedList<Status>>> = async {

@@ -17,5 +17,5 @@ data class Account(val accountId: Long = 0L,
                    val followersCount: Int = 0,
                    val followingCount: Int = 0,
                    val statusesCount: Int = 0,
-                   val emojis: List<Emoji> = emptyList()
+                   val accountEmojis: ArrayList<Emoji> = ArrayList()
 ): Parcelable

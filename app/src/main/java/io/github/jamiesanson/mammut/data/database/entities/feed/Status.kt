@@ -18,7 +18,6 @@ data class Status @JvmOverloads constructor(
         val reblogId: Long = 0L,
         val content: String = "",
         val createdAt: String = "",
-        @Embedded
         val emojis: ArrayList<Emoji>? = ArrayList(),
         val repliesCount: Int = 0,
         val reblogsCount: Int = 0,
@@ -28,12 +27,9 @@ data class Status @JvmOverloads constructor(
         val isSensitive: Boolean = false,
         val spoilerText: String = "",
         val visibility: String = Visibility.Public.value,
-        @Embedded
-        val mediaAttachments: ArrayList<Attachment>? = ArrayList(),
-        @Embedded
-        val mentions: ArrayList<Mention>? = ArrayList(),
-        @Embedded
-        val tags: ArrayList<Tag>? = ArrayList(),
+        val mediaAttachments: ArrayList<Attachment> = ArrayList(),
+        val mentions: ArrayList<Mention> = ArrayList(),
+        val tags: ArrayList<Tag> = ArrayList(),
         @Embedded
         val application: Application? = null,
         val language: String? = null,

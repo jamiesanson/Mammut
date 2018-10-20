@@ -188,7 +188,7 @@ class JoinInstanceViewModel @Inject constructor(
                                 followersCount,
                                 followingCount,
                                 statusesCount,
-                                emojis = emojis.map { it.run { Emoji(shortcode, staticUrl, url, visibleInPicker) } }
+                                ArrayList(emojis.map { it.run { Emoji(shortcode, staticUrl, url, visibleInPicker) } })
                         )
                     }
             )

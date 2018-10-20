@@ -61,7 +61,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private val type: FeedType
         get() = args.getParcelable(FeedController.ARG_TYPE)
-                ?: throw IllegalArgumentException("Missing feed type for feed fragment")
+                ?: throw IllegalArgumentException("Missing feed attachmentType for feed fragment")
 
     private val feedModule: FeedModule by retained(key = {
         type.toString()
@@ -87,7 +87,8 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         firstSmoothScrollSkipped = false
 
         recyclerView.layoutManager = LinearLayoutManager(view!!.context).apply {
-            initialPrefetchItemCount = 20
+            isItemPrefetchEnabled = true
+            initialPrefetchItemCount = 10
         }
         recyclerView.adapter = FeedAdapter(viewModel::loadAround, this)
 
