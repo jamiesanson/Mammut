@@ -1,7 +1,9 @@
 package io.github.jamiesanson.mammut
 
 import android.app.Application
+import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.fabric.sdk.android.Fabric
 import io.github.jamiesanson.mammut.dagger.application.ApplicationComponent
 import io.github.jamiesanson.mammut.dagger.application.ApplicationModule
 import io.github.jamiesanson.mammut.dagger.application.DaggerApplicationComponent
@@ -25,5 +27,7 @@ class MammutApplication: Application() {
         themeEngine.updateFontDefaults()
 
         AndroidThreeTen.init(this)
+
+        Fabric.with(this, Crashlytics())
     }
 }

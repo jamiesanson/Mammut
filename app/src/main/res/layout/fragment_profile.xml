@@ -36,6 +36,7 @@
                         android:id="@+id/coverPhotoImageView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:scaleType="centerCrop"
                         android:contentDescription="@null"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -296,24 +297,7 @@
                     app:tabMode="fixed"
                     app:tabPaddingStart="16dp"
                     app:tabInlineLabel="true"
-                    app:tabUnboundedRipple="true"
-                    app:tabPaddingEnd="16dp">
-
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/toots"/>
-
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/w_replies"/>
-
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/media"/>
-                </com.google.android.material.tabs.TabLayout>
+                    app:tabPaddingEnd="16dp"/>
 
             </FrameLayout>
 
@@ -321,7 +305,8 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent"/>

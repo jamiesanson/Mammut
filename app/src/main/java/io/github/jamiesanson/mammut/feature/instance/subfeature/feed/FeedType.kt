@@ -8,6 +8,7 @@ import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import com.sys1yagi.mastodon4j.api.entity.Status
+import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Public
 import com.sys1yagi.mastodon4j.api.method.Streaming
 import com.sys1yagi.mastodon4j.api.method.Timelines
@@ -44,5 +45,22 @@ sealed class FeedType: Parcelable {
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> =
                 Public(client)::getFederatedPublic
+    }
+
+    @Parcelize
+    data class AccountToots(val accountId: Long, val withReplies: Boolean): FeedType() {
+        override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
+
+        override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> {
+            return {
+                Accounts(client).getStatuses(
+                        accountId = accountId,
+                        onlyMedia = false,
+                        excludeReplies = !withReplies,
+                        pinned = false,
+                        range = it
+                )
+            }
+        }
     }
 }

@@ -39,6 +39,11 @@
         </activity>
         <activity android:name=".feature.instancebrowser.InstanceBrowserActivity" />
         <activity android:name=".feature.instance.InstanceActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ce4f5a2f9fd20365388fb0c06764af3fb6984930" />
+
     </application>
 
 </manifest>

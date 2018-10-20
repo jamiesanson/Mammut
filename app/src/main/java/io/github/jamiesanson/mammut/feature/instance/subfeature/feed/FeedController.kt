@@ -41,7 +41,8 @@ import org.jetbrains.anko.sdk25.coroutines.onScrollChange
 import javax.inject.Inject
 
 /**
- * Controller used to display a feed
+ * Controller used to display a feed. TODO - This needs to be generic enough to be started with
+ * *any* pageable status endpoint. So far, I think it is, but I can't be sure.
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
 class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
@@ -177,6 +178,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                 if (firstSmoothScrollSkipped) {
                     launch(UI) {
                         delay(200)
+                        containerView ?: return@launch
                         recyclerView?.smoothScrollToPosition(0)
                     }
                 } else {

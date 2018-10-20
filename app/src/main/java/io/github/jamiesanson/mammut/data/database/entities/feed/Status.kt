@@ -9,8 +9,8 @@ import io.github.jamiesanson.mammut.data.models.*
 data class Status @JvmOverloads constructor(
         @PrimaryKey
         val id: Long = 0L,
-        val uri: String = "",
-        val url: String = "",
+        val uri: String? = "",
+        val url: String? = "",
         @Embedded
         val account: Account? = null,
         val inReplyToId: Long? = null,

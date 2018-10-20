@@ -33,6 +33,12 @@ import androidx.annotation.ColorInt
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.support.RouterPagerAdapter
+import com.bumptech.glide.load.MultiTransformation
+import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
+import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
@@ -93,6 +99,41 @@ class ProfileController(args: Bundle): BaseController(args) {
         }
     }
 
+    private fun setupViewPager(account: Account) {
+        val pagerAdapter = object: RouterPagerAdapter(this) {
+
+            override fun configureRouter(router: Router, position: Int) {
+                if (!router.hasRootController()) {
+                    val controller = when (position) {
+                        0 -> FeedController.newInstance(FeedType.AccountToots(
+                                accountId = account.accountId,
+                                withReplies = false
+                        ))
+                        1 -> FeedController.newInstance(FeedType.AccountToots(
+                                accountId = account.accountId,
+                                withReplies = true
+                        ))
+                        else -> return
+                    }
+
+                    router.setRoot(RouterTransaction.with(controller))
+                }
+            }
+
+            override fun getCount(): Int = 3
+
+            override fun getPageTitle(position: Int): CharSequence? = when (position) {
+                0 -> "Toots"
+                1 -> "w/ replies"
+                2 -> "Media"
+                else -> throw IndexOutOfBoundsException("Unexpected index")
+            }
+        }
+
+        tabLayout.setupWithViewPager(pager)
+        pager.adapter = pagerAdapter
+    }
+
     private fun bindAccount(account: Account) {
         // Resolve colors
         val typedValue = TypedValue()
@@ -120,7 +161,7 @@ class ProfileController(args: Bundle): BaseController(args) {
                                 .load(ColorDrawable(color))
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .transforms(CenterCrop(), BlurTransformation(25), ColorFilterTransformation(color))
+                .apply(RequestOptions.bitmapTransform(MultiTransformation(BlurTransformation(25), ColorFilterTransformation(color))))
                 .into(coverPhotoImageView)
 
         usernameTextView.text = "@${account.userName}"
@@ -131,6 +172,7 @@ class ProfileController(args: Bundle): BaseController(args) {
         followingCountTextView.text = account.followingCount.toString()
         followerCountTextView.text = account.followersCount.toString()
 
+        setupViewPager(account)
     }
 
     companion object {
