@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,14 +32,18 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import androidx.annotation.ColorInt
 import android.util.TypedValue
+import android.widget.ProgressBar
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.load.MultiTransformation
+import com.google.android.material.button.MaterialButton
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
+import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
@@ -76,6 +81,7 @@ class ProfileController(args: Bundle): BaseController(args) {
         super.onAttach(view)
         setupToolbar()
         viewModel.accountLiveData.observe(this, ::bindAccount)
+        viewModel.followStateLiveData.observe(this, ::bindFollowButton)
     }
 
     private fun setupToolbar() {
@@ -173,6 +179,46 @@ class ProfileController(args: Bundle): BaseController(args) {
         followerCountTextView.text = account.followersCount.toString()
 
         setupViewPager(account)
+    }
+
+    private fun bindFollowButton(followState: FollowState) {
+        fun MaterialButton.showLoading() {
+            TransitionManager.beginDelayedTransition(view as ViewGroup)
+            visibility = View.VISIBLE
+            isEnabled = false
+        }
+
+        fun MaterialButton.hideLoading() {
+            TransitionManager.beginDelayedTransition(view as ViewGroup)
+            visibility = View.VISIBLE
+            isEnabled = true
+        }
+
+        when (followState) {
+            is FollowState.Following -> {
+                if (followState.loadingUnfollow) {
+                    followButton.showLoading()
+                } else {
+                    followButton.hideLoading()
+                }
+                followButton.text = view?.context?.getString(R.string.unfollow)
+            }
+            is FollowState.NotFollowing -> {
+                if (followState.loadingFollow) {
+                    followButton.showLoading()
+                } else {
+                    followButton.hideLoading()
+                }
+                followButton.text = view?.context?.getString(R.string.follow)
+            }
+            FollowState.IsMe -> {
+                followButton.visibility = View.GONE
+            }
+        }
+
+        followButton.onClick {
+            viewModel.requestFollowToggle(followState)
+        }
     }
 
     companion object {

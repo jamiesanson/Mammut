@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import arrow.core.Either
-import com.google.gson.Gson
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Scope
 import com.sys1yagi.mastodon4j.api.method.Accounts
@@ -23,7 +22,6 @@ import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.base.InputError
 import kotlinx.coroutines.experimental.launch
-import okhttp3.OkHttpClient
 import javax.inject.Inject
 
 class JoinInstanceViewModel @Inject constructor(

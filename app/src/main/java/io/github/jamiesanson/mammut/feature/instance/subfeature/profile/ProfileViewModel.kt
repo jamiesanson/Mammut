@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import arrow.core.Either
+import arrow.core.orNull
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
 import io.github.jamiesanson.mammut.data.converters.toEntity
@@ -30,6 +31,8 @@ class ProfileViewModel @Inject constructor(
 
     val accountLiveData: LiveData<Account> = MutableLiveData()
 
+    val followStateLiveData: LiveData<FollowState> = MutableLiveData()
+
     init {
         if (account == null) {
             launch {
@@ -45,9 +48,66 @@ class ProfileViewModel @Inject constructor(
                 }.toEntity()
 
                 accountLiveData.postSafely(account)
+                followStateLiveData.postSafely(FollowState.IsMe)
             }
         } else {
+            // Get relationship to current account
+            // Go ahead and try and get some account info
+            launch accountInfo@{
+                val registration = database.instanceRegistrationDao().getRegistrationByName(instanceName)
+
+                Accounts(client)
+                        .getRelationships(accountIds = listOf(account.accountId))
+                        .run()
+                        .orNull()
+                        ?.let { relationships ->
+                            relationships.firstOrNull { it.id == account.accountId }?.let {
+                                if (it.isFollowing) {
+                                    followStateLiveData.postSafely(FollowState.Following())
+                                } else {
+                                    followStateLiveData.postSafely(FollowState.NotFollowing())
+                                }
+                            } ?: kotlin.run {
+                                followStateLiveData.postSafely(FollowState.NotFollowing())
+                            }
+                        }
+            }
+
             accountLiveData.postSafely(account)
+        }
+    }
+
+    fun requestFollowToggle(followState: FollowState) {
+        when (followState) {
+            is FollowState.Following -> launch {
+                followStateLiveData.postSafely(FollowState.Following(loadingUnfollow = true))
+                Accounts(client)
+                        .postUnFollow(account?.accountId!!)
+                        .run()
+                        .orNull()
+                        ?.let {
+                    if (!it.isFollowing) {
+                        followStateLiveData.postSafely(FollowState.NotFollowing())
+                    } else {
+                        followStateLiveData.postSafely(FollowState.Following())
+                    }
+                }
+            }
+            is FollowState.NotFollowing -> launch {
+                followStateLiveData.postSafely(FollowState.NotFollowing(loadingFollow = true))
+                Accounts(client)
+                        .postFollow(account?.accountId!!)
+                        .run()
+                        .orNull()
+                        ?.let {
+                            if (it.isFollowing) {
+                                followStateLiveData.postSafely(FollowState.Following())
+                            } else {
+                                followStateLiveData.postSafely(FollowState.NotFollowing())
+                            }
+                        }
+            }
+            FollowState.IsMe -> throw IllegalStateException("You can't follow yourself")
         }
     }
 

@@ -33,4 +33,5 @@
     <string name="following">Following</string>
     <string name="w_replies">w/ Replies</string>
     <string name="media">Media</string>
+    <string name="unfollow">Unfollow</string>
 </resources>
