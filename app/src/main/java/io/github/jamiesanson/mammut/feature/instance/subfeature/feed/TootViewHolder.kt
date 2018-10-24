@@ -4,14 +4,18 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.text.HtmlCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
@@ -19,6 +23,8 @@ import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
@@ -34,14 +40,13 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.image
+import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 
 
 class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
@@ -51,6 +56,8 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
     private var currentStatus: Status? = null
 
     private var exoPlayer: SimpleExoPlayer? = null
+
+    private var isSensitiveScreenVisible = false
 
     fun bind(status: Status, callbacks: TootCallbacks, requestManager: RequestManager) {
         if (status.id == currentStatus?.id) return
@@ -81,6 +88,9 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                 }
             }
 
+            // Setup sensitive content screen
+            setupContentWarning(isSensitive = status.isSensitive)
+
             // Resolve colors
             val typedValue = TypedValue()
             val theme = itemView.context.theme ?: return
@@ -107,7 +117,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                 if (tootImageCardView.isInvisible) tootImageCardView.isVisible = true
 
                 fun onImageViewLaidOut(view: View) {
-                    view.updateLayoutParams imageView@ {
+                    view.updateLayoutParams imageView@{
                         height = floor(view.width / aspect).toInt()
                     }
                     view.doOnLayout { _ ->
@@ -123,7 +133,9 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                 }
 
                 tootImageCardView.onClick { _ ->
-                    callbacks.onPhotoClicked(tootImageView, it.url)
+                    if (!isSensitiveScreenVisible) {
+                        callbacks.onPhotoClicked(tootImageView, it.url)
+                    }
                 }
             } ?: run {
                 tootImageCardView.updateLayoutParams {
@@ -207,6 +219,63 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                 )
                 .transition(withCrossFade())
                 .into(itemView.tootImageView)
+    }
+
+    private fun setupContentWarning(isSensitive: Boolean) {
+        with (itemView) {
+            // If not sensitive content, short circuit
+            if (!isSensitive) {
+                isSensitiveScreenVisible = false
+                sensitiveContentFrameLayout.isVisible = false
+                sensitiveContentToggleButton.isVisible = false
+                return
+            }
+
+            // Initial conditions
+            sensitiveContentFrameLayout.isVisible = true
+            sensitiveContentToggleButton.isVisible = true
+            isSensitiveScreenVisible = true
+
+            fun View.largestDimension(): Float = (if (width > height) width else height).toFloat()
+
+            sensitiveContentToggleButton.onClick {
+                if (isSensitiveScreenVisible) {
+                    ViewAnimationUtils.createCircularReveal(
+                            sensitiveContentFrameLayout,
+                            sensitiveContentFrameLayout.width - sensitiveContentToggleButton.width / 2,
+                            sensitiveContentToggleButton.height / 2,
+                            sensitiveContentFrameLayout.largestDimension(),
+                            0F
+                    ).apply {
+                        doOnEnd { _ ->
+                            sensitiveContentFrameLayout.isVisible = false
+                        }
+                        duration = 250L
+                    }.start()
+
+                    TransitionManager.beginDelayedTransition(tootImageCardView)
+                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_black_24dp
+                    isSensitiveScreenVisible = false
+                } else {
+                    ViewAnimationUtils.createCircularReveal(
+                            sensitiveContentFrameLayout,
+                            sensitiveContentFrameLayout.width - sensitiveContentToggleButton.width / 2,
+                            sensitiveContentToggleButton.height / 2,
+                            0F,
+                            sensitiveContentFrameLayout.largestDimension()
+                    ).apply {
+                        doOnStart { _ ->
+                            sensitiveContentFrameLayout.isVisible = true
+                        }
+                        duration = 250L
+                    }.start()
+
+                    TransitionManager.beginDelayedTransition(tootImageCardView)
+                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_off_black_24dp
+                    isSensitiveScreenVisible = true
+                }
+            }
+        }
     }
 
     /**

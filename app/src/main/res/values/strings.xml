@@ -34,4 +34,6 @@
     <string name="w_replies">w/ Replies</string>
     <string name="media">Media</string>
     <string name="unfollow">Unfollow</string>
+    <string name="sensitive_content_warning">Sensitive Content Warning</string>
+    <string name="sensitive_content_description">Press the eye button to view</string>
 </resources>

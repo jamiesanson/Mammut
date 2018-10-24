@@ -128,14 +128,14 @@
         android:layout_width="0dp"
         android:layout_height="0px"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginEnd="32dp"
-        android:foreground="@drawable/accent_ripple"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="8dp"
+        android:foreground="@drawable/accent_ripple"
         android:stateListAnimator="@animator/cardview_click_animator"
         app:cardBackgroundColor="?attr/colorPrimaryLight"
+        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toTopOf="@id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -154,7 +154,50 @@
             android:id="@+id/playerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/sensitiveContentFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimaryDark"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="4dp"
+                android:text="@string/sensitive_content_warning"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/sensitive_content_description"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/sensitiveContentToggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:background="@drawable/circular_accent_ripple"
+            android:clickable="true"
+            android:elevation="4dp"
+            android:contentDescription="@null"
+            android:focusable="true"
+            android:padding="8dp"
+            android:tint="?attr/colorControlNormal"
+            android:tintMode="src_in"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:srcCompat="@drawable/ic_visibility_off_black_24dp" />
 
     </com.google.android.material.card.MaterialCardView>
 

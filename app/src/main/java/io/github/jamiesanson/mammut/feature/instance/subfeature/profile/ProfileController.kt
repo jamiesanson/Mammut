@@ -173,7 +173,7 @@ class ProfileController(args: Bundle): BaseController(args), FullScreenPhotoHand
                 .apply(RequestOptions.bitmapTransform(MultiTransformation(BlurTransformation(25), ColorFilterTransformation(color))))
                 .into(coverPhotoImageView)
 
-        usernameTextView.text = "@${account.userName}"
+        usernameTextView.text = "@${account.acct}"
         displayNameTextView.text = if (account.displayName.isEmpty()) account.acct else account.displayName
         descriptionTextView.text = HtmlCompat.fromHtml(account.note, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
