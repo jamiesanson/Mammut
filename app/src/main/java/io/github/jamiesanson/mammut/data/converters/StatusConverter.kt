@@ -2,7 +2,6 @@ package io.github.jamiesanson.mammut.data.converters
 
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.jamiesanson.mammut.data.models.Application
-import io.github.jamiesanson.mammut.data.models.Attachment
 import io.github.jamiesanson.mammut.data.models.Mention
 import io.github.jamiesanson.mammut.data.models.Tag
 
@@ -26,16 +25,7 @@ fun Status.toEntity(): io.github.jamiesanson.mammut.data.database.entities.feed.
                 isSensitive,
                 spoilerText,
                 visibility,
-                ArrayList(mediaAttachments.map {
-                        Attachment(
-                                it.id,
-                                it.type,
-                                it.url,
-                                it.remoteUrl,
-                                it.previewUrl,
-                                it.textUrl
-                        )
-                }),
+                ArrayList(mediaAttachments),
                 ArrayList(mentions.map {
                         Mention(
                                 it.url,

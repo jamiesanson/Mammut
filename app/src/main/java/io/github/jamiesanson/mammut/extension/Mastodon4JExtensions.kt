@@ -5,6 +5,7 @@ import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Right
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
@@ -48,7 +49,7 @@ private data class Error(
 
 class ClientBuilder(
         private val okHttpClient: OkHttpClient.Builder,
-        private val gson: Gson
+        private val gson: GsonBuilder
 ) {
 
     fun getInstanceBuilder(instanceName: String): MastodonClient.Builder =

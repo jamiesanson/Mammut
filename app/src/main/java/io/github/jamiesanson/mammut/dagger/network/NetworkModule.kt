@@ -1,6 +1,6 @@
 package io.github.jamiesanson.mammut.dagger.network
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
@@ -17,9 +17,9 @@ class NetworkModule {
 
     @Provides
     @ApplicationScope
-    fun provideGson(): Gson = Gson()
+    fun provideGsonBuilder(): GsonBuilder = GsonBuilder()
 
     @Provides
     @ApplicationScope
-    fun provideClientBuilder(okHttpClient: OkHttpClient.Builder, gson: Gson): ClientBuilder = ClientBuilder(okHttpClient, gson)
+    fun provideClientBuilder(okHttpClient: OkHttpClient.Builder, gson: GsonBuilder): ClientBuilder = ClientBuilder(okHttpClient, gson)
 }

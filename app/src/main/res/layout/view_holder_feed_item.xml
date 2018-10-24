@@ -34,20 +34,20 @@
 
     <LinearLayout
         android:id="@+id/nameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barrier"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/profileImageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/displayNameTextView"
@@ -119,22 +119,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="start"
-        app:layout_constraintEnd_toEndOf="parent"
         app:constraint_referenced_ids="timeTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteX="384dp" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/tootImageCardView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="0px"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="32dp"
+        android:foreground="@drawable/accent_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?selectableItemBackground"
-        android:visibility="gone"
         app:cardCornerRadius="8dp"
+        android:stateListAnimator="@animator/cardview_click_animator"
+        app:cardBackgroundColor="?attr/colorPrimaryLight"
         app:layout_constraintBottom_toTopOf="@id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -143,12 +144,12 @@
         <ImageView
             android:id="@+id/tootImageView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
             android:contentDescription="@null"
-            app:srcCompat="@color/standardPrimaryLightColor" />
+            android:scaleType="fitCenter"
+            tools:srcCompat="@color/standardPrimaryLightColor" />
 
     </com.google.android.material.card.MaterialCardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bumptech.glide.RequestManager
 import io.github.jamiesanson.mammut.R
+import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
@@ -49,6 +51,8 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private lateinit var viewModel: FeedViewModel
 
+    private lateinit var requestManager: RequestManager
+
     @Inject
     @FeedScope
     lateinit var factory: MammutViewModelFactory
@@ -77,6 +81,19 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                 .inject(this)
 
         viewModel = ViewModelProviders.of(context, factory).get(type.toString(), FeedViewModel::class.java)
+        requestManager = GlideApp.with(context)
+    }
+
+    override fun onContextUnavailable() {
+        super.onContextUnavailable()
+        // Clear the request manager
+        // NOTE - The following could throw an exception if nothing's used the manager,
+        // so try-catch it
+        try {
+            requestManager.onDestroy()
+        } catch (e: Exception) {
+            // no-op
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
@@ -90,7 +107,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             isItemPrefetchEnabled = true
             initialPrefetchItemCount = 10
         }
-        recyclerView.adapter = FeedAdapter(viewModel::loadAround, this)
+        recyclerView.adapter = FeedAdapter(viewModel::loadAround, this, requestManager)
 
         // The following ensures we only change animate the display of the progress bar if
         // showing for the first time, i.e don't transition again after a rotation

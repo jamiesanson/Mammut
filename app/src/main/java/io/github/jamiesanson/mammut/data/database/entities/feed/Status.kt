@@ -3,6 +3,7 @@ package io.github.jamiesanson.mammut.data.database.entities.feed
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.jamiesanson.mammut.data.models.*
 
 @Entity
@@ -27,7 +28,7 @@ data class Status @JvmOverloads constructor(
         val isSensitive: Boolean = false,
         val spoilerText: String = "",
         val visibility: String = Visibility.Public.value,
-        val mediaAttachments: ArrayList<Attachment> = ArrayList(),
+        val mediaAttachments: ArrayList<Attachment<*>> = ArrayList(),
         val mentions: ArrayList<Mention> = ArrayList(),
         val tags: ArrayList<Tag> = ArrayList(),
         @Embedded
