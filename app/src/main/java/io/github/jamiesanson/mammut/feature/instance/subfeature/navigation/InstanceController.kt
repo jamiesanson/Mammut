@@ -6,15 +6,25 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.IdRes
+import com.alexvasilkov.gestures.transition.GestureTransitions
+import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.github.jamiesanson.mammut.R
+import io.github.jamiesanson.mammut.component.GlideApp
+import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
 
 private const val ROUTER_STATES_KEY = "STATE"
@@ -40,7 +50,8 @@ private const val ROUTER_STATES_KEY = "STATE"
  *
  * The main idea came from [this PR](https://github.com/bluelinelabs/Conductor/pull/316).
  */
-class InstanceController : BaseController(), BottomNavigationView.OnNavigationItemSelectedListener {
+@ContainerOptions(cache = CacheImplementation.NO_CACHE)
+class InstanceController : BaseController(), BottomNavigationView.OnNavigationItemSelectedListener, FullScreenPhotoHandler {
 
     /**
      * This will hold all the information about the tabs.
@@ -50,6 +61,8 @@ class InstanceController : BaseController(), BottomNavigationView.OnNavigationIt
     private var routerStates = SparseArray<Bundle>()
 
     private lateinit var childRouter: Router
+
+    private var fullScreenImageAnimator: ViewsTransitionAnimator<*>? = null
 
     /**
      * This is the current selected item id from the [BottomNavigationView]
@@ -165,5 +178,47 @@ class InstanceController : BaseController(), BottomNavigationView.OnNavigationIt
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY) ?: SparseArray()
+    }
+
+    override fun handleBack(): Boolean {
+        return if (fullScreenImageAnimator?.isLeaving == false) {
+            fullScreenImageAnimator?.exit(true)
+            true
+        } else {
+            super.handleBack()
+        }
+    }
+
+    /**
+     * Function for rendering an interactive full screen image
+     */
+    override fun displayFullScreenPhoto(imageView: ImageView, photoUrl: String) {
+        // Setup animator
+        fullScreenImageAnimator = GestureTransitions.from<Unit>(imageView).into(fullScreenGestureImageView).also {
+            it.addPositionUpdateListener { position, isLeaving ->
+                containerView ?: return@addPositionUpdateListener
+                fullScreenPhotoLayout.alpha = position
+                val visibility = when {
+                    position == 0F && isLeaving -> View.GONE
+                    else -> View.VISIBLE
+                }
+
+                fullScreenPhotoLayout.visibility = visibility
+                fullScreenGestureImageView.visibility = visibility
+            }
+        }
+
+        // Reset controller state
+        fullScreenGestureImageView.controller.resetState()
+
+        // Start the animation
+        fullScreenImageAnimator?.enterSingle(true)
+
+        GlideApp.with(imageView)
+                .load(photoUrl)
+                .placeholder(imageView.drawable)
+                .transition(withCrossFade())
+                .transform(FitCenter())
+                .into(fullScreenGestureImageView)
     }
 }

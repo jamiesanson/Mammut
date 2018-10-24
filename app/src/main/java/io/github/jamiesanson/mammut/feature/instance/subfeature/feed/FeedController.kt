@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
@@ -26,6 +27,7 @@ import io.github.jamiesanson.mammut.data.models.Account
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
+import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
@@ -105,7 +107,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
         recyclerView.layoutManager = LinearLayoutManager(view!!.context).apply {
             isItemPrefetchEnabled = true
-            initialPrefetchItemCount = 10
+            initialPrefetchItemCount = 20
         }
         recyclerView.adapter = FeedAdapter(viewModel::loadAround, this, requestManager)
 
@@ -172,6 +174,10 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     override fun onProfileClicked(account: Account) {
         router.pushController(RouterTransaction.with(ProfileController.newInstance(account)))
+    }
+
+    override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
+        (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
     }
 
     private fun onResultsReady(resultLiveData: LiveData<PagedList<Status>>) {

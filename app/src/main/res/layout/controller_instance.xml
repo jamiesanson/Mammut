@@ -33,4 +33,19 @@
         android:tintMode="src_in"
         app:useCompatPadding="true" />
 
+    <View
+        android:id="@+id/fullScreenPhotoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:elevation="16dp"
+        android:background="?attr/colorPrimaryTransparency"/>
+
+    <com.alexvasilkov.gestures.views.GestureImageView
+        android:id="@+id/fullScreenGestureImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

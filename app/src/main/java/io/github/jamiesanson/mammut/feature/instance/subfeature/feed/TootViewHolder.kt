@@ -1,7 +1,6 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import com.sys1yagi.mastodon4j.api.entity.Attachment
@@ -37,7 +35,6 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
 
@@ -115,8 +112,8 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                     tootImageCardView.doOnLayout(::onImageViewLaidOut)
                 }
 
-                tootImageCardView.onClick { scope ->
-                    Log.d("TootCardViewHolder", "CLICK")
+                tootImageCardView.onClick { _ ->
+                    callbacks.onPhotoClicked(tootImageView, it.url)
                 }
             } ?: run {
                 tootImageCardView.updateLayoutParams {

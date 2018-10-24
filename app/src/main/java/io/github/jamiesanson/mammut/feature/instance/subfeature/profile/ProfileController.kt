@@ -4,12 +4,10 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import io.github.jamiesanson.mammut.R
@@ -32,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import androidx.annotation.ColorInt
 import android.util.TypedValue
-import android.widget.ProgressBar
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.transition.TransitionManager
@@ -41,13 +39,14 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.load.MultiTransformation
 import com.google.android.material.button.MaterialButton
+import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class ProfileController(args: Bundle): BaseController(args) {
+class ProfileController(args: Bundle): BaseController(args), FullScreenPhotoHandler {
 
     private lateinit var viewModel: ProfileViewModel
 
@@ -82,6 +81,10 @@ class ProfileController(args: Bundle): BaseController(args) {
         setupToolbar()
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
+    }
+
+    override fun displayFullScreenPhoto(imageView: ImageView, photoUrl: String) {
+        (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
     }
 
     private fun setupToolbar() {

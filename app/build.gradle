@@ -136,6 +136,9 @@ dependencies {
 
     // ktx
     implementation 'androidx.core:core-ktx:1.0.0'
+
+    // Image View laziness
+    implementation 'com.alexvasilkov:gesture-views:2.5.2'
 }
 
 kotlin {
