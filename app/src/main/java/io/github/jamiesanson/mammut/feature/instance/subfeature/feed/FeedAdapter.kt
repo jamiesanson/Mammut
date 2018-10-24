@@ -31,6 +31,11 @@ class FeedAdapter(
         holder.bind(current, tootCallbacks, requestManager)
     }
 
+    override fun onViewRecycled(holder: TootViewHolder) {
+        super.onViewRecycled(holder)
+        holder.recycle()
+    }
+
     private fun loadAround(id: Long) {
         onLoadAround(id)
     }

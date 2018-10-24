@@ -38,6 +38,11 @@ android {
         release.java.srcDirs += 'build/generated/source/kaptKotlin/release'
         debug.java.srcDirs += 'build/generated/source/kaptKotlin/debug'
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 repositories {
@@ -137,8 +142,13 @@ dependencies {
     // ktx
     implementation 'androidx.core:core-ktx:1.0.0'
 
-    // Image View laziness
+    // Gesture view for full screen image viewer
     implementation 'com.alexvasilkov:gesture-views:2.5.2'
+
+    // Exoplayer for GIFVs and MP4s
+    def exoplayer_version = "2.9.0"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
 }
 
 kotlin {

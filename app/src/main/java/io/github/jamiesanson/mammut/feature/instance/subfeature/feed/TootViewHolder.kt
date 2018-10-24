@@ -1,6 +1,7 @@
 package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
@@ -35,12 +40,17 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+
 
 class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
 
     private var countJob = Job()
 
     private var currentStatus: Status? = null
+
+    private var exoPlayer: SimpleExoPlayer? = null
 
     fun bind(status: Status, callbacks: TootCallbacks, requestManager: RequestManager) {
         if (status.id == currentStatus?.id) return
@@ -129,6 +139,54 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
     }
 
     private fun loadAttachment(attachment: Attachment<*>, requestManager: RequestManager) {
+        when (attachment) {
+            is PhotoAttachment -> loadImage(attachment, requestManager)
+            is VideoAttachment -> loadVideo(attachment)
+            is GifvAttachment -> loadGifv(attachment)
+        }
+    }
+
+    private fun loadGifv(gifvAttachment: Attachment<*>) {
+        itemView.tootImageView.visibility = View.GONE
+        itemView.playerView.visibility = View.VISIBLE
+        itemView.playerView.useController = false
+
+        val factory = DefaultDataSourceFactory(itemView.context,
+                Util.getUserAgent(itemView.context, "Mammut"))
+
+        val source = ExtractorMediaSource.Factory(factory)
+                .createMediaSource(Uri.parse(gifvAttachment.url))
+
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context).apply {
+            repeatMode = Player.REPEAT_MODE_ALL
+            playWhenReady = true
+        }
+
+        itemView.playerView.player = exoPlayer
+        exoPlayer?.prepare(source)
+    }
+
+    private fun loadVideo(videoAttachment: Attachment<*>) {
+        itemView.tootImageView.visibility = View.GONE
+        itemView.playerView.visibility = View.VISIBLE
+        itemView.playerView.useController = true
+
+        val factory = DefaultDataSourceFactory(itemView.context,
+                Util.getUserAgent(itemView.context, "Mammut"))
+
+        val source = ExtractorMediaSource.Factory(factory)
+                .createMediaSource(Uri.parse(videoAttachment.url))
+
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context)
+
+        itemView.playerView.player = exoPlayer
+        exoPlayer?.prepare(source)
+    }
+
+    private fun loadImage(photoAttachment: PhotoAttachment, requestManager: RequestManager) {
+        itemView.tootImageView.visibility = View.VISIBLE
+        itemView.playerView.visibility = View.GONE
+
         // Resolve colors
         val typedValue = TypedValue()
         val theme = itemView.context.theme ?: return
@@ -137,10 +195,10 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
         // Load attachment
         requestManager
-                .load(attachment.url)
+                .load(photoAttachment.url)
                 .thumbnail(
                         requestManager
-                                .load(attachment.previewUrl)
+                                .load(photoAttachment.previewUrl)
                                 .thumbnail(
                                         requestManager
                                                 .load(ColorDrawable(color))
@@ -161,15 +219,15 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
             is PhotoAttachment -> attachment.metadata?.original?.run {
                 when {
                     aspect != 0F -> aspect
-                    width != 0 && height != 0 -> (width / height).toFloat()
+                    width != 0 && height != 0 -> width.toFloat() / height.toFloat()
                     else -> bestGuess
                 }
             } ?: bestGuess
             is VideoAttachment -> attachment.metadata?.original?.run {
-                if (width != 0 && height != 0) (width / height).toFloat() else bestGuess
+                if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
             } ?: bestGuess
             is GifvAttachment -> attachment.metadata?.original?.run {
-                if (width != 0 && height != 0) (width / height).toFloat() else bestGuess
+                if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
             } ?: bestGuess
             else -> throw IllegalArgumentException("Unknown attachment type")
         }
@@ -201,5 +259,10 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
         }
         countJob.cancel()
         currentStatus = null
+
+    }
+
+    fun recycle() {
+        exoPlayer?.release()
     }
 }
