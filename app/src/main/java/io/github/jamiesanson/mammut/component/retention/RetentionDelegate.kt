@@ -86,4 +86,4 @@ fun <T> Fragment.retained(valInitializer: (() -> T)? = null) = RetentionDelegate
 fun <T> AppCompatActivity.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
 
 // Controller stuff
-fun <T> BaseController.retained(key: () -> String, valInitializer: (() -> T)? = null) = RetentionDelegate({ activity as ViewModelStoreOwner }, key, valInitializer)
+fun <T> BaseController.retained(key: () -> String = { "" }, valInitializer: (() -> T)) = RetentionDelegate({ activity as ViewModelStoreOwner }, key, valInitializer)

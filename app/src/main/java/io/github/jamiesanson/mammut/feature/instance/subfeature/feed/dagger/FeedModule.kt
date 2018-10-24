@@ -9,10 +9,8 @@ import dagger.Module
 import dagger.Provides
 import io.github.jamiesanson.mammut.data.database.StatusInMemoryDatabase
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedAdapter
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedPagingManager
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import java.util.stream.Stream
 import javax.inject.Named
 
 @Module(includes = [FeedViewModelModule::class])

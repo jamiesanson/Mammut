@@ -36,4 +36,6 @@
     <string name="unfollow">Unfollow</string>
     <string name="sensitive_content_warning">Sensitive Content Warning</string>
     <string name="sensitive_content_description">Press the eye button to view</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="settings">Settings</string>
 </resources>

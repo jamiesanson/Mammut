@@ -6,6 +6,8 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.Feed
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileComponent
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
+import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsComponent
+import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsModule
 
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])
@@ -16,4 +18,6 @@ interface InstanceComponent {
     fun plus(feedModule: FeedModule): FeedComponent
 
     fun plus(profileModule: ProfileModule): ProfileComponent
+
+    fun plus(settingsModule: SettingsModule): SettingsComponent
 }

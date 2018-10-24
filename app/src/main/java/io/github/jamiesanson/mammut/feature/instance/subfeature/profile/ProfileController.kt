@@ -4,12 +4,23 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProviders
+import androidx.transition.TransitionManager
+import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.support.RouterPagerAdapter
+import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.button.MaterialButton
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.component.retention.retained
@@ -17,36 +28,27 @@ import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.models.Account
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
+import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
+import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
+import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
+import io.github.jamiesanson.mammut.feature.settings.SettingsController
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.itemsSequence
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
-import androidx.annotation.ColorInt
-import android.util.TypedValue
-import android.widget.ImageView
-import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
-import androidx.transition.TransitionManager
-import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.support.RouterPagerAdapter
-import com.bumptech.glide.load.MultiTransformation
-import com.google.android.material.button.MaterialButton
-import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class ProfileController(args: Bundle): BaseController(args), FullScreenPhotoHandler {
+class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHandler {
 
     private lateinit var viewModel: ProfileViewModel
 
@@ -89,27 +91,61 @@ class ProfileController(args: Bundle): BaseController(args), FullScreenPhotoHand
 
     private fun setupToolbar() {
         val context = view?.context ?: return
-
         // Resolve colors
         val typedValue = TypedValue()
         val theme = context.theme
         theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
-        @ColorInt val color = typedValue.data
+        @ColorInt val colorControlNormal = typedValue.data
 
-        // Set icon
-        toolbar.navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_black_24dp)?.apply {
-            setTint(color)
-            setTintMode(PorterDuff.Mode.SRC_IN)
-        }
+        // The following indicated we're displaying the current users profile, as it's a
+        // bottom navigation destination. If there is a root controller, we're not displaying the
+        // current users profile
+        if (router.backstackSize > 1) {
+            // Set icon
+            toolbar.navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_black_24dp)?.apply {
+                setTint(colorControlNormal)
+                setTintMode(PorterDuff.Mode.SRC_IN)
+            }
 
-        // Setup back button
-        toolbar.setNavigationOnClickListener {
-            router.popCurrentController()
+            // Setup back button
+            toolbar.setNavigationOnClickListener {
+                router.popCurrentController()
+            }
+        } else {
+            // Inflate edit and settings items
+            toolbar.inflateMenu(R.menu.user_profile_menu)
+            toolbar.menu
+                    .itemsSequence()
+                    .forEach {
+                        it.icon.setTint(colorControlNormal)
+                        it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
+                    }
+            toolbar.setOnMenuItemClickListener { item ->
+                return@setOnMenuItemClickListener when (item.itemId) {
+                    R.id.edit_item -> {
+                        onEditClicked()
+                        true
+                    }
+                    R.id.settings_item -> {
+                        onSettingsClicked()
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
     }
 
+    private fun onEditClicked() {
+        // TODO - Implement this in a future version
+    }
+
+    private fun onSettingsClicked() {
+        router.pushController(RouterTransaction.with(SettingsController()))
+    }
+
     private fun setupViewPager(account: Account) {
-        val pagerAdapter = object: RouterPagerAdapter(this) {
+        val pagerAdapter = object : RouterPagerAdapter(this) {
 
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
@@ -228,9 +264,9 @@ class ProfileController(args: Bundle): BaseController(args), FullScreenPhotoHand
         @JvmStatic
         fun newInstance(account: Account? = null, isMe: Boolean = true): ProfileController =
                 ProfileController(bundleOf(
-                            ARG_ACCOUNT to account,
-                            ARG_IS_ME to isMe
-                    ))
+                        ARG_ACCOUNT to account,
+                        ARG_IS_ME to isMe
+                ))
 
         private val profileOpenCount = AtomicInteger()
 
