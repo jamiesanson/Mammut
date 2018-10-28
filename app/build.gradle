@@ -149,6 +149,10 @@ dependencies {
     def exoplayer_version = "2.9.0"
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+
+    // FlexAdapter for simple screen composition
+    def flexadapter_version = "2.2.0"
+    implementation "com.github.ajalt:flexadapter:$flexadapter_version"
 }
 
 kotlin {
