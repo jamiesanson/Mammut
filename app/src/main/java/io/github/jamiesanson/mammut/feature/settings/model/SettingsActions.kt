@@ -8,9 +8,9 @@ import io.github.jamiesanson.mammut.feature.contributors.ContributorsController
  */
 sealed class SettingsAction
 
-sealed class NavigationAction(val controllerToPush: Controller): SettingsAction() {
+sealed class NavigationAction(val controllerToPush: () -> Controller): SettingsAction() {
 
-    object ViewContributors: NavigationAction(controllerToPush = ContributorsController())
+    object ViewContributors: NavigationAction(controllerToPush = { ContributorsController() })
 
 }
 

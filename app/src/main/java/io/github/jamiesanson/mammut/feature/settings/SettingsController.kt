@@ -94,7 +94,7 @@ class SettingsController: BaseController() {
                 onClick {
                     // Perform action
                     when (clickableItem.action) {
-                        is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush))
+                        is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
                         else -> viewModel.performAction(clickableItem.action)
                     }
                 }
