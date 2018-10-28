@@ -36,13 +36,23 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
-import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onScrollChange
 import javax.inject.Inject
+import kotlin.Boolean
+import kotlin.Exception
+import kotlin.IllegalArgumentException
+import kotlin.String
+import kotlin.apply
+import kotlin.let
+import kotlin.run
+import kotlin.to
 
 /**
  * Controller used to display a feed. TODO - This needs to be generic enough to be started with
@@ -110,14 +120,17 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             initialPrefetchItemCount = 20
         }
         recyclerView.adapter = FeedAdapter(viewModel::loadAround, this, requestManager)
+        
+        // Only show the progress bar if we're displaying this controller the first time
+        if (savedInstanceState == null) {
+            // The following ensures we only change animate the display of the progress bar if
+            // showing for the first time, i.e don't transition again after a rotation
+            val transition = AutoTransition()
+            transition.excludeTarget(recyclerView, true)
+            TransitionManager.beginDelayedTransition(view as ViewGroup, transition)
 
-        // The following ensures we only change animate the display of the progress bar if
-        // showing for the first time, i.e don't transition again after a rotation
-        val transition = AutoTransition()
-        transition.excludeTarget(recyclerView, true)
-        TransitionManager.beginDelayedTransition(view as ViewGroup, transition)
-
-        progressBar.visibility = View.VISIBLE
+            progressBar.visibility = View.VISIBLE
+        }
 
         newTootButton.executeOnMeasure {
             if (savedInstanceState?.getBoolean(STATE_NEW_TOOTS_VISIBLE) == true) {

@@ -10,10 +10,7 @@ import androidx.annotation.ColorInt
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.text.HtmlCompat
-import androidx.core.view.doOnLayout
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
+import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.bumptech.glide.RequestManager
@@ -47,6 +44,8 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
@@ -71,6 +70,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
             usernameTextView.text = "@${status.account?.userName}"
             contentTextView.text = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
 
+            // Configure counting
             countJob.cancel()
             countJob = launch {
                 while (true) {
@@ -82,6 +82,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                 }
             }
 
+            // Configure profile click
             status.account?.let { account ->
                 profileImageView.onClick {
                     callbacks.onProfileClicked(account)
@@ -236,7 +237,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
             sensitiveContentToggleButton.isVisible = true
             isSensitiveScreenVisible = true
 
-            fun View.largestDimension(): Float = (if (width > height) width else height).toFloat()
+            fun View.largestDimension(): Float = sqrt(this.width.toFloat().pow(2F) + this.height.toFloat().pow(2F))
 
             sensitiveContentToggleButton.onClick {
                 if (isSensitiveScreenVisible) {
