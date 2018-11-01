@@ -12,6 +12,7 @@ import com.sys1yagi.mastodon4j.api.entity.Notification
 import io.github.jamiesanson.mammut.data.converters.toEntity
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
+import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
@@ -28,7 +29,8 @@ class FeedViewModel @Inject constructor(
         @Named("in_memory_feed_db")
         private val statusDao: StatusDao,
         @FeedScope
-        private val streamingBuilder: StreamingBuilder?
+        private val streamingBuilder: StreamingBuilder?,
+        private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     val results: Deferred<LiveData<PagedList<Status>>> = async {
@@ -39,6 +41,8 @@ class FeedViewModel @Inject constructor(
     val errors: LiveData<Event<String>> = MutableLiveData()
 
     val onStreamedResult: LiveData<Event<Unit?>> = MutableLiveData()
+
+    val refreshed: LiveData<Event<Boolean>> = MutableLiveData()
 
     private var shutdownable: Shutdownable? = null
 
@@ -73,9 +77,10 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun startStreaming() {
-        streamingBuilder ?: return
-        if (shutdownable != null || streamStartJob != null) return
+    fun startStreaming(): Boolean {
+        if (!preferencesRepository.isStreamingEnabled) return false
+        streamingBuilder ?: return false
+        if (shutdownable != null || streamStartJob != null) return false
 
         streamStartJob = launch {
             shutdownable = streamingBuilder.startStream(object : Handler {
@@ -97,6 +102,15 @@ class FeedViewModel @Inject constructor(
                 }
 
             })
+        }
+
+        return true
+    }
+
+    fun refresh() {
+        launch {
+            feedPagingManager.loadAroundIdSuspending(statusDao.getLatest()?.id ?: 0)
+            refreshed.postSafely(Event(true))
         }
     }
 

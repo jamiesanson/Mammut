@@ -5,12 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:clipToPadding="false"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:clipToPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -28,6 +35,9 @@
         android:layout_marginTop="8dp"
         app:icon="@drawable/ic_sync_black_24dp"
         app:iconGravity="start"
+        app:iconTint="?attr/colorControlNormal"
+        app:iconTintMode="src_in"
+        android:textColor="?attr/colorControlNormal"
         android:paddingEnd="16dp"
         android:paddingStart="8dp"
         android:text="@string/new_toots"

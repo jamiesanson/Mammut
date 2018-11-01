@@ -19,6 +19,8 @@
         android:elevation="8dp"
         app:itemHorizontalTranslationEnabled="false"
         app:labelVisibilityMode="labeled"
+        app:itemIconTint="@drawable/bottom_navigation_color_state"
+        app:itemTextColor="@drawable/bottom_navigation_color_state"
         app:menu="@menu/instance_bottom_navigation" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

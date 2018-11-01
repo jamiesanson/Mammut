@@ -18,3 +18,13 @@ object StandardTheme: Theme(
         styleRes = R.style.Mammut_Standard,
         primaryFont = VarelaRound,
         secondaryFont = Poppins)
+
+/**
+ * Standard light theme for Mammut
+ */
+object StandardLightTheme: Theme(
+        themeId = "standard_light",
+        styleRes = R.style.Mammut_Standard_Light,
+        primaryFont = VarelaRound,
+        secondaryFont = Poppins
+)

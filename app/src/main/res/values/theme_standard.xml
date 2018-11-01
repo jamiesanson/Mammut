@@ -9,6 +9,7 @@
     <color name="standardSecondaryDarkColor">#0086c3</color>
     <color name="standardPrimaryTextColor">#ffffff</color>
     <color name="standardSecondaryTextColor">#000000</color>
+    <color name="standardColorControlTransparent">#8AFFFFFF</color>
 
     <style name="Mammut.Standard" parent="Mammut.Base">
         <item name="colorPrimary">@color/standardPrimaryColor</item>
@@ -19,5 +20,6 @@
         <item name="colorAccentDark">@color/standardSecondaryDarkColor</item>
         <item name="colorPrimaryTransparency">@color/standardPrimaryTransparentColor</item>
         <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlNormalTransparent">@color/standardColorControlTransparent</item>
     </style>
 </resources>

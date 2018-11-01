@@ -43,4 +43,7 @@
     <string name="account_settings">Account Settings</string>
     <string name="contributors">Contributors</string>
     <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="enable_light_mode">Use Light Theme</string>
+    <string name="disable_streaming">Disable Streaming</string>
+    <string name="disable_streaming_subtitle">This could save you some data</string>
 </resources>

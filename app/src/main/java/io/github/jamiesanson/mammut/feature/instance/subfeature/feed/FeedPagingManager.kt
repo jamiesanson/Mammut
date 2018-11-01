@@ -10,6 +10,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
 import kotlinx.coroutines.experimental.launch
+import kotlin.coroutines.experimental.coroutineContext
 
 class FeedPagingManager(
         private val getCallForRange: (Range) -> MastodonRequest<Pageable<Status>>
@@ -55,20 +56,31 @@ class FeedPagingManager(
     fun loadAroundId(id: Long) {
         if (isInitialised) {
             launch {
-                when (id) {
-                    getLatestId() -> {
-                        // Load start
-                        val results = loadForRange(Range(sinceId = id))
-                        feedResults.postSafely(results)
-                    }
-                    getEarliestId() -> {
-                        // Load end
-                        val results = loadForRange(Range(maxId = id))
-                        feedResults.postSafely(results)
-                    }
-                    else -> {
-                        // Ignore this
-                    }
+                loadAroundIdSuspending(id)
+            }
+        }
+    }
+
+    /**
+     * Called when a status ID is binded - loading around it.
+     *
+     * The logic's a bit weird on this one. If the ID is the max ID, we're at the top of the chronological timeline
+     */
+    suspend fun loadAroundIdSuspending(id: Long) {
+        if (isInitialised) {
+            when (id) {
+                getLatestId() -> {
+                    // Load start
+                    val results = loadForRange(Range(sinceId = id))
+                    feedResults.postSafely(results)
+                }
+                getEarliestId() -> {
+                    // Load end
+                    val results = loadForRange(Range(maxId = id))
+                    feedResults.postSafely(results)
+                }
+                else -> {
+                    // Ignore this
                 }
             }
         }

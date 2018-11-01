@@ -4,6 +4,7 @@
     <attr name="colorAccentDark" format="reference" />
     <attr name="colorAccentLight" format="reference" />
     <attr name="colorPrimaryTransparency" format="reference" />
+    <attr name="colorControlNormalTransparent" format="reference" />
     <declare-styleable name="ExpandableFloatingActionButton">
         <attr name="buttonText" format="string" />
         <attr name="buttonAccentColor" format="color" />

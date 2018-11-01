@@ -1,5 +1,6 @@
 package io.github.jamiesanson.mammut.data.repo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
@@ -13,56 +14,73 @@ class PreferencesRepository(appContext: Context) {
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
 
-    var themeId by preferences.string(defaultReturn = StandardTheme.themeId)
+    var themeId by preferences.string(defaultReturn = StandardTheme.themeId, useCommit = true)
 
     var loginDomain by preferences.string(defaultReturn = "")
 
     var isAdvancedUser by preferences.boolean(defaultReturn = false)
+
+    var isStreamingEnabled by preferences.boolean(defaultReturn = true)
 }
 
 
-internal fun SharedPreferences.string(defaultReturn: String = "") = StringDelegate(this, defaultReturn)
-internal fun SharedPreferences.int(defaultReturn: Int = 0) = IntDelegate(this, defaultReturn)
-internal fun SharedPreferences.boolean(defaultReturn: Boolean = false) = BooleanDelegate(this, defaultReturn)
+internal fun SharedPreferences.string(defaultReturn: String = "", useCommit: Boolean = false) = StringDelegate(this, defaultReturn, useCommit)
+internal fun SharedPreferences.int(defaultReturn: Int = 0, useCommit: Boolean = false) = IntDelegate(this, defaultReturn, useCommit)
+internal fun SharedPreferences.boolean(defaultReturn: Boolean = false, useCommit: Boolean = false) = BooleanDelegate(this, defaultReturn, useCommit)
 
-class StringDelegate(private val preferences: SharedPreferences, private val defaultReturn: String) {
+class StringDelegate(private val preferences: SharedPreferences, private val defaultReturn: String, private val useCommit: Boolean) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): String? =
             preferences.getString(property.name, defaultReturn)
 
+    @SuppressLint("ApplySharedPref")
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String?) {
         // If set is null, clear the preference
         if (value == null) {
-            preferences.edit().remove(property.name).apply()
+            preferences.edit().remove(property.name).apply {
+                if (useCommit) commit() else apply()
+            }
         } else {
-            preferences.edit().putString(property.name, value).apply()
+            preferences.edit().putString(property.name, value).apply {
+                if (useCommit) commit() else apply()
+            }
         }
     }
 }
 
-class IntDelegate(private val preferences: SharedPreferences, private val defaultReturn: Int) {
+class IntDelegate(private val preferences: SharedPreferences, private val defaultReturn: Int, private val useCommit: Boolean) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Int =
             preferences.getInt(property.name, defaultReturn)
 
+    @SuppressLint("ApplySharedPref")
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int?) {
         // If set is null, clear the preference
         if (value == null) {
-            preferences.edit().remove(property.name).apply()
+            preferences.edit().remove(property.name).apply {
+                if (useCommit) commit() else apply()
+            }
         } else {
-            preferences.edit().putInt(property.name, value).apply()
+            preferences.edit().putInt(property.name, value).apply {
+                if (useCommit) commit() else apply()
+            }
         }
     }
 }
 
-class BooleanDelegate(private val preferences: SharedPreferences, private val defaultReturn: Boolean) {
+class BooleanDelegate(private val preferences: SharedPreferences, private val defaultReturn: Boolean, private val useCommit: Boolean) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Boolean =
             preferences.getBoolean(property.name, defaultReturn)
 
+    @SuppressLint("ApplySharedPref")
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean?) {
         // If set is null, clear the preference
         if (value == null) {
-            preferences.edit().remove(property.name).apply()
+            preferences.edit().remove(property.name).apply {
+                if (useCommit) commit() else apply()
+            }
         } else {
-            preferences.edit().putBoolean(property.name, value).apply()
+            preferences.edit().putBoolean(property.name, value).apply {
+                if (useCommit) commit() else apply()
+            }
         }
     }
 }

@@ -7,10 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
 import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
@@ -32,7 +36,15 @@ import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_settings.*
 import kotlinx.android.synthetic.main.section_settings_footer.view.*
 import kotlinx.android.synthetic.main.section_settings_header.view.*
+import kotlinx.android.synthetic.main.section_toggleable_item.view.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
@@ -76,7 +88,13 @@ class SettingsController: BaseController() {
         registerSettingsItems(adapter)
 
         viewModel.settingsItems.observe(this) {
-            adapter.items.addAll(it)
+            adapter.resetItems(it)
+        }
+
+        viewModel.restartApp.observe(this) {
+            it.getContentIfNotHandled()?.run {
+                activity?.recreate()
+            }
         }
     }
 
@@ -85,7 +103,6 @@ class SettingsController: BaseController() {
         adapter.register<SectionHeader>(layout = R.layout.section_settings_header) { sectionHeader, view, _ ->
             with (view) {
                 titleTextView.setText(sectionHeader.titleRes)
-                topDividerView.isVisible = sectionHeader.showTopDivider
             }
         }
 
@@ -100,6 +117,40 @@ class SettingsController: BaseController() {
                         is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
                         is ViewOssLicenses -> startActivity(Intent(view.context, OssLicensesMenuActivity::class.java))
                         else -> viewModel.performAction(clickableItem.action)
+                    }
+                }
+            }
+        }
+
+        // Toggleable items
+        adapter.register<ToggleableItem>(layout = R.layout.section_toggleable_item) { toggleableItem, view, _ ->
+            with (view) {
+                toggleableTitleTextView.setText(toggleableItem.titleRes)
+                if (toggleableItem.subtitleRes == 0) {
+                    toggleableSubtitleTextView.isVisible = false
+                } else {
+                    toggleableSubtitleTextView.isVisible = true
+                    toggleableSubtitleTextView.setText(toggleableItem.subtitleRes)
+                }
+
+                toggleableSwitch.setOnCheckedChangeListener(null)
+
+                if (toggleableSwitch.isChecked != toggleableItem.isSet) {
+                    toggleableSwitch.isChecked = toggleableItem.isSet
+                }
+
+                onClick {
+                    toggleableSwitch.toggle()
+                }
+
+                toggleableSwitch.onCheckedChange { _, isChecked ->
+                    if (isChecked != toggleableItem.isSet) {
+                        launch {
+                            delay(250, TimeUnit.MILLISECONDS)
+                            withContext(UI) {
+                                viewModel.performAction(toggleableItem.action)
+                            }
+                        }
                     }
                 }
             }

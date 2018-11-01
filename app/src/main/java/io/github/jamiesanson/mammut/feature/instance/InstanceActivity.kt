@@ -16,6 +16,7 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.Insta
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.Tab
 import kotlinx.android.synthetic.main.activity_instance.*
+import org.jetbrains.anko.contentView
 
 private const val EXTRA_INSTANCE_NAME = "instance_name"
 private const val EXTRA_AUTH_CODE = "auth_code"

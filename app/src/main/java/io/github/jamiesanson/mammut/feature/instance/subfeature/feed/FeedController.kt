@@ -45,14 +45,7 @@ import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onScrollChange
 import javax.inject.Inject
-import kotlin.Boolean
-import kotlin.Exception
-import kotlin.IllegalArgumentException
-import kotlin.String
-import kotlin.apply
-import kotlin.let
 import kotlin.run
-import kotlin.to
 
 /**
  * Controller used to display a feed. TODO - This needs to be generic enough to be started with
@@ -120,7 +113,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             initialPrefetchItemCount = 20
         }
         recyclerView.adapter = FeedAdapter(viewModel::loadAround, this, requestManager)
-        
+
         // Only show the progress bar if we're displaying this controller the first time
         if (savedInstanceState == null) {
             // The following ensures we only change animate the display of the progress bar if
@@ -152,6 +145,15 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             }
         }
 
+        swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.isRefreshing = true
+            viewModel.refresh()
+        }
+
+        viewModel.refreshed.observe(this) {
+            swipeRefreshLayout.isRefreshing = false
+        }
+
         viewModel.errors.observe(this@FeedController) { event ->
             event.getContentIfNotHandled()?.let {
                 snackbar(it)
@@ -166,7 +168,9 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                 if (!adapterStateRestored) {
                     containerView ?: return@withContext
                     savedInstanceState?.let(::restoreAdapterState)
-                    viewModel.startStreaming()
+                    val streamingStarted = viewModel.startStreaming()
+
+                    swipeRefreshLayout.isEnabled = !streamingStarted
                 }
 
                 observeStream()
@@ -199,6 +203,11 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
             if (progressBar.visibility == View.VISIBLE) {
                 progressBar.visibility = View.GONE
+            }
+
+            // Handle the refreshed event after submitting the list
+            viewModel.refreshed.value?.getContentIfNotHandled()?.let { _ ->
+                recyclerView.smoothScrollToPosition(0)
             }
         }
     }

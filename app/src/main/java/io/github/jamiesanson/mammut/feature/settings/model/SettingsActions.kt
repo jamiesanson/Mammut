@@ -14,6 +14,10 @@ sealed class NavigationAction(val controllerToPush: () -> Controller): SettingsA
 
 }
 
+object ToggleLightDarkMode: SettingsAction()
+
+object ToggleStreaming: SettingsAction()
+
 object ViewOssLicenses: SettingsAction()
 
 object LogOut: SettingsAction()

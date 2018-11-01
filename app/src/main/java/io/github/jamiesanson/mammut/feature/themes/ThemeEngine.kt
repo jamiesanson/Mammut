@@ -15,12 +15,16 @@ class ThemeEngine(
     private val currentTheme: Theme
        get() = when (preferencesRepository.themeId) {
            StandardTheme.themeId -> StandardTheme
+           StandardLightTheme.themeId -> StandardLightTheme
            else -> {
                preferencesRepository.themeId = StandardTheme.themeId
                Log.w("ThemeEngine", "Invalid theme ID. Resetting to standard")
                StandardTheme
            }
        }
+
+    val isLightTheme: Boolean
+        get() = currentTheme.themeId.contains("light")
 
     fun apply(activity: AppCompatActivity) {
         activity.setTheme(currentTheme.styleRes)
