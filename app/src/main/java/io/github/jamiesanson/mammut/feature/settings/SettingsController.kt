@@ -2,6 +2,7 @@ package io.github.jamiesanson.mammut.feature.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
+import com.google.android.gms.oss.licenses.OssLicensesActivity
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
@@ -95,6 +98,7 @@ class SettingsController: BaseController() {
                     // Perform action
                     when (clickableItem.action) {
                         is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
+                        is ViewOssLicenses -> startActivity(Intent(view.context, OssLicensesMenuActivity::class.java))
                         else -> viewModel.performAction(clickableItem.action)
                     }
                 }

@@ -1,11 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 buildscript {
     repositories {
+        google()
+        jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.9.3'
     }
 }
 
@@ -153,6 +157,9 @@ dependencies {
     // FlexAdapter for simple screen composition
     def flexadapter_version = "2.2.0"
     implementation "com.github.ajalt:flexadapter:$flexadapter_version"
+
+    // OSS Licenses
+    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.1'
 }
 
 kotlin {

@@ -14,5 +14,6 @@ sealed class NavigationAction(val controllerToPush: () -> Controller): SettingsA
 
 }
 
+object ViewOssLicenses: SettingsAction()
 
 object LogOut: SettingsAction()

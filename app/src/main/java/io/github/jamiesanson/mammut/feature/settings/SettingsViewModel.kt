@@ -23,6 +23,7 @@ class SettingsViewModel @Inject constructor(
                         ClickableItem(titleRes = R.string.log_out, action = LogOut),
                         SectionHeader(titleRes = R.string.about_mammut),
                         ClickableItem(titleRes = R.string.contributors, action = NavigationAction.ViewContributors),
+                        ClickableItem(titleRes = R.string.open_source_licenses, action = ViewOssLicenses),
                         SettingsFooter(appVersion = "${BuildConfig.VERSION_NAME}/${BuildConfig.BUILD_TYPE}")
                 )
         )
