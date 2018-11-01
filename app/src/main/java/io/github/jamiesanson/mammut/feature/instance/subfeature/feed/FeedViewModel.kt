@@ -78,7 +78,15 @@ class FeedViewModel @Inject constructor(
     }
 
     fun startStreaming(): Boolean {
-        if (!preferencesRepository.isStreamingEnabled) return false
+        if (!preferencesRepository.isStreamingEnabled) {
+            // Cancel streaming if applicable
+            shutdownable?.shutdown()
+            shutdownable = null
+            streamStartJob?.cancel()
+            streamStartJob = null
+            return false
+        }
+
         streamingBuilder ?: return false
         if (shutdownable != null || streamStartJob != null) return false
 
