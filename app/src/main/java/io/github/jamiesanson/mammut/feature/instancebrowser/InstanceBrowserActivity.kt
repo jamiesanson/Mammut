@@ -52,6 +52,8 @@ class InstanceBrowserActivity: BaseActivity(), NestedScrollListener {
                 InstanceActivity.launch(this@InstanceBrowserActivity,
                         instanceName = instanceName,
                         authCode = accessToken!!.accessToken)
+
+                this@InstanceBrowserActivity.finish()
             }
         }) { detail, id ->
             expandAboutFragment(detail, id)

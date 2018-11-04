@@ -24,6 +24,7 @@ import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.data.models.Account
+import io.github.jamiesanson.mammut.extension.comingSoon
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
@@ -195,6 +196,10 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
         (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
+    }
+
+    override fun onTootClicked(status: Status) {
+        comingSoon()
     }
 
     private fun onResultsReady(resultLiveData: LiveData<PagedList<Status>>) {

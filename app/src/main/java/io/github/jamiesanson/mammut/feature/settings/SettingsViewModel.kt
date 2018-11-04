@@ -6,15 +6,23 @@ import androidx.lifecycle.ViewModel
 import io.github.jamiesanson.mammut.BuildConfig
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
+import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.feature.base.Event
+import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.settings.model.*
 import io.github.jamiesanson.mammut.feature.themes.StandardLightTheme
 import io.github.jamiesanson.mammut.feature.themes.StandardTheme
+import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 class SettingsViewModel @Inject constructor(
-        private val preferencesRepository: PreferencesRepository
+        private val preferencesRepository: PreferencesRepository,
+        private val registrationRepository: RegistrationRepository,
+        @InstanceScope
+        @Named("instance_access_token")
+        private val accessToken: String
 ) : ViewModel() {
 
     val settingsItems: LiveData<List<SettingsItem>> = MutableLiveData()
@@ -87,7 +95,14 @@ class SettingsViewModel @Inject constructor(
                 preferencesRepository.isStreamingEnabled = !preferencesRepository.isStreamingEnabled
                 rebuildSettingsScreen()
             }
-            LogOut -> TODO()
+            LogOut -> {
+                launch {
+                    val registration = registrationRepository.getAllRegistrations()
+                            .first { it.accessToken?.accessToken == accessToken }
+
+                    registrationRepository.logOut(registration.id)
+                }
+            }
         }
     }
 

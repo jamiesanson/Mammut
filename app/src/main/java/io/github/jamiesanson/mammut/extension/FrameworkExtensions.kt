@@ -1,9 +1,7 @@
 package io.github.jamiesanson.mammut.extension
 
 import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
@@ -22,7 +20,8 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.bluelinelabs.conductor.Controller
+import org.jetbrains.anko.attr
+import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.textColor
 
 
@@ -53,10 +52,6 @@ fun Fragment.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     requireActivity().snackbar(message, length)
 }
 
-fun Controller.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
-    activity!!.snackbar(message, length)
-}
-
 /**
  * Helper function for allowing simple ViewHolder view inflation
  */
@@ -65,11 +60,3 @@ internal fun ViewGroup.inflate(@LayoutRes resource: Int): View =
 
 val RecyclerView.ViewHolder.lifecycleOwner: LifecycleOwner
     get() = itemView.context as LifecycleOwner
-
-/**
- * Conductor extensions
- */
-inline fun <reified T> Controller.startActivity(finishCurrent: Boolean = false) =
-        startActivity(Intent(activity, T::class.java)).also {
-            if (finishCurrent) this@startActivity.activity?.finish()
-        }

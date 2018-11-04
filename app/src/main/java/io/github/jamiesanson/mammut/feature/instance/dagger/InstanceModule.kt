@@ -28,4 +28,9 @@ class InstanceModule(private val instanceName: String, private val accessToken: 
     @InstanceScope
     @Named("instance_name")
     fun provideInstanceName(): String = instanceName
+
+    @Provides
+    @InstanceScope
+    @Named("instance_access_token")
+    fun provideInstanceAccessToken(): String = accessToken
 }

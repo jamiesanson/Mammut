@@ -26,6 +26,7 @@ import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.data.models.Account
+import io.github.jamiesanson.mammut.extension.comingSoon
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
@@ -137,7 +138,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     }
 
     private fun onEditClicked() {
-        // TODO - Implement this in a future version
+        parentController?.comingSoon()
     }
 
     private fun onSettingsClicked() {

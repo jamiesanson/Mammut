@@ -13,7 +13,7 @@ interface InstanceRegistrationDao {
     @Query("SELECT * FROM instanceregistrationentity")
     fun getAllRegistrationsLive(): LiveData<List<InstanceRegistrationEntity>>
 
-    @Query("SELECT * FROM instanceregistrationentity WHERE instanceName = :name")
+    @Query("SELECT * FROM instanceregistrationentity WHERE instanceName = :name LIMIT 1")
     fun getRegistrationByName(name: String): InstanceRegistrationEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

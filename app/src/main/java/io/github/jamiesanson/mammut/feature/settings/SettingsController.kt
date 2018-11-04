@@ -119,6 +119,9 @@ class SettingsController: BaseController() {
                         is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
                         is ViewOssLicenses -> startActivity<OssLicensesMenuActivity>()
                         is ChangeInstance -> startActivity<InstanceBrowserActivity>(finishCurrent = true)
+                        is LogOut -> viewModel.performAction(clickableItem.action).also {
+                            startActivity<InstanceBrowserActivity>(finishCurrent = true)
+                        }
                         else -> viewModel.performAction(clickableItem.action)
                     }
                 }
