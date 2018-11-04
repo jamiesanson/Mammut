@@ -1,9 +1,6 @@
 package io.github.jamiesanson.mammut.extension
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 
 fun <T> LiveData<T>.observe(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observe(owner, Observer(onChanged))
@@ -11,4 +8,12 @@ fun <T> LiveData<T>.observe(owner: LifecycleOwner, onChanged: (T) -> Unit) {
 
 fun <T> LiveData<T>.postSafely(item: T) {
     (this as? MutableLiveData<T>)?.postValue(item)
+}
+
+fun <X> LiveData<List<X>>.filterElements(predicate: (X) -> Boolean): LiveData<List<X>> {
+    return MediatorLiveData<List<X>>().apply {
+        addSource(this@filterElements) { x ->
+           value = x.filter(predicate)
+        }
+    }
 }

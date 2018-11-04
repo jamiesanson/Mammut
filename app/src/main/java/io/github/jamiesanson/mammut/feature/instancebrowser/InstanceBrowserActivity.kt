@@ -62,7 +62,7 @@ class InstanceBrowserActivity: BaseActivity(), NestedScrollListener {
             startActivity<JoinInstanceActivity>()
         }
 
-        registrationRepository.getAllRegistrationsLive().observe(this) {
+        registrationRepository.getAllCompletedRegistrationsLive().observe(this) {
             (instanceRecyclerView.adapter as? InstanceBrowserAdapter)?.submitList(it)
         }
 

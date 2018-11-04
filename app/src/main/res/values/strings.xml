@@ -46,4 +46,5 @@
     <string name="enable_light_mode">Use Light Theme</string>
     <string name="disable_streaming">Disable Streaming</string>
     <string name="disable_streaming_subtitle">This could save you some data</string>
+    <string name="change_instance">Change Instance</string>
 </resources>

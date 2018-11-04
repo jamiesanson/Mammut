@@ -12,7 +12,7 @@
     android:background="?attr/colorPrimaryLight"
     android:clickable="true"
     android:focusable="true"
-    app:cardElevation="0dp"
+    android:stateListAnimator="@animator/cardview_click_animator"
     app:cardCornerRadius="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:foreground="?selectableItemBackgroundBorderless"
-            android:tint="@android:color/white"
+            android:tint="?attr/colorControlNormal"
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"

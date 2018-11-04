@@ -20,4 +20,6 @@ object ToggleStreaming: SettingsAction()
 
 object ViewOssLicenses: SettingsAction()
 
+object ChangeInstance: SettingsAction()
+
 object LogOut: SettingsAction()

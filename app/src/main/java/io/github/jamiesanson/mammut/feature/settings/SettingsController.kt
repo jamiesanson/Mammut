@@ -25,8 +25,10 @@ import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
 import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
 import io.github.jamiesanson.mammut.extension.observe
+import io.github.jamiesanson.mammut.extension.startActivity
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsModule
 import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsScope
 import io.github.jamiesanson.mammut.feature.settings.model.*
@@ -115,7 +117,8 @@ class SettingsController: BaseController() {
                     // Perform action
                     when (clickableItem.action) {
                         is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
-                        is ViewOssLicenses -> startActivity(Intent(view.context, OssLicensesMenuActivity::class.java))
+                        is ViewOssLicenses -> startActivity<OssLicensesMenuActivity>()
+                        is ChangeInstance -> startActivity<InstanceBrowserActivity>(finishCurrent = true)
                         else -> viewModel.performAction(clickableItem.action)
                     }
                 }

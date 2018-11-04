@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
         private val preferencesRepository: PreferencesRepository
-): ViewModel() {
+) : ViewModel() {
 
     val settingsItems: LiveData<List<SettingsItem>> = MutableLiveData()
 
@@ -44,6 +44,10 @@ class SettingsViewModel @Inject constructor(
                         ),
                         SectionHeader(
                                 titleRes = R.string.account_settings
+                        ),
+                        ClickableItem(
+                                titleRes = R.string.change_instance,
+                                action = ChangeInstance
                         ),
                         ClickableItem(
                                 titleRes = R.string.log_out,

@@ -1,6 +1,7 @@
 package io.github.jamiesanson.mammut.extension
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -64,3 +65,11 @@ internal fun ViewGroup.inflate(@LayoutRes resource: Int): View =
 
 val RecyclerView.ViewHolder.lifecycleOwner: LifecycleOwner
     get() = itemView.context as LifecycleOwner
+
+/**
+ * Conductor extensions
+ */
+inline fun <reified T> Controller.startActivity(finishCurrent: Boolean = false) =
+        startActivity(Intent(activity, T::class.java)).also {
+            if (finishCurrent) this@startActivity.activity?.finish()
+        }

@@ -7,6 +7,7 @@ import io.github.jamiesanson.mammut.data.converters.toEntity
 import io.github.jamiesanson.mammut.data.converters.toModel
 import io.github.jamiesanson.mammut.data.database.MammutDatabase
 import io.github.jamiesanson.mammut.data.models.InstanceRegistration
+import io.github.jamiesanson.mammut.extension.filterElements
 import javax.inject.Inject
 
 /**
@@ -21,18 +22,18 @@ class RegistrationRepository @Inject constructor(
         database.instanceRegistrationDao().insertRegistration(registration = registration.toEntity())
     }
 
-    suspend fun getRegistrationForName(name: String): InstanceRegistration?
-        = database.instanceRegistrationDao().getRegistrationByName(name)?.toModel()
+    suspend fun getRegistrationForName(name: String): InstanceRegistration? = database.instanceRegistrationDao().getRegistrationByName(name)?.toModel()
 
-    suspend fun hasRegistrations(): Boolean
-        = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
+    suspend fun hasRegistrations(): Boolean = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
 
-    suspend fun getAllRegistrations(): List<InstanceRegistration>
-        = database.instanceRegistrationDao().getAllRegistrations().map { it.toModel() }
+    suspend fun getAllRegistrations(): List<InstanceRegistration> = database.instanceRegistrationDao().getAllRegistrations().map { it.toModel() }
 
-    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>>
-        = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toModel() }}
+    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toModel() } }
 
-    suspend fun logOut(id: Long)
-        = database.instanceRegistrationDao().deleteRegistration(id)
+    fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = getAllRegistrationsLive()
+            .filterElements {
+                it.account != null
+            }
+
+    suspend fun logOut(id: Long) = database.instanceRegistrationDao().deleteRegistration(id)
 }
