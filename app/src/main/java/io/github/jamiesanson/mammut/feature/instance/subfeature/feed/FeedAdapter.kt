@@ -7,7 +7,6 @@ import com.bumptech.glide.RequestManager
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
-        private val onLoadAround: (Long) -> Unit,
         private val tootCallbacks: TootCallbacks,
         private val requestManager: RequestManager
 ): PagedListAdapter<Status, TootViewHolder>(DIFF_CALLBACK) {
@@ -27,17 +26,12 @@ class FeedAdapter(
             return
         }
 
-        loadAround(current.id)
         holder.bind(current, tootCallbacks, requestManager)
     }
 
     override fun onViewRecycled(holder: TootViewHolder) {
         super.onViewRecycled(holder)
         holder.recycle()
-    }
-
-    private fun loadAround(id: Long) {
-        onLoadAround(id)
     }
 
     companion object {

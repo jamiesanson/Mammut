@@ -45,7 +45,7 @@ class ProfileViewModel @Inject constructor(
                 val account = when (accountResult) {
                     is Either.Right -> accountResult.b
                     is Either.Left -> {
-                        throw Exception(accountResult.a)
+                        throw Exception(accountResult.a.description)
                     }
                 }.toEntity()
 
@@ -56,8 +56,6 @@ class ProfileViewModel @Inject constructor(
             // Get relationship to current account
             // Go ahead and try and get some account info
             launch accountInfo@{
-                val registration = database.instanceRegistrationDao().getRegistrationByName(instanceName)
-
                 Accounts(client)
                         .getRelationships(accountIds = listOf(account.accountId))
                         .run()

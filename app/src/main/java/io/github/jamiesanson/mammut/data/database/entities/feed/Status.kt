@@ -34,7 +34,10 @@ data class Status @JvmOverloads constructor(
         @Embedded
         val application: Application? = null,
         val language: String? = null,
-        val pinned: Boolean? = null) {
+        val pinned: Boolean? = null,
+        // Non-standard fields
+        val statusIndex: Int = -1,
+        val source: String = "undefined") {
     enum class Visibility(val value: String) {
         Public("public"),
         Unlisted("unlisted"),

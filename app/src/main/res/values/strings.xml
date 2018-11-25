@@ -47,4 +47,6 @@
     <string name="disable_streaming">Disable Streaming</string>
     <string name="disable_streaming_subtitle">This could save you some data</string>
     <string name="change_instance">Change Instance</string>
+    <string name="keep_your_place">Keep your place</string>
+    <string name="well_keep_your_place">We\'ll remember where you left off</string>
 </resources>

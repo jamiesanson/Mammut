@@ -79,7 +79,7 @@ class JoinInstanceViewModel @Inject constructor(
                 }
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> result.a }))
+                    errorMessage.postSafely(Event({ _ -> result.a.description }))
 
                     return@launch
                 }
@@ -147,7 +147,7 @@ class JoinInstanceViewModel @Inject constructor(
                 }
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> result.a }))
+                    errorMessage.postSafely(Event({ _ -> result.a.description }))
 
                     return@launch
                 }
@@ -161,7 +161,7 @@ class JoinInstanceViewModel @Inject constructor(
                 is Either.Right -> accountResult.b
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> accountResult.a }))
+                    errorMessage.postSafely(Event({ _ -> accountResult.a.description }))
 
                     return@launch
                 }

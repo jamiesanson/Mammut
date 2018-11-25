@@ -108,20 +108,18 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                     .apply(RequestOptions.circleCropTransform())
                     .into(profileImageView)
 
-            status.mediaAttachments.firstOrNull()?.let {
+            status.mediaAttachments.firstOrNull()?.let { attachment ->
                 requestManager
                         .clear(tootImageView)
 
-                val aspect = getThumbnailSpec(it)
-
-                if (tootImageCardView.isInvisible) tootImageCardView.isVisible = true
+                val aspect = getThumbnailSpec(attachment)
 
                 fun onImageViewLaidOut(view: View) {
                     view.updateLayoutParams imageView@{
                         height = floor(view.width / aspect).toInt()
                     }
-                    view.doOnLayout { _ ->
-                        loadAttachment(it, requestManager)
+                    view.doOnLayout {
+                        loadAttachment(attachment, requestManager)
                     }
                 }
 
@@ -132,9 +130,9 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                     tootImageCardView.doOnLayout(::onImageViewLaidOut)
                 }
 
-                tootImageCardView.onClick { _ ->
+                tootImageCardView.onClick {
                     if (!isSensitiveScreenVisible) {
-                        callbacks.onPhotoClicked(tootImageView, it.url)
+                        callbacks.onPhotoClicked(tootImageView, attachment.url)
                     }
                 }
             } ?: run {
@@ -160,6 +158,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadGifv(gifvAttachment: Attachment<*>) {
         itemView.tootImageView.visibility = View.GONE
+        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.VISIBLE
         itemView.playerView.useController = false
 
@@ -180,6 +179,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadVideo(videoAttachment: Attachment<*>) {
         itemView.tootImageView.visibility = View.GONE
+        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.VISIBLE
         itemView.playerView.useController = true
 
@@ -197,6 +197,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadImage(photoAttachment: PhotoAttachment, requestManager: RequestManager) {
         itemView.tootImageView.visibility = View.VISIBLE
+        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.GONE
 
         // Resolve colors
@@ -328,7 +329,6 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
         }
         countJob.cancel()
         currentStatus = null
-
     }
 
     fun recycle() {

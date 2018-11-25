@@ -21,6 +21,14 @@ class PreferencesRepository(appContext: Context) {
     var isAdvancedUser by preferences.boolean(defaultReturn = false)
 
     var isStreamingEnabled by preferences.boolean(defaultReturn = true)
+
+    var shouldKeepFeedPlace by preferences.boolean(defaultReturn = true)
+
+    var localFeedLastPageSeen by preferences.int(defaultReturn = -99999)
+
+    var homeFeedLastPageSeen by preferences.int(defaultReturn = -99999)
+
+    var federatedFeedLastPageSeen by preferences.int(defaultReturn = -99999)
 }
 
 

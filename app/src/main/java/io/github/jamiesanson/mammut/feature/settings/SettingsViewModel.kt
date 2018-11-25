@@ -52,6 +52,12 @@ class SettingsViewModel @Inject constructor(
                                 isSet = !preferencesRepository.isStreamingEnabled,
                                 action = ToggleStreaming
                         ),
+                        ToggleableItem(
+                                titleRes = R.string.keep_your_place,
+                                subtitleRes = R.string.well_keep_your_place,
+                                isSet = preferencesRepository.shouldKeepFeedPlace,
+                                action = TogglePlaceKeeping
+                        ),
                         SectionHeader(
                                 titleRes = R.string.account_settings
                         ),
@@ -95,6 +101,10 @@ class SettingsViewModel @Inject constructor(
             }
             ToggleStreaming -> {
                 preferencesRepository.isStreamingEnabled = !preferencesRepository.isStreamingEnabled
+                rebuildSettingsScreen()
+            }
+            TogglePlaceKeeping -> {
+                preferencesRepository.shouldKeepFeedPlace = !preferencesRepository.shouldKeepFeedPlace
                 rebuildSettingsScreen()
             }
             LogOut -> {

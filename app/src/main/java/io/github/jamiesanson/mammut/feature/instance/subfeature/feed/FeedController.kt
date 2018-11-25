@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
-import androidx.lifecycle.LiveData
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
-import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
@@ -31,6 +31,7 @@ import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
+import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.paging.NetworkState
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
@@ -40,9 +41,7 @@ import kotlinx.android.synthetic.main.controller_feed.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
-import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onScrollChange
 import javax.inject.Inject
@@ -113,7 +112,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             isItemPrefetchEnabled = true
             initialPrefetchItemCount = 20
         }
-        recyclerView.adapter = FeedAdapter(viewModel::loadAround, this, requestManager)
+        recyclerView.adapter = FeedAdapter(this, requestManager)
 
         // Only show the progress bar if we're displaying this controller the first time
         if (savedInstanceState == null) {
@@ -147,36 +146,47 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.isRefreshing = true
             viewModel.refresh()
         }
 
-        viewModel.refreshed.observe(this) {
-            swipeRefreshLayout.isRefreshing = false
-        }
-
-        viewModel.errors.observe(this@FeedController) { event ->
-            event.getContentIfNotHandled()?.let {
-                snackbar(it)
-            }
-        }
-
-        launch {
-            val liveData = viewModel.results.await()
-            withContext(Dispatchers.Main) {
-                onResultsReady(liveData)
-
-                if (!adapterStateRestored) {
-                    containerView ?: return@withContext
-                    savedInstanceState?.let(::restoreAdapterState)
-                    val streamingStarted = viewModel.startStreaming()
-
-                    swipeRefreshLayout.isEnabled = !streamingStarted
+        viewModel.feedData.refreshState.observe(this) {
+            swipeRefreshLayout.isRefreshing = when (it) {
+                NetworkState.Running -> true
+                NetworkState.Loaded -> false
+                is NetworkState.Error -> {
+                    snackbar(it.message)
+                    false
                 }
-
-                observeStream()
             }
         }
+
+        viewModel.feedData.networkState.observe(this) {
+            when {
+                it is NetworkState.Running && viewModel.feedData.pagedList.value == null -> {
+                    progressBar.isVisible = true
+                }
+            }
+        }
+
+        viewModel.feedData.pagedList.observe(this) {
+            (recyclerView?.adapter as FeedAdapter?)?.submitList(it)
+
+            if (progressBar.visibility == View.VISIBLE) {
+                progressBar.visibility = View.GONE
+            }
+
+            // Handle the refreshed event after submitting the list
+            viewModel.feedData.refreshState.value?.let { state ->
+                if (state is NetworkState.Loaded && recyclerView.isNearTop() && viewModel.shouldScrollOnFirstLoad) {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+            }
+        }
+
+        savedInstanceState?.let(::restoreAdapterState)
+        adapterStateRestored = true
+
+        observeStream()
     }
 
     override fun onSaveViewState(view: View, outState: Bundle) {
@@ -202,42 +212,23 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         comingSoon()
     }
 
-    private fun onResultsReady(resultLiveData: LiveData<PagedList<Status>>) {
-        resultLiveData.observe(this) {
-            (recyclerView?.adapter as FeedAdapter?)?.submitList(it)
-
-            if (progressBar.visibility == View.VISIBLE) {
-                progressBar.visibility = View.GONE
-            }
-
-            // Handle the refreshed event after submitting the list
-            viewModel.refreshed.value?.getContentIfNotHandled()?.let { _ ->
-                recyclerView.smoothScrollToPosition(0)
-            }
-        }
-    }
-
     private fun observeStream() {
         viewModel.onStreamedResult.observe(this) {
-            it.getContentIfNotHandled()
-            // Only scroll to the top if the first item is completely visible. Note, this is
-            // invoked before the streamed item is inserted
-            if (recyclerView.isNearTop()) {
-                // Due to race conditions in state restoration and async madness, this is often called
-                // before [isNearTop] is returning valid results. Due to this, we should skip the first
-                // call.
-                if (firstSmoothScrollSkipped) {
+            if (!it.hasBeenHandled) {
+                it.getContentIfNotHandled()
+
+                if (recyclerView.isNearTop() && adapterStateRestored) {
                     launch(Dispatchers.Main) {
                         delay(200)
                         containerView ?: return@launch
-                        recyclerView?.smoothScrollToPosition(0)
+                        if (recyclerView?.isNearTop() == true) {
+                            recyclerView?.smoothScrollToPosition(0)
+                        }
                     }
                 } else {
-                    firstSmoothScrollSkipped = true
-                }
-            } else {
-                if (!tootButtonVisible) {
-                    showNewTootsIndicator()
+                    if (!tootButtonVisible) {
+                        showNewTootsIndicator()
+                    }
                 }
             }
         }
@@ -280,14 +271,12 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         savedInstanceState.getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)?.let { state ->
             (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
         }
-        adapterStateRestored = true
     }
 
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstVisibleItemPosition() <= 1
+                return@run findFirstVisibleItemPosition() <= 2
             } ?: false
-
 
     companion object {
 
