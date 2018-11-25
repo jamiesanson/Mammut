@@ -58,6 +58,12 @@ class SettingsViewModel @Inject constructor(
                                 isSet = preferencesRepository.shouldKeepFeedPlace,
                                 action = TogglePlaceKeeping
                         ),
+                        ToggleableItem(
+                                titleRes = R.string.launch_chooser_title,
+                                subtitleRes = R.string.launch_chooser_description,
+                                isSet = preferencesRepository.takeMeStraightToInstanceBrowser,
+                                action = ToggleLaunchInstanceBrowser
+                        ),
                         SectionHeader(
                                 titleRes = R.string.account_settings
                         ),
@@ -105,6 +111,10 @@ class SettingsViewModel @Inject constructor(
             }
             TogglePlaceKeeping -> {
                 preferencesRepository.shouldKeepFeedPlace = !preferencesRepository.shouldKeepFeedPlace
+                rebuildSettingsScreen()
+            }
+            ToggleLaunchInstanceBrowser -> {
+                preferencesRepository.takeMeStraightToInstanceBrowser = !preferencesRepository.takeMeStraightToInstanceBrowser
                 rebuildSettingsScreen()
             }
             LogOut -> {

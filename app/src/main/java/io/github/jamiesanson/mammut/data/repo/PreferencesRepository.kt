@@ -29,6 +29,10 @@ class PreferencesRepository(appContext: Context) {
     var homeFeedLastPageSeen by preferences.int(defaultReturn = -99999)
 
     var federatedFeedLastPageSeen by preferences.int(defaultReturn = -99999)
+
+    var lastAccessedInstanceToken by preferences.string("none")
+
+    var takeMeStraightToInstanceBrowser by preferences.boolean(false)
 }
 
 

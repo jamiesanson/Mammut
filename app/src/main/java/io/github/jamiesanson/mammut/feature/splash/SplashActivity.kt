@@ -23,26 +23,35 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applicationComponent.inject(this)
+        if (preferencesRepository.takeMeStraightToInstanceBrowser) {
+            startActivity<InstanceBrowserActivity>()
+            finish()
+            return
+        }
 
         launch {
-            val registration = registrationRepository
+            val registrations = registrationRepository
                     .getAllRegistrations()
-                    .firstOrNull()
 
             withContext(Dispatchers.Main) {
-                registration?.run {
-                    when {
-                        preferencesRepository.isAdvancedUser && accessToken != null ->
-                            startActivity<InstanceBrowserActivity>()
-                        accessToken != null ->
-                            InstanceActivity.launch(this@SplashActivity,
-                                    instanceName = instanceName,
-                                    authCode = accessToken.accessToken)
-                        else ->
-                            startActivity<JoinInstanceActivity>()
+                registrations.forEach {
+                    it.run {
+                        when {
+                            accessToken != null && accessToken.accessToken == preferencesRepository.lastAccessedInstanceToken -> {
+                                InstanceActivity.launch(this@SplashActivity,
+                                        instanceName = instanceName,
+                                        authCode = accessToken.accessToken)
+                                finish()
+                                return@withContext
+                            }
+                            else -> {
+                                // no-op
+                            }
+                        }
                     }
-                } ?: startActivity<JoinInstanceActivity>()
+                }
 
+                startActivity<JoinInstanceActivity>()
                 finish()
             }
         }

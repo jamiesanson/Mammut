@@ -49,4 +49,6 @@
     <string name="change_instance">Change Instance</string>
     <string name="keep_your_place">Keep your place</string>
     <string name="well_keep_your_place">We\'ll remember where you left off</string>
+    <string name="launch_chooser_description">Launch the instance switcher screen on app start</string>
+    <string name="launch_chooser_title">Open to chooser</string>
 </resources>

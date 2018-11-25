@@ -8,15 +8,19 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.github.jamiesanson.mammut.R
+import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.base.BaseActivity
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceComponent
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceModule
+import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.Tab
 import kotlinx.android.synthetic.main.activity_instance.*
 import org.jetbrains.anko.contentView
+import javax.inject.Inject
+import javax.inject.Named
 
 private const val EXTRA_INSTANCE_NAME = "instance_name"
 private const val EXTRA_AUTH_CODE = "auth_code"
@@ -29,6 +33,9 @@ class InstanceActivity : BaseActivity() {
     lateinit var component: InstanceComponent
 
     private lateinit var router: Router
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +63,13 @@ class InstanceActivity : BaseActivity() {
                 .plus(InstanceModule(instanceName, authCode)).also {
                     it.inject(this)
                 }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Save the current instance to shared preferences
+        preferencesRepository.lastAccessedInstanceToken = intent?.extras?.getString(EXTRA_AUTH_CODE)
+                ?: throw NullPointerException("Auth code must not be null")
     }
 
     companion object {
