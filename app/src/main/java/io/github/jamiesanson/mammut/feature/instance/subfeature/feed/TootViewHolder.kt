@@ -305,7 +305,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun Duration.toElapsedTime(): String =
             when {
-                this > Duration.of(7, ChronoUnit.DAYS) -> "${toDays().rem(7)} weeks ago"
+                this > Duration.of(7, ChronoUnit.DAYS) -> "${toDays() / 7} weeks ago"
                 this > Duration.of(1, ChronoUnit.DAYS) -> "${toDays()} days ago"
                 this > Duration.of(1, ChronoUnit.HOURS) -> "${toHours()} hours ago"
                 this > Duration.of(1, ChronoUnit.MINUTES) -> "${toMinutes()} mins ago"
