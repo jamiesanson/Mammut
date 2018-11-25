@@ -31,24 +31,19 @@ import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.image
 import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
-import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
+class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var countJob = Job()
 
@@ -78,11 +73,11 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
             countJob.cancel()
             countJob = launch {
                 while (true) {
-                    withContext(UI) {
+                    withContext(Dispatchers.Main) {
                         val timeSinceSubmission = Duration.between(submissionTime, ZonedDateTime.now())
                         timeTextView.text = timeSinceSubmission.toElapsedTime()
                     }
-                    delay(1, TimeUnit.SECONDS)
+                    delay(1000)
                 }
             }
 

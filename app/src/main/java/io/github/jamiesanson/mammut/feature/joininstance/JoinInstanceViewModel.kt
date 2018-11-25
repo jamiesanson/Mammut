@@ -21,7 +21,9 @@ import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.base.InputError
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class JoinInstanceViewModel @Inject constructor(
@@ -29,7 +31,7 @@ class JoinInstanceViewModel @Inject constructor(
         private val preferencesRepository: PreferencesRepository,
         private val instancesRepository: InstancesRepository,
         private val clientBuilder: ClientBuilder
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by GlobalScope {
 
     val isLoading: LiveData<Boolean> = MutableLiveData()
 

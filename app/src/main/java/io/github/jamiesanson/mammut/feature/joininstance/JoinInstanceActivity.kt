@@ -26,7 +26,7 @@ import io.github.jamiesanson.mammut.feature.joininstance.dagger.JoinInstanceModu
 import io.github.jamiesanson.mammut.feature.joininstance.suggestion.InstanceSuggestionPopupWindow
 import kotlinx.android.synthetic.main.activity_join_instance.*
 import org.jetbrains.anko.contentView
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 

@@ -17,8 +17,7 @@ import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -31,7 +30,7 @@ class FeedViewModel @Inject constructor(
         @FeedScope
         private val streamingBuilder: StreamingBuilder?,
         private val preferencesRepository: PreferencesRepository
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     val results: Deferred<LiveData<PagedList<Status>>> = async {
         initialise()
@@ -45,8 +44,6 @@ class FeedViewModel @Inject constructor(
     val refreshed: LiveData<Event<Boolean>> = MutableLiveData()
 
     private var shutdownable: Shutdownable? = null
-
-    private var streamStartJob: Job? = null
 
     fun loadAround(id: Long) {
         feedPagingManager.loadAroundId(id)
@@ -64,9 +61,9 @@ class FeedViewModel @Inject constructor(
                     statusDao.getLatest()?.id
                 })
 
-        withContext(UI) {
+        withContext(Dispatchers.Main) {
             feedPagingManager.feedResults.observeForever { newPage ->
-                launch {
+                launch(Dispatchers.IO) {
                     statusDao.insertNewPage(newPage.map { it.toEntity() })
                 }
             }
@@ -82,20 +79,16 @@ class FeedViewModel @Inject constructor(
             // Cancel streaming if applicable
             shutdownable?.shutdown()
             shutdownable = null
-            streamStartJob?.cancel()
-            streamStartJob = null
             return false
         }
 
         streamingBuilder ?: return false
-        if (shutdownable != null || streamStartJob != null) return false
+        if (shutdownable != null) return false
 
-        streamStartJob = launch {
+        launch {
             shutdownable = streamingBuilder.startStream(object : Handler {
                 override fun onDelete(id: Long) {
-                    launch {
-                        statusDao.deleteById(id)
-                    }
+                    statusDao.deleteById(id)
                 }
 
                 override fun onNotification(notification: Notification) {
@@ -103,12 +96,9 @@ class FeedViewModel @Inject constructor(
                 }
 
                 override fun onStatus(status: com.sys1yagi.mastodon4j.api.entity.Status) {
-                    launch {
-                        onStreamedResult.postSafely(Event(null))
-                        statusDao.insertStatus(status.toEntity())
-                    }
+                    onStreamedResult.postSafely(Event(null))
+                    statusDao.insertStatus(status.toEntity())
                 }
-
             })
         }
 
@@ -123,10 +113,8 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun stopStreaming() {
-        streamStartJob?.cancel()
         shutdownable?.shutdown()
         shutdownable = null
-        streamStartJob = null
     }
 
     override fun onCleared() {

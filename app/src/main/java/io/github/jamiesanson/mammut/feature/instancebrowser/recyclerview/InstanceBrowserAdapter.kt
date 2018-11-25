@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import io.github.jamiesanson.mammut.data.models.InstanceRegistration
 import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
 import kotlinx.android.synthetic.main.view_holder_instance_card.view.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * RecyclerView adapter for displaying instances

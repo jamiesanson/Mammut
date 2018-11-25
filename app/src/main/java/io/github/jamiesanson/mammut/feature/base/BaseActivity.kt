@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import org.jetbrains.anko.attr
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.contentView
@@ -18,7 +20,7 @@ import javax.inject.Inject
 /**
  * Base activity for theming (and more)
  */
-abstract class BaseActivity: AppCompatActivity() {
+abstract class BaseActivity: AppCompatActivity(), CoroutineScope by GlobalScope {
 
     @Inject
     lateinit var themeEngine: ThemeEngine

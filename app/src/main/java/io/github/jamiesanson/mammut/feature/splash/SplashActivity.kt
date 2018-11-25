@@ -8,13 +8,11 @@ import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
 
     @Inject
     lateinit var registrationRepository: RegistrationRepository
@@ -31,7 +29,7 @@ class SplashActivity : AppCompatActivity() {
                     .getAllRegistrations()
                     .firstOrNull()
 
-            withContext(UI) {
+            withContext(Dispatchers.Main) {
                 registration?.run {
                     when {
                         preferencesRepository.isAdvancedUser && accessToken != null ->

@@ -9,8 +9,8 @@ import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
-import kotlinx.coroutines.experimental.launch
-import kotlin.coroutines.experimental.coroutineContext
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class FeedPagingManager(
         private val getCallForRange: (Range) -> MastodonRequest<Pageable<Status>>
@@ -55,7 +55,7 @@ class FeedPagingManager(
      */
     fun loadAroundId(id: Long) {
         if (isInitialised) {
-            launch {
+            GlobalScope.launch {
                 loadAroundIdSuspending(id)
             }
         }

@@ -13,7 +13,9 @@ import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.settings.model.*
 import io.github.jamiesanson.mammut.feature.themes.StandardLightTheme
 import io.github.jamiesanson.mammut.feature.themes.StandardTheme
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -23,7 +25,7 @@ class SettingsViewModel @Inject constructor(
         @InstanceScope
         @Named("instance_access_token")
         private val accessToken: String
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by GlobalScope {
 
     val settingsItems: LiveData<List<SettingsItem>> = MutableLiveData()
 

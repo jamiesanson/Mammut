@@ -8,9 +8,6 @@ import io.github.jamiesanson.mammut.data.database.entities.InstanceSearchResultE
 import io.github.jamiesanson.mammut.data.models.InstanceSearchResult
 import io.github.jamiesanson.mammut.data.remote.MastodonInstancesService
 import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.last
-import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

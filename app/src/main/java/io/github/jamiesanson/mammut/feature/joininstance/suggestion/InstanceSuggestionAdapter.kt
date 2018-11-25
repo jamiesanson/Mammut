@@ -9,7 +9,7 @@ import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.data.models.InstanceSearchResult
 import io.github.jamiesanson.mammut.extension.inflate
 import kotlinx.android.synthetic.main.instance_suggestion_layout.view.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class InstanceSuggestionAdapter(private val onResultSelected: (InstanceSearchResult) -> Unit) : ListAdapter<InstanceSearchResult, InstanceSuggestionAdapter.ViewHolder>(DIFF_CALLBACK) {
 

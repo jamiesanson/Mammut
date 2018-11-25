@@ -37,14 +37,14 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.bundleOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onScrollChange
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onScrollChange
 import javax.inject.Inject
 import kotlin.run
 
@@ -163,7 +163,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
         launch {
             val liveData = viewModel.results.await()
-            withContext(UI) {
+            withContext(Dispatchers.Main) {
                 onResultsReady(liveData)
 
                 if (!adapterStateRestored) {
@@ -227,7 +227,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                 // before [isNearTop] is returning valid results. Due to this, we should skip the first
                 // call.
                 if (firstSmoothScrollSkipped) {
-                    launch(UI) {
+                    launch(Dispatchers.Main) {
                         delay(200)
                         containerView ?: return@launch
                         recyclerView?.smoothScrollToPosition(0)

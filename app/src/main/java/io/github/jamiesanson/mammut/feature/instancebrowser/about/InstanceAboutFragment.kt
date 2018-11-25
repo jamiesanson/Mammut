@@ -16,7 +16,7 @@ import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import kotlinx.android.synthetic.main.fragment_about_instance.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.textColorResource
 
 class InstanceAboutFragment: Fragment() {

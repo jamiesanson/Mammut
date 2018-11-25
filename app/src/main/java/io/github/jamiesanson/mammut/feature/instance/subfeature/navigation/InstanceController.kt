@@ -19,7 +19,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.extension.comingSoon
-import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
@@ -28,7 +27,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 private const val ROUTER_STATES_KEY = "STATE"
 
