@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -38,10 +39,27 @@ abstract class BaseActivity: AppCompatActivity(), CoroutineScope by GlobalScope 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             contentView?.apply {
                 systemUiVisibility = when {
-                    themeEngine.isLightTheme -> View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                    else -> systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                    themeEngine.isLightTheme -> View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.run {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            this or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                        } else {
+                            this
+                        }
+                    }
+                    else -> systemUiVisibility and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.run {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            this or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                        } else {
+                            this
+                        }
+                    }).inv()
                 }
             }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Only apply this on O such that we can also tint the nav bar icons
+            window.navigationBarColor = colorAttr(R.attr.colorPrimary)
         }
     }
 
