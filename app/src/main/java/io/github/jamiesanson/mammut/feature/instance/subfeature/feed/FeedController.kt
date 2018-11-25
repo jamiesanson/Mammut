@@ -171,7 +171,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         viewModel.feedData.pagedList.observe(this) {
             (recyclerView?.adapter as FeedAdapter?)?.submitList(it)
 
-            if (progressBar.visibility == View.VISIBLE) {
+            if (progressBar.visibility == View.VISIBLE && it.size != 0) {
                 progressBar.visibility = View.GONE
             }
 
