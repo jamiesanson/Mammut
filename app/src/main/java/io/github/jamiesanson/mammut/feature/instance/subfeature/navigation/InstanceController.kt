@@ -25,6 +25,7 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.abc_activity_chooser_view.*
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -211,6 +212,16 @@ class InstanceController : BaseController(), BottomNavigationView.OnNavigationIt
 
                 fullScreenPhotoLayout.visibility = visibility
                 fullScreenGestureImageView.visibility = visibility
+
+                if (position == 0f && isLeaving) {
+                    // Invalidate the target to ensure it resizes properly
+                    GlideApp.with(imageView)
+                            .load(photoUrl)
+                            .placeholder(fullScreenGestureImageView.drawable)
+                            .transition(withCrossFade())
+                            .transform(FitCenter())
+                            .into(imageView)
+                }
             }
         }
 

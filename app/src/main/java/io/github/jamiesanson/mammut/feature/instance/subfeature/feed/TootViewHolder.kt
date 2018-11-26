@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.text.HtmlCompat
@@ -14,6 +15,7 @@ import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -38,7 +40,6 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -114,20 +115,17 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
                 val aspect = getThumbnailSpec(attachment)
 
-                fun onImageViewLaidOut(view: View) {
-                    view.updateLayoutParams imageView@{
-                        height = floor(view.width / aspect).toInt()
-                    }
-                    view.doOnLayout {
-                        loadAttachment(attachment, requestManager)
-                    }
+                with (ConstraintSet()) {
+                    clone(constraintLayout)
+                    setDimensionRatio(tootImageCardView.id, aspect.toString())
+                    applyTo(constraintLayout)
                 }
 
-                if (tootImageCardView.width > 0) {
-                    // The imageView is already laid out, therefore we don't need to wait for the next pass
-                    onImageViewLaidOut(tootImageCardView)
-                } else {
-                    tootImageCardView.doOnLayout(::onImageViewLaidOut)
+                tootImageCardView.visibility = View.VISIBLE
+
+                tootImageCardView.doOnLayout {
+                    // Wait until the next layout pass to ensure the parent is sized correctly
+                    loadAttachment(attachment, requestManager)
                 }
 
                 tootImageCardView.onClick {
@@ -136,14 +134,14 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                     }
                 }
             } ?: run {
-                tootImageCardView.updateLayoutParams {
-                    height = 0
-
-                    doOnLayout {
-                        tootImageView.image = null
-                        tootImageCardView.visibility = View.INVISIBLE
-                    }
+                with (ConstraintSet()) {
+                    clone(constraintLayout)
+                    setDimensionRatio(tootImageCardView.id, "0")
+                    applyTo(constraintLayout)
                 }
+
+                tootImageView.image = null
+                tootImageCardView.visibility = View.INVISIBLE
             }
         }
     }
@@ -158,7 +156,6 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadGifv(gifvAttachment: Attachment<*>) {
         itemView.tootImageView.visibility = View.GONE
-        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.VISIBLE
         itemView.playerView.useController = false
 
@@ -179,7 +176,6 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadVideo(videoAttachment: Attachment<*>) {
         itemView.tootImageView.visibility = View.GONE
-        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.VISIBLE
         itemView.playerView.useController = true
 
@@ -197,7 +193,6 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun loadImage(photoAttachment: PhotoAttachment, requestManager: RequestManager) {
         itemView.tootImageView.visibility = View.VISIBLE
-        itemView.tootImageCardView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.GONE
 
         // Resolve colors
@@ -219,6 +214,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                                 .transition(withCrossFade())
                 )
                 .transition(withCrossFade())
+                .apply(RequestOptions.bitmapTransform(FitCenter()))
                 .into(itemView.tootImageView)
     }
 
