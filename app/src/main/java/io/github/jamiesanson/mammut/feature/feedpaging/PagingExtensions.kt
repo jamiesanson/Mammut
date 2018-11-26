@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed.paging
+package io.github.jamiesanson.mammut.feature.feedpaging
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

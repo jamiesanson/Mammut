@@ -1,5 +1,6 @@
 package io.github.jamiesanson.mammut.feature.instance.dagger
 
+import androidx.recyclerview.widget.RecyclerView
 import com.sys1yagi.mastodon4j.MastodonClient
 import dagger.Module
 import dagger.Provides
@@ -33,4 +34,8 @@ class InstanceModule(private val instanceName: String, private val accessToken: 
     @InstanceScope
     @Named("instance_access_token")
     fun provideInstanceAccessToken(): String = accessToken
+
+    @Provides
+    @InstanceScope
+    fun provideFeedViewPool(): RecyclerView.RecycledViewPool = RecyclerView.RecycledViewPool()
 }

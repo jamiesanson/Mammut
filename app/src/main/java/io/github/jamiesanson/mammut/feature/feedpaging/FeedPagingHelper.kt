@@ -1,7 +1,10 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed.paging
+package io.github.jamiesanson.mammut.feature.feedpaging
 
 import androidx.annotation.MainThread
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.PagingRequestHelper
@@ -21,11 +24,17 @@ import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.*
+import org.threeten.bp.Duration
+import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -47,6 +56,7 @@ class FeedPagingHelper(
     private val statusDao: StatusDao = statusDatabase.statusDao()
 
     private var streamShutdownable: Shutdownable? = null
+    private var bufferedItemDisposable: Disposable? = null
 
     private val dbPagingExecutor: Executor = Executors.newSingleThreadExecutor()
 
@@ -54,7 +64,21 @@ class FeedPagingHelper(
 
     private val networkState = pagingHelper.createStatusLiveData()
 
-    private val itemStreamed: LiveData<Event<Unit?>> = MutableLiveData()
+    private val itemStreamedPublishSubject = PublishSubject.create<com.sys1yagi.mastodon4j.api.entity.Status>()
+    private val bufferedItemFlowable: Flowable<Event<List<com.sys1yagi.mastodon4j.api.entity.Status>>> = Flowable
+                .fromPublisher(itemStreamedPublishSubject.toFlowable(BackpressureStrategy.BUFFER))
+                .buffer(100, TimeUnit.MILLISECONDS)
+                .map { Event(it) }
+    private val itemStreamed: LiveData<Event<List<com.sys1yagi.mastodon4j.api.entity.Status>>> = LiveDataReactiveStreams
+            .fromPublisher(bufferedItemFlowable)
+
+    private val timelineBroken: LiveData<Boolean> = MutableLiveData()
+
+    private val isTimelineBroken: Deferred<Boolean> = async {
+        checkIfIsTimelineBroken().also {
+            timelineBroken.postSafely(it)
+        }
+    }
 
     fun initialise(): FeedData<Status> {
         val refreshTrigger = MutableLiveData<Unit>()
@@ -67,7 +91,12 @@ class FeedPagingHelper(
                 .setInitialLoadKey(getPreviousPosition())
                 .build()
 
-        beginStreaming()
+        launch {
+            // Only begin streaming if the timeline isn't broken
+            if (!isTimelineBroken.await()) {
+                beginStreaming()
+            }
+        }
 
         return FeedData(
                 pagedList = liveList,
@@ -88,15 +117,68 @@ class FeedPagingHelper(
         stopStreaming()
     }
 
-    private fun beginStreaming() {
-        launch {
-            streamShutdownable = streamingBuilder?.startStream(this@FeedPagingHelper)
-        }
+    private suspend fun beginStreaming() = coroutineScope {
+        streamShutdownable = streamingBuilder?.startStream(this@FeedPagingHelper)
+
+        // Begin listening to buffered results
+        bufferedItemDisposable = bufferedItemFlowable
+                .subscribeOn(Schedulers.from(dbPagingExecutor))
+                .subscribe {
+                    launch {
+                        insertStatuses(it.peekContent(), true)
+                    }
+                }
     }
 
     private fun stopStreaming() {
-        streamShutdownable?.shutdown()
-        streamShutdownable = null
+        launch {
+            streamShutdownable?.shutdown()
+            streamShutdownable = null
+            bufferedItemDisposable?.dispose()
+        }
+    }
+
+    /**
+     * This is to be called each time the [FeedPagingHelper] is initialised, if operating
+     * on a feed where persistence is enabled.
+     *
+     * How this works:
+     * * Load the most N recent statuses in the feed
+     * * Load the top most N statuses in the database
+     * * Calculate the average time between posts for both lists
+     * * If difference between oldest from the remote, and newest locally is larger than X times that
+     *   the timeline is broken, so give the user a chance to choose if they want to continue on up or
+     *   jump to the top.
+     */
+    private suspend fun checkIfIsTimelineBroken(): Boolean = coroutineScope {
+        val N = 20
+        val X = 3
+
+        val result = getCallForRange(Range(limit = N)).run(retryCount = 3)
+
+        // Ignore errors here - if no results, just say the timeline's broken and see what happens.
+        val remotePage = result.toOption().orNull()?.part?.map { it.toEntity() } ?: return@coroutineScope true
+        val localPage = statusDao.getMostRecent(count = N, source = feedType.key)
+
+        // Average the time between items
+        fun List<Status>.getAverageInterval(): Duration =
+            windowed(size = 2, step = 1) { items ->
+                val (first, second) = items.map { ZonedDateTime.parse(it.createdAt) }
+                Duration.between(first, second)
+            }.reduce { acc, duration ->
+                acc + duration
+            }.dividedBy(size.toLong())
+
+        val remoteInterval = remotePage.getAverageInterval()
+        val localInterval = localPage.getAverageInterval()
+        val totalInterval = (remoteInterval + localInterval).dividedBy(2L)
+
+        val oldestRemoteTime = ZonedDateTime.parse(remotePage.last().createdAt)
+        val latestLocalTime = ZonedDateTime.parse(localPage.first().createdAt)
+
+        val middleInterval = Duration.between(oldestRemoteTime, latestLocalTime)
+
+        middleInterval.multipliedBy(X.toLong()) > totalInterval
     }
 
     private fun executeStatusRequest(request: MastodonRequest<Pageable<com.sys1yagi.mastodon4j.api.entity.Status>>, callback: PagingRequestHelper.Request.Callback, isLoadingInfront: Boolean = false) {
@@ -108,29 +190,34 @@ class FeedPagingHelper(
                     callback.recordFailure(Exception(result.a.description))
                 }
                 is Either.Right -> {
-                    statusDatabase.runInTransaction {
-                        when {
-                            isLoadingInfront -> {
-                                val frontIndex = statusDao.getPreviousIndexInFeed(feedType.key)
-                                statusDao.insertNewPage(result.b.part.mapIndexed { index, status ->
-                                    status.toEntity().copy(
-                                            statusIndex = frontIndex + (index - result.b.part.size),
-                                            source = feedType.key
-                                    )
-                                })
-                            }
-                            else -> {
-                                val endIndex = statusDao.getNextIndexInFeed(feedType.key)
-                                statusDao.insertNewPage(result.b.part.mapIndexed { index, status ->
-                                    status.toEntity().copy(
-                                            statusIndex = index + endIndex,
-                                            source = feedType.key
-                                    )
-                                })
-                            }
-                        }
-                    }
+                    insertStatuses(result.b.part, isLoadingInfront)
+
                     callback.recordSuccess()
+                }
+            }
+        }
+    }
+
+    private suspend fun insertStatuses(statuses: List<com.sys1yagi.mastodon4j.api.entity.Status>, addToFront: Boolean) = coroutineScope {
+        statusDatabase.runInTransaction {
+            when {
+                addToFront -> {
+                    val frontIndex = statusDao.getPreviousIndexInFeed(feedType.key)
+                    statusDao.insertNewPage(statuses.mapIndexed { index, status ->
+                        status.toEntity().copy(
+                                statusIndex = frontIndex + (index - statuses.size),
+                                source = feedType.key
+                        )
+                    })
+                }
+                else -> {
+                    val endIndex = statusDao.getNextIndexInFeed(feedType.key)
+                    statusDao.insertNewPage(statuses.mapIndexed { index, status ->
+                        status.toEntity().copy(
+                                statusIndex = index + endIndex,
+                                source = feedType.key
+                        )
+                    })
                 }
             }
         }
@@ -184,8 +271,17 @@ class FeedPagingHelper(
 
     override fun onItemAtFrontLoaded(itemAtFront: Status) {
         super.onItemAtFrontLoaded(itemAtFront)
-        pagingHelper.runIfNotRunning(PagingRequestHelper.RequestType.BEFORE) {
-            executeStatusRequest(getCallForRange(Range(minId = itemAtFront.id)), it, isLoadingInfront = true)
+        // If timeline broken, or we're streaming, we shouldn't go ahead with this.
+        launch {
+            if (isTimelineBroken.await() || streamShutdownable != null) {
+                return@launch
+            }
+
+            withContext(Dispatchers.Main) {
+                pagingHelper.runIfNotRunning(PagingRequestHelper.RequestType.BEFORE) {
+                    executeStatusRequest(getCallForRange(Range(minId = itemAtFront.id)), it, isLoadingInfront = true)
+                }
+            }
         }
     }
 
@@ -209,19 +305,7 @@ class FeedPagingHelper(
     }
 
     override fun onStatus(status: com.sys1yagi.mastodon4j.api.entity.Status) {
-        launch {
-            statusDatabase.runInTransaction {
-                val index = statusDao.getNextIndexInFeed(feedType.key)
-                statusDao.insertStatus(status.toEntity().apply {
-                    copy(
-                            statusIndex = index,
-                            source = this@FeedPagingHelper.feedType.key
-                    )
-                })
-            }
-
-            itemStreamed.postSafely(Event(null))
-        }
+        itemStreamedPublishSubject.onNext(status)
     }
     // END REGION
 }

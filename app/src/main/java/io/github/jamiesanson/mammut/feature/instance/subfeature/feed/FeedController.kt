@@ -29,10 +29,11 @@ import io.github.jamiesanson.mammut.extension.comingSoon
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.snackbar
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
+import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.paging.NetworkState
+import io.github.jamiesanson.mammut.feature.feedpaging.NetworkState
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
@@ -63,10 +64,12 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     @FeedScope
     lateinit var factory: MammutViewModelFactory
 
-    // REGION DYNAMIC STATE
-    private var firstSmoothScrollSkipped: Boolean = false
-    private var tootButtonVisible: Boolean = false
-    // END REGION
+    @Inject
+    @InstanceScope
+    lateinit var viewPool: RecyclerView.RecycledViewPool
+
+    private val tootButtonHidden: Boolean
+        get() = newTootButton?.translationY != 0f
 
     private val type: FeedType
         get() = args.getParcelable(FeedController.ARG_TYPE)
@@ -105,8 +108,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             inflater.inflate(R.layout.controller_feed, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
-        firstSmoothScrollSkipped = false
-
         initialiseRecyclerView()
 
         // Only show the progress bar if we're displaying this controller the first time
@@ -137,9 +138,10 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
 
         viewModel.onStreamedResult.observe(this) {
-            if (!it.hasBeenHandled) {
-                it.getContentIfNotHandled()
-                onResultStreamed()
+            it.getContentIfNotHandled()?.let { items ->
+                if (items.isNotEmpty()) {
+                    onResultStreamed()
+                }
             }
         }
     }
@@ -148,7 +150,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         super.onSaveViewState(view, outState)
         val state = (view.recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
         outState.putParcelable(STATE_LAYOUT_MANAGER, state)
-        outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, tootButtonVisible)
+        outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, !tootButtonHidden)
         viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
     }
 
@@ -169,11 +171,9 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     }
 
     private fun initialiseRecyclerView() {
-        recyclerView.layoutManager = LinearLayoutManager(view!!.context).apply {
-            isItemPrefetchEnabled = true
-            initialPrefetchItemCount = 20
-        }
+        recyclerView.layoutManager = LinearLayoutManager(view!!.context)
         recyclerView.adapter = FeedAdapter(this, requestManager)
+        recyclerView.setRecycledViewPool(viewPool)
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
             containerView ?: return@onScrollChange
@@ -247,16 +247,11 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     private fun onResultStreamed() {
         if (recyclerView.isNearTop()) {
             launch(Dispatchers.Main) {
-                delay(200)
-                containerView ?: return@launch
-                containerView?.recyclerView?.let {
-                    if (it.isNearTop()) {
-                        it.smoothScrollToPosition(0)
-                    }
-                }
+                delay(100)
+                containerView?.recyclerView?.smoothScrollToPosition(0)
             }
         } else {
-            if (!tootButtonVisible) {
+            if (tootButtonHidden) {
                 showNewTootsIndicator()
             }
         }
@@ -272,8 +267,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         } else {
             newTootButton.translationY = 0F
         }
-
-        tootButtonVisible = true
 
         newTootButton.onClick {
             hideNewTootsIndicator()
@@ -291,8 +284,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         } else {
             newTootButton.translationY = -(newTootButton.y + newTootButton.height)
         }
-
-        tootButtonVisible = false
     }
 
     private fun restoreAdapterState(savedInstanceState: Bundle) {

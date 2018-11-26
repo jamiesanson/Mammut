@@ -13,6 +13,8 @@ import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
 import io.github.jamiesanson.mammut.BuildConfig
 import okhttp3.OkHttpClient
 
+typealias MastodonResult<T> = Either<Error, T>
+
 tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Error, T> {
     val result = try {
         Right(execute())
@@ -21,10 +23,14 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Erro
         if (e.isErrorResponse()) {
             e.response?.body()?.string()?.run {
                 when {
-                    startsWith("{") ->  Left(GsonBuilder()
-                            .excludeFieldsWithoutExposeAnnotation()
-                            .create()
-                            .fromJson<Error>(e.response?.body()?.charStream(), Error::class.java))
+                    startsWith("{") ->  try {
+                        Left(GsonBuilder()
+                                .excludeFieldsWithoutExposeAnnotation()
+                                .create()
+                                .fromJson<Error>(e.response?.body()?.charStream(), Error::class.java))
+                    } catch (e: Exception) {
+                        null
+                    }
                     isNotEmpty() -> unknownError(this)
                     else -> null
                 }

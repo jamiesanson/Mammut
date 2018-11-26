@@ -1,6 +1,8 @@
 package io.github.jamiesanson.mammut.extension
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 fun <T> LiveData<T>.observe(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observe(owner, Observer(onChanged))
@@ -16,4 +18,18 @@ fun <X> LiveData<List<X>>.filterElements(predicate: (X) -> Boolean): LiveData<Li
            value = x.filter(predicate)
         }
     }
+}
+
+suspend fun <T> LiveData<T>.awaitFirst(): T = suspendCancellableCoroutine {
+    // Try short circuit
+    value?.let { value ->
+        it.resume(value)
+        return@suspendCancellableCoroutine
+    }
+
+    // Wait for first emission
+    val observer = { value: T ->
+        it.resume(value)
+    }
+    observeForever(observer)
 }

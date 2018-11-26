@@ -37,4 +37,7 @@ interface StatusDao {
 
     @Query("SELECT MIN(statusIndex) - 1 FROM status WHERE source = :source")
     fun getPreviousIndexInFeed(source: String): Int
+
+    @Query("SELECT * FROM status WHERE source = :source ORDER BY statusIndex ASC LIMIT :count")
+    fun getMostRecent(count: Int, source: String): List<Status>
 }

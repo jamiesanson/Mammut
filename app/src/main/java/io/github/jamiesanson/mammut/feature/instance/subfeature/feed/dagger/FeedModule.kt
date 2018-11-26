@@ -10,8 +10,9 @@ import dagger.Provides
 import io.github.jamiesanson.mammut.data.database.StatusDatabase
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedPager
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.paging.FeedPagingHelper
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedPagingHelper
 import javax.inject.Named
 
 @Module(includes = [FeedViewModelModule::class])
@@ -19,13 +20,17 @@ class FeedModule(private val feedType: FeedType) {
 
     @Provides
     @FeedScope
-    fun provideStatusDatabase(context: Context): StatusDatabase =
+    fun provideStatusDatabase(
+            context: Context,
+            @Named("instance_name")
+            instanceName: String
+    ): StatusDatabase =
             when (feedType) {
                 is FeedType.AccountToots, FeedType.Federated ->
                     Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
                             .build()
                 else -> {
-                    Room.databaseBuilder(context, StatusDatabase::class.java, "status_${feedType.key}")
+                    Room.databaseBuilder(context, StatusDatabase::class.java, "status_${feedType.key}_$instanceName")
                             .build()
                 }
             }
@@ -43,9 +48,25 @@ class FeedModule(private val feedType: FeedType) {
         return object : StreamingBuilder {
             override fun startStream(handler: Handler): Shutdownable =
                 builder.invoke(handler)
-
         }
     }
+
+    @Provides
+    @FeedScope
+    fun provideFeedPager(mastodonClient: MastodonClient,
+                         pagingCallbacks: FeedPagePreferencesCallbacks,
+                         streamingBuilder: StreamingBuilder?,
+                         statusDatabase: StatusDatabase,
+                         preferencesRepository: PreferencesRepository): FeedPager =
+            FeedPager(
+                    getCallForRange = feedType.getRequestBuilder(mastodonClient),
+                    getPreviousPosition = pagingCallbacks.getPage,
+                    setPreviousPosition = pagingCallbacks.setPage,
+                    streamingBuilder = streamingBuilder,
+                    statusDatabase = statusDatabase,
+                    feedType = feedType,
+                    preferencesRepository = preferencesRepository
+            )
 
     @Provides
     @FeedScope
