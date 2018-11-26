@@ -84,6 +84,7 @@ dependencies {
     // Lifecycle
     def lifecycle_version = "2.0.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
     // Anko
     implementation "org.jetbrains.anko:anko:0.10.8"

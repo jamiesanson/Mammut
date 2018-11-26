@@ -66,14 +66,26 @@ fun initialiseFeedState(
         }
         val localPage = loadLocalPage()
 
+        if (localPage.isEmpty()) {
+            FeedStateMachine.onNewFeedStarted()
+            return@launch
+        }
+
         // Average the time between items
         fun List<Status>.getAverageInterval(): Duration =
                 windowed(size = 2, step = 1) { items ->
                     val (first, second) = items.map { ZonedDateTime.parse(it.createdAt) }
                     Duration.between(first, second)
-                }.reduce { acc, duration ->
-                    acc + duration
-                }.dividedBy(size.toLong())
+                }.run {
+                    if (isNotEmpty()) {
+                        reduce { acc, duration ->
+                            acc + duration
+                        }.dividedBy(size.toLong())
+                    } else {
+                        // We just need a long duration here to ensure results are coherent
+                        Duration.ofDays(14L)
+                    }
+                }
 
         val remoteInterval = remotePage.getAverageInterval()
         val localInterval = localPage.getAverageInterval()
