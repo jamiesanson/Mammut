@@ -21,7 +21,7 @@ class FeedModule(private val feedType: FeedType) {
     @FeedScope
     fun provideStatusDatabase(context: Context): StatusDatabase =
             when (feedType) {
-                is FeedType.AccountToots ->
+                is FeedType.AccountToots, FeedType.Federated ->
                     Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
                             .build()
                 else -> {
@@ -76,7 +76,7 @@ class FeedModule(private val feedType: FeedType) {
                             val value= when (feedType) {
                                 FeedType.Home -> sharedPreferences.homeFeedLastPageSeen
                                 FeedType.Local -> sharedPreferences.localFeedLastPageSeen
-                                FeedType.Federated -> sharedPreferences.federatedFeedLastPageSeen
+                                FeedType.Federated -> null
                                 is FeedType.AccountToots -> null
                             }
 
@@ -89,7 +89,6 @@ class FeedModule(private val feedType: FeedType) {
                         when (feedType) {
                             FeedType.Home -> sharedPreferences.homeFeedLastPageSeen = it
                             FeedType.Local -> sharedPreferences.localFeedLastPageSeen = it
-                            FeedType.Federated -> sharedPreferences.federatedFeedLastPageSeen = it
                         }
                     }
             )
