@@ -26,8 +26,9 @@ class FeedViewModel @Inject constructor(
        feedData.refresh()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        feedPagingHelper.onCleared(feedData.pagedList.value?.lastKey as? Int?)
+    fun getPreviousPosition(): Int? = feedPagingHelper.getPreviousPosition()
+
+    fun savePageState(position: Int) {
+        feedPagingHelper.onCleared(position)
     }
 }

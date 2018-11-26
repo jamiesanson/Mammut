@@ -169,7 +169,14 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
 
         viewModel.feedData.pagedList.observe(this) {
+            val isFirstLoad = (recyclerView?.adapter as FeedAdapter?)?.currentList == null
             (recyclerView?.adapter as FeedAdapter?)?.submitList(it)
+
+            if (isFirstLoad) {
+                viewModel.getPreviousPosition()?.let { pos ->
+                    recyclerView.scrollToPosition(pos)
+                }
+            }
 
             if (progressBar.visibility == View.VISIBLE && it.size != 0) {
                 progressBar.visibility = View.GONE
@@ -194,6 +201,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         val state = (view.recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
         outState.putParcelable(STATE_LAYOUT_MANAGER, state)
         outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, tootButtonVisible)
+        viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
     }
 
     override fun onTabReselected() {

@@ -13,7 +13,7 @@ import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import com.sys1yagi.mastodon4j.api.entity.Notification
 import io.github.jamiesanson.mammut.data.converters.toEntity
-import io.github.jamiesanson.mammut.data.database.StatusInMemoryDatabase
+import io.github.jamiesanson.mammut.data.database.StatusDatabase
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.extension.postSafely
@@ -37,7 +37,7 @@ class FeedPagingHelper(
         val getPreviousPosition: () -> Int?,
         private val setPreviousPosition: (Int) -> Unit,
         private val streamingBuilder: StreamingBuilder?,
-        private val statusDatabase: StatusInMemoryDatabase,
+        private val statusDatabase: StatusDatabase,
         private val feedType: FeedType
 ) : PagedList.BoundaryCallback<Status>(), CoroutineScope, Handler {
 

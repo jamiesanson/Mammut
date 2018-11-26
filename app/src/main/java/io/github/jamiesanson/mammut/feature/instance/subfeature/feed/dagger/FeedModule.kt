@@ -7,7 +7,7 @@ import com.sys1yagi.mastodon4j.api.Handler
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import dagger.Module
 import dagger.Provides
-import io.github.jamiesanson.mammut.data.database.StatusInMemoryDatabase
+import io.github.jamiesanson.mammut.data.database.StatusDatabase
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
@@ -19,13 +19,21 @@ class FeedModule(private val feedType: FeedType) {
 
     @Provides
     @FeedScope
-    fun provideStatusDatabase(context: Context): StatusInMemoryDatabase =
-            Room.inMemoryDatabaseBuilder(context, StatusInMemoryDatabase::class.java).build()
+    fun provideStatusDatabase(context: Context): StatusDatabase =
+            when (feedType) {
+                is FeedType.AccountToots ->
+                    Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
+                            .build()
+                else -> {
+                    Room.databaseBuilder(context, StatusDatabase::class.java, "status_${feedType.key}")
+                            .build()
+                }
+            }
 
     @Provides
     @FeedScope
     @Named("in_memory_feed_db")
-    fun provideStatusDao(database: StatusInMemoryDatabase): StatusDao =
+    fun provideStatusDao(database: StatusDatabase): StatusDao =
             database.statusDao()
 
     @Provides
@@ -45,14 +53,14 @@ class FeedModule(private val feedType: FeedType) {
             mastodonClient: MastodonClient,
             pagingCallbacks: FeedPagePreferencesCallbacks,
             streamingBuilder: StreamingBuilder?,
-            statusInMemoryDatabase: StatusInMemoryDatabase
+            statusDatabase: StatusDatabase
     ): FeedPagingHelper =
             FeedPagingHelper(
                     getCallForRange = feedType.getRequestBuilder(mastodonClient),
                     getPreviousPosition = pagingCallbacks.getPage,
                     setPreviousPosition = pagingCallbacks.setPage,
                     streamingBuilder = streamingBuilder,
-                    statusDatabase = statusInMemoryDatabase,
+                    statusDatabase = statusDatabase,
                     feedType = feedType)
 
     @Provides
