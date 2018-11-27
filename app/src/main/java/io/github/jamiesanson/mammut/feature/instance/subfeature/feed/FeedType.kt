@@ -15,14 +15,17 @@ import com.sys1yagi.mastodon4j.api.method.Timelines
 import kotlinx.android.parcel.Parcelize
 
 
-sealed class FeedType(val key: String, val persistenceEnabled: Boolean): Parcelable {
+sealed class FeedType(
+        val key: String,
+        val persistenceEnabled: Boolean,
+        val supportsStreaming: Boolean): Parcelable {
 
     abstract fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>>
 
     abstract fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)?
 
     @Parcelize
-    object Home: FeedType("home", true) {
+    object Home: FeedType("home", true, false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> =
@@ -30,7 +33,7 @@ sealed class FeedType(val key: String, val persistenceEnabled: Boolean): Parcela
     }
 
     @Parcelize
-    object Local: FeedType("local", true) {
+    object Local: FeedType("local", true, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::localPublic
 
@@ -39,7 +42,7 @@ sealed class FeedType(val key: String, val persistenceEnabled: Boolean): Parcela
     }
 
     @Parcelize
-    object Federated: FeedType("federated", false) {
+    object Federated: FeedType("federated", false, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::federatedPublic
 
@@ -48,7 +51,7 @@ sealed class FeedType(val key: String, val persistenceEnabled: Boolean): Parcela
     }
 
     @Parcelize
-    data class AccountToots(val accountId: Long, val withReplies: Boolean): FeedType("account_toots_${accountId}_$withReplies", false) {
+    data class AccountToots(val accountId: Long, val withReplies: Boolean): FeedType("account_toots_${accountId}_$withReplies", false, false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> {

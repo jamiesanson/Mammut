@@ -4,34 +4,72 @@ import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.RequestManager
+import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
         private val tootCallbacks: TootCallbacks,
-        private val requestManager: RequestManager
-): PagedListAdapter<Status, TootViewHolder>(DIFF_CALLBACK) {
+        private val requestManager: RequestManager,
+        private val onBrokenTimelineResolved: () -> Unit
+): PagedListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
 
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int): Long = getItem(position)?.id ?: 0L
+    private var brokenFeed: Boolean = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TootViewHolder =
-            TootViewHolder(parent)
-
-    override fun onBindViewHolder(holder: TootViewHolder, position: Int) {
-        val current = getItem(position) ?: run {
-            holder.clear()
-            return
+    fun setFeedBroken(isFeedBroken: Boolean) {
+        if (isFeedBroken && brokenFeed != isFeedBroken) {
+            brokenFeed = isFeedBroken
+            if (itemCount > 0) {
+                notifyItemInserted(0)
+            }
+        } else {
+            brokenFeed = isFeedBroken
+            if (itemCount > 0) {
+                notifyItemRemoved(0)
+            }
         }
-
-        holder.bind(current, tootCallbacks, requestManager)
     }
 
-    override fun onViewRecycled(holder: TootViewHolder) {
+    override fun getItemId(position: Int): Long = getItem(position)?.id ?: 0L
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
+            when (viewType) {
+                R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
+                else -> TootViewHolder(parent)
+            }
+
+    override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {
+        when (holder) {
+            is TootViewHolder -> {
+                val current = getItem(position) ?: run {
+                    holder.clear()
+                    return
+                }
+
+                holder.bind(current, tootCallbacks, requestManager)
+            }
+            is BrokenTimelineViewHolder -> {
+                holder.bind(onBrokenTimelineResolved)
+            }
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int = when {
+        position == 0 && brokenFeed -> R.layout.view_holder_broken_timeline
+        else -> R.layout.view_holder_feed_item
+    }
+
+    override fun getItemCount(): Int =
+            super.getItemCount() + if (brokenFeed) 1 else 0
+
+    override fun onViewRecycled(holder: FeedItemViewHolder) {
         super.onViewRecycled(holder)
-        holder.recycle()
+        when (holder) {
+            is TootViewHolder -> holder.recycle()
+        }
     }
 
     companion object {

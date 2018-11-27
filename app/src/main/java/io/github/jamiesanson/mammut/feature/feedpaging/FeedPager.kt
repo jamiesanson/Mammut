@@ -1,5 +1,6 @@
 package io.github.jamiesanson.mammut.feature.feedpaging
 
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,7 +32,7 @@ class FeedPager(
         streamingBuilder: StreamingBuilder?,
         private val statusDatabase: StatusDatabase,
         private val feedType: FeedType,
-        private val preferencesRepository: PreferencesRepository
+        private val feedStateData: FeedStateData
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
@@ -42,32 +43,25 @@ class FeedPager(
     private val dbExecutor = Executors.newSingleThreadExecutor()
 
     private val streamHandler = FeedStreamingHandler(
-            feedState = FeedStateMachine.stateLiveData,
+            feedState = feedStateData.observableState,
             streamingBuilder = streamingBuilder,
             handleStatuses = ::insertStatuses,
             onItemDeleted = {
                 statusDao.deleteById(it)
             })
 
-    fun refreshState() {
-        // Initialise Feed state
-        initialiseFeedState(
-                keepPlaceEnabled = feedType.persistenceEnabled && preferencesRepository.shouldKeepFeedPlace,
-                scrolledToTop = getPreviousPosition() == null || getPreviousPosition() == 0,
-                loadRemotePage = {
-                    getCallForRange(Range(limit = 20)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toEntity() }
-                },
-                loadLocalPage = {
-                    statusDao.getMostRecent(count = 20, source = feedType.key)
-                })
+    private fun refreshState() {
+        feedStateData.store.send(if (feedType.supportsStreaming) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
+    }
+
+    private fun onBrokenTimelineResolved() {
+
     }
 
     /**
      * Initialise and begin paging
      */
     fun initialise(): FeedData<io.github.jamiesanson.mammut.data.database.entities.feed.Status> {
-        refreshState()
-
         val refreshTrigger = MutableLiveData<Unit>()
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh()
@@ -77,7 +71,7 @@ class FeedPager(
                 dbExecutor,
                 getCallForRange,
                 ::insertStatuses,
-                FeedStateMachine.stateLiveData
+                feedStateData.observableState
         )
 
         val liveList = LivePagedListBuilder(statusDao.getAllPagedInFeed(feedType.key), 20)
@@ -95,7 +89,8 @@ class FeedPager(
                 refresh = {
                     refreshTrigger.value = null
                 },
-                refreshState = refreshState
+                refreshState = refreshState,
+                state = feedStateData.observableState
         )
     }
 
@@ -141,6 +136,9 @@ class FeedPager(
      */
     @MainThread
     private fun refresh(): LiveData<NetworkState> {
+        Log.d("Pager", "Refreshing from state ${feedStateData.store.state}")
+        refreshState()
+
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.Running
 

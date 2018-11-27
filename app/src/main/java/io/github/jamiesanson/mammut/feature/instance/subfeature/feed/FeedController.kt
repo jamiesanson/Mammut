@@ -28,6 +28,7 @@ import io.github.jamiesanson.mammut.data.models.Account
 import io.github.jamiesanson.mammut.extension.comingSoon
 import io.github.jamiesanson.mammut.extension.observe
 import io.github.jamiesanson.mammut.extension.snackbar
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedState
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
@@ -135,6 +136,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             it.refreshState.observe(this, ::onRefreshStateChanged)
             it.networkState.observe(this, ::onNetworkStateChanged)
             it.pagedList.observe(this, ::onListAvailable)
+            it.state.observe(this, ::onFeedStateChanged)
         }
 
         viewModel.onStreamedResult.observe(this) {
@@ -172,7 +174,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private fun initialiseRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
-        recyclerView.adapter = FeedAdapter(this, requestManager)
+        recyclerView.adapter = FeedAdapter(this, requestManager, viewModel::onBrokenTimelineResolved)
         recyclerView.setRecycledViewPool(viewPool)
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
@@ -190,6 +192,22 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.refresh()
+        }
+    }
+
+    private fun onFeedStateChanged(feedState: FeedState) {
+        when (feedState) {
+            FeedState.StreamingFromTop -> {
+                // Disable pull to fresh when streaming
+                swipeRefreshLayout.isEnabled = false
+                (recyclerView.adapter as FeedAdapter).setFeedBroken(false)
+            }
+            FeedState.BrokenTimeline -> {
+                // Insert to front of adapter
+                swipeRefreshLayout.isEnabled = true
+                (recyclerView.adapter as FeedAdapter).setFeedBroken(true)
+                recyclerView.smoothScrollToPosition(0)
+            }
         }
     }
 

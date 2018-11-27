@@ -7,26 +7,31 @@ import io.github.jamiesanson.mammut.feature.base.Event
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.jamiesanson.mammut.feature.feedpaging.FeedData
 import io.github.jamiesanson.mammut.feature.feedpaging.FeedPager
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedPagingHelper
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateData
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateEvent
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class FeedViewModel @Inject constructor(
         @FeedScope
-        private val feedPager: FeedPager
+        private val feedPager: FeedPager,
+        @FeedScope
+        private val feedStateData: FeedStateData
 ) : ViewModel(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     val feedData: FeedData<Status> = feedPager.initialise()
 
     val onStreamedResult: LiveData<Event<List<com.sys1yagi.mastodon4j.api.entity.Status>>>
-        get() = feedData.itemStreamed.also {
-            feedPager.refreshState()
-        }
+        get() = feedData.itemStreamed
 
     val shouldScrollOnFirstLoad: Boolean = feedPager.getPreviousPosition() == null
 
     fun refresh() {
        feedData.refresh()
+    }
+
+    fun onBrokenTimelineResolved() {
+        feedStateData.store.send(FeedStateEvent.OnBrokenTimelineResolved)
     }
 
     fun getPreviousPosition(): Int? = feedPager.getPreviousPosition()

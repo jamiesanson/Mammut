@@ -8,7 +8,9 @@ import io.github.jamiesanson.mammut.feature.base.Event
 data class FeedData<T>(
         // the LiveData of paged lists for the UI to observe
         val pagedList: LiveData<PagedList<T>>,
-
+        // The state of the feed
+        val state: LiveData<FeedState>,
+        // notifies when items are streamed
         val itemStreamed: LiveData<Event<List<Status>>>,
         // represents the network request status to show to the user
         val networkState: LiveData<NetworkState>,

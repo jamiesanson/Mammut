@@ -51,4 +51,7 @@
     <string name="well_keep_your_place">We\'ll remember where you left off</string>
     <string name="launch_chooser_description">Launch the instance switcher screen on app start</string>
     <string name="launch_chooser_title">Open to chooser</string>
+    <string name="pull_to_refresh_for_new_toots_or_find_your_own_way_back_to_the_top">Pull to refresh for new toots, or find your own way back to the top</string>
+    <string name="i_ll_find_my_own_way">I\'ll find my own way</string>
+    <string name="looks_like_you_re_looking_at_old_content">Looks like you\'re looking at old content</string>
 </resources>

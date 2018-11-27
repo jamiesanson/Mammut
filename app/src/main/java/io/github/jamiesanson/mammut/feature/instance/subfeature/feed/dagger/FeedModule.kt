@@ -4,15 +4,19 @@ import android.content.Context
 import androidx.room.Room
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Handler
+import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import dagger.Module
 import dagger.Provides
+import io.github.jamiesanson.mammut.data.converters.toEntity
 import io.github.jamiesanson.mammut.data.database.StatusDatabase
 import io.github.jamiesanson.mammut.data.database.dao.StatusDao
 import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
+import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.feedpaging.FeedPager
+import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateData
+import io.github.jamiesanson.mammut.feature.feedpaging.initialiseFeedState
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedPagingHelper
 import javax.inject.Named
 
 @Module(includes = [FeedViewModelModule::class])
@@ -57,7 +61,7 @@ class FeedModule(private val feedType: FeedType) {
                          pagingCallbacks: FeedPagePreferencesCallbacks,
                          streamingBuilder: StreamingBuilder?,
                          statusDatabase: StatusDatabase,
-                         preferencesRepository: PreferencesRepository): FeedPager =
+                         feedStateData: FeedStateData): FeedPager =
             FeedPager(
                     getCallForRange = feedType.getRequestBuilder(mastodonClient),
                     getPreviousPosition = pagingCallbacks.getPage,
@@ -65,24 +69,8 @@ class FeedModule(private val feedType: FeedType) {
                     streamingBuilder = streamingBuilder,
                     statusDatabase = statusDatabase,
                     feedType = feedType,
-                    preferencesRepository = preferencesRepository
+                    feedStateData = feedStateData
             )
-
-    @Provides
-    @FeedScope
-    fun provideFeedPagingHelper(
-            mastodonClient: MastodonClient,
-            pagingCallbacks: FeedPagePreferencesCallbacks,
-            streamingBuilder: StreamingBuilder?,
-            statusDatabase: StatusDatabase
-    ): FeedPagingHelper =
-            FeedPagingHelper(
-                    getCallForRange = feedType.getRequestBuilder(mastodonClient),
-                    getPreviousPosition = pagingCallbacks.getPage,
-                    setPreviousPosition = pagingCallbacks.setPage,
-                    streamingBuilder = streamingBuilder,
-                    statusDatabase = statusDatabase,
-                    feedType = feedType)
 
     @Provides
     @FeedScope
@@ -113,6 +101,23 @@ class FeedModule(private val feedType: FeedType) {
                         }
                     }
             )
+
+    @Provides
+    @FeedScope
+    fun provideFeedStateData(preferencesRepository: PreferencesRepository,
+                             pagingCallbacks: FeedPagePreferencesCallbacks,
+                             mastodonClient: MastodonClient,
+                             statusDatabase: StatusDatabase): FeedStateData = initialiseFeedState(
+            streamingEnabled = feedType.supportsStreaming,
+            keepPlaceEnabled = feedType.persistenceEnabled && preferencesRepository.shouldKeepFeedPlace,
+            scrolledToTop = pagingCallbacks.getPage() == null || pagingCallbacks.getPage() == 0,
+            loadRemotePage = {
+                feedType.getRequestBuilder(client = mastodonClient)(Range(limit = 20)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toEntity() }
+            },
+            loadLocalPage = {
+                statusDatabase.statusDao().getMostRecent(count = 20, source = feedType.key)
+            }
+    )
 }
 
 interface StreamingBuilder {

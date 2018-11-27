@@ -1,47 +1,89 @@
 package io.github.jamiesanson.mammut.feature.feedpaging
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.extension.postSafely
+import io.github.jamiesanson.mammut.feature.feedpaging.scaffold.Reducible
+import io.github.jamiesanson.mammut.feature.feedpaging.scaffold.StateObserver
+import io.github.jamiesanson.mammut.feature.feedpaging.scaffold.Store
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
-import kotlin.properties.Delegates
 
-object FeedStateMachine {
+sealed class FeedState: Reducible<FeedStateEvent, FeedState> {
 
-    private var state: FeedState by Delegates.observable(initialValue = FeedState.Undefined) { _, _: FeedState, new: FeedState ->
-        if (new != FeedState.Undefined) {
-            stateLiveData.postSafely(new)
-        }
-    }
+    override fun reduce(event: FeedStateEvent): FeedState =
+            when {
+                this is Undefined && event is FeedStateEvent.OnTimelineBroken ->
+                    BrokenTimeline
+                this is Undefined && event is FeedStateEvent.OnFreshFeed ->
+                    StreamingFromTop
+                this is Undefined && event is FeedStateEvent.OnBrokenTimelineResolved ->
+                    PagingUpwards
 
-    val stateLiveData: LiveData<FeedState> = MutableLiveData()
+                this is BrokenTimeline && event is FeedStateEvent.OnBrokenTimelineResolved ->
+                    PagingUpwards
+                this is BrokenTimeline && event is FeedStateEvent.OnFreshFeed ->
+                    StreamingFromTop
 
-    fun onBeginPagingUpwards() {
-        state = FeedState.PagingUpwards
-    }
+                this is PagingUpwards && event is FeedStateEvent.OnFreshFeed -> {
+                    StreamingFromTop
+                }
+                else -> this
+            }
 
-    fun onNewFeedStarted() {
-        state = FeedState.StreamingFromTop
-    }
 
-    fun onBrokenTimeline() {
-        state = FeedState.BrokenTimeline
-    }
+    object StreamingFromTop: FeedState()
+
+    object BrokenTimeline: FeedState()
+
+    object PagingUpwards: FeedState()
+
+    object Undefined: FeedState()
 }
 
+sealed class FeedStateEvent {
+
+    object OnTimelineBroken: FeedStateEvent()
+
+    object OnFreshFeed: FeedStateEvent()
+
+    object OnBrokenTimelineResolved: FeedStateEvent()
+}
+
+
+data class FeedStateData(
+        val store: Store<FeedState, FeedStateEvent>,
+        val observableState: LiveData<FeedState>
+)
+
 fun initialiseFeedState(
+        streamingEnabled: Boolean,
         keepPlaceEnabled: Boolean,
         scrolledToTop: Boolean,
         loadRemotePage: suspend () -> List<Status>?,
-        loadLocalPage: suspend () -> List<Status>) {
+        loadLocalPage: suspend () -> List<Status>): FeedStateData {
 
-    if (!keepPlaceEnabled || scrolledToTop) {
-        FeedStateMachine.onNewFeedStarted()
-        return
+    val store = Store(initialState = FeedState.Undefined)
+    val stateLiveData: LiveData<FeedState> = MutableLiveData()
+
+    store.observe(object : StateObserver<FeedState> {
+        override fun stateChanged(oldState: FeedState?, newState: FeedState) {
+            Log.d("FeedStateMachine", "Feed transitioning from $oldState to $newState")
+            stateLiveData.postSafely(newState)
+        }
+    })
+
+    // If this is a fresh instance, we should return a fresh state
+    if (!keepPlaceEnabled) {
+        store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
+        return FeedStateData(
+                store,
+                stateLiveData
+        )
     }
 
     /**
@@ -61,13 +103,13 @@ fun initialiseFeedState(
 
         // Ignore errors here - if no results, just say the timeline's broken and see what happens.
         val remotePage = loadRemotePage() ?: run {
-            FeedStateMachine.onBrokenTimeline()
+            store.send(FeedStateEvent.OnTimelineBroken)
             return@launch
         }
         val localPage = loadLocalPage()
 
         if (localPage.isEmpty()) {
-            FeedStateMachine.onNewFeedStarted()
+            store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
             return@launch
         }
 
@@ -94,14 +136,27 @@ fun initialiseFeedState(
         val oldestRemoteTime = ZonedDateTime.parse(remotePage.last().createdAt)
         val latestLocalTime = ZonedDateTime.parse(localPage.first().createdAt)
 
-        val middleInterval = Duration.between(oldestRemoteTime, latestLocalTime)
-
-        val isBroken = middleInterval.multipliedBy(X.toLong()) > totalInterval
-        if (isBroken) {
-            FeedStateMachine.onBrokenTimeline()
-        } else {
-            FeedStateMachine.onBeginPagingUpwards()
+        if (oldestRemoteTime.isBefore(latestLocalTime)) {
+            store.send(FeedStateEvent.OnBrokenTimelineResolved)
+            return@launch
         }
 
+        val middleInterval = Duration.between(oldestRemoteTime, latestLocalTime)
+
+        val isBroken = middleInterval > totalInterval.multipliedBy(X.toLong())
+        if (isBroken) {
+            store.send(FeedStateEvent.OnTimelineBroken)
+        } else {
+            if (scrolledToTop) {
+                store.send(FeedStateEvent.OnFreshFeed)
+            } else {
+                store.send(FeedStateEvent.OnBrokenTimelineResolved)
+            }
+        }
     }
+
+    return FeedStateData(
+            store,
+            stateLiveData
+    )
 }

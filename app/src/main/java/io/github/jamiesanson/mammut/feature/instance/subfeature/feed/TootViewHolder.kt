@@ -44,7 +44,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
+class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var countJob = Job()
 
