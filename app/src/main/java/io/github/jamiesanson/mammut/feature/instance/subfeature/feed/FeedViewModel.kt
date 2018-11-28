@@ -3,12 +3,10 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
+import io.github.jamiesanson.mammut.extension.awaitFirst
 import io.github.jamiesanson.mammut.feature.base.Event
+import io.github.jamiesanson.mammut.feature.feedpaging.*
 import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedData
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedPager
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateData
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateEvent
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
@@ -26,6 +24,19 @@ class FeedViewModel @Inject constructor(
 
     val shouldScrollOnFirstLoad: Boolean = feedPager.getPreviousPosition() == null
 
+    init {
+        feedStateData.observableState.observeForever {
+            when (it) {
+                FeedState.PagingUpwards -> {
+                    launch {
+                        val list = feedData.pagedList.awaitFirst()
+                        list.firstOrNull()?.let(feedPager::forceLoadAtFront)
+                    }
+                }
+            }
+        }
+    }
+
     fun refresh() {
        feedData.refresh()
     }
@@ -38,5 +49,10 @@ class FeedViewModel @Inject constructor(
 
     fun savePageState(position: Int) {
         feedPager.onCleared(position)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        feedPager.tearDown()
     }
 }

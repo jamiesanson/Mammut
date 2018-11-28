@@ -13,21 +13,14 @@ class FeedAdapter(
         private val onBrokenTimelineResolved: () -> Unit
 ): PagedListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
 
-    init {
-        setHasStableIds(true)
-    }
-
     private var brokenFeed: Boolean = false
 
     fun setFeedBroken(isFeedBroken: Boolean) {
-        if (isFeedBroken && brokenFeed != isFeedBroken) {
+        if (brokenFeed != isFeedBroken) {
             brokenFeed = isFeedBroken
-            if (itemCount > 0) {
+            if (isFeedBroken) {
                 notifyItemInserted(0)
-            }
-        } else {
-            brokenFeed = isFeedBroken
-            if (itemCount > 0) {
+            } else {
                 notifyItemRemoved(0)
             }
         }

@@ -112,10 +112,10 @@ class FeedModule(private val feedType: FeedType) {
             keepPlaceEnabled = feedType.persistenceEnabled && preferencesRepository.shouldKeepFeedPlace,
             scrolledToTop = pagingCallbacks.getPage() == null || pagingCallbacks.getPage() == 0,
             loadRemotePage = {
-                feedType.getRequestBuilder(client = mastodonClient)(Range(limit = 20)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toEntity() }
+                feedType.getRequestBuilder(client = mastodonClient)(Range(limit = 5)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toEntity() }
             },
             loadLocalPage = {
-                statusDatabase.statusDao().getMostRecent(count = 20, source = feedType.key)
+                statusDatabase.statusDao().getMostRecent(count = 5, source = feedType.key)
             }
     )
 }

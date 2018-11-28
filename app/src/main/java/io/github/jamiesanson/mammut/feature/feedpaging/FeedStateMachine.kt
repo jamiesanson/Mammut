@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
+import kotlin.math.abs
 
 sealed class FeedState: Reducible<FeedStateEvent, FeedState> {
 
@@ -99,7 +100,7 @@ fun initialiseFeedState(
      *   jump to the top.
      */
     GlobalScope.launch {
-        val X = 3
+        val X = 20
 
         // Ignore errors here - if no results, just say the timeline's broken and see what happens.
         val remotePage = loadRemotePage() ?: run {
@@ -111,6 +112,14 @@ fun initialiseFeedState(
         if (localPage.isEmpty()) {
             store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
             return@launch
+        }
+
+        if (remotePage.first().id == localPage.first().id) {
+            // Begin streaming if applicable
+            if (streamingEnabled) {
+                store.send(FeedStateEvent.OnFreshFeed)
+                return@launch
+            }
         }
 
         // Average the time between items
@@ -143,7 +152,7 @@ fun initialiseFeedState(
 
         val middleInterval = Duration.between(oldestRemoteTime, latestLocalTime)
 
-        val isBroken = middleInterval > totalInterval.multipliedBy(X.toLong())
+        val isBroken = abs(middleInterval.toMillis()) > abs(totalInterval.multipliedBy(X.toLong()).toMillis())
         if (isBroken) {
             store.send(FeedStateEvent.OnTimelineBroken)
         } else {

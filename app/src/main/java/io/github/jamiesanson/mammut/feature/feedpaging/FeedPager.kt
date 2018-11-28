@@ -50,12 +50,15 @@ class FeedPager(
                 statusDao.deleteById(it)
             })
 
+    private val boundaryCallback = FeedPagingBoundaryCallback(
+            dbExecutor,
+            getCallForRange,
+            ::insertStatuses,
+            feedStateData.observableState
+    )
+
     private fun refreshState() {
         feedStateData.store.send(if (feedType.supportsStreaming) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
-    }
-
-    private fun onBrokenTimelineResolved() {
-
     }
 
     /**
@@ -66,13 +69,6 @@ class FeedPager(
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh()
         }
-
-        val boundaryCallback = FeedPagingBoundaryCallback(
-                dbExecutor,
-                getCallForRange,
-                ::insertStatuses,
-                feedStateData.observableState
-        )
 
         val liveList = LivePagedListBuilder(statusDao.getAllPagedInFeed(feedType.key), 20)
                 .setBoundaryCallback(boundaryCallback)
@@ -94,8 +90,15 @@ class FeedPager(
         )
     }
 
+    fun forceLoadAtFront(frontItem: io.github.jamiesanson.mammut.data.database.entities.feed.Status) {
+        boundaryCallback.onItemAtFrontLoaded(frontItem)
+    }
+
     fun onCleared(lastPageSeen: Int?) {
         lastPageSeen?.let(setPreviousPosition)
+    }
+
+    fun tearDown() {
         streamHandler.tearDown()
     }
 
