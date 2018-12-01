@@ -3,7 +3,6 @@ package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.component.retention.retained
 import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
+import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.data.models.Account
 import io.github.jamiesanson.mammut.extension.comingSoon
@@ -38,6 +38,7 @@ import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.Feed
 import io.github.jamiesanson.mammut.feature.feedpaging.NetworkState
 import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
+import io.github.jamiesanson.mammut.feature.network.NetworkIndicator
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -69,6 +70,10 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     @Inject
     @InstanceScope
     lateinit var viewPool: RecyclerView.RecycledViewPool
+
+    @Inject
+    @ApplicationScope
+    lateinit var networkIndicator: NetworkIndicator
 
     private val tootButtonHidden: Boolean
         get() = newTootButton?.translationY != 0f
@@ -132,6 +137,8 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
 
         savedInstanceState?.let(::restoreAdapterState)
+
+        networkIndicator.attach(view as ViewGroup, this)
 
         viewModel.feedData.let {
             it.refreshState.observe(this, ::onRefreshStateChanged)

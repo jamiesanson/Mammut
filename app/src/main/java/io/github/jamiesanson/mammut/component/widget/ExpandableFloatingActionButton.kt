@@ -30,20 +30,29 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
 
     private var animating: Boolean = false
 
+    var isExpanded: Boolean = true
+        private set
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.button_expandable_fab, this, true)
         context.theme.obtainStyledAttributes(
                 attrs,
                 R.styleable.ExpandableFloatingActionButton,
                 0, 0).apply {
 
+            if (getBoolean(R.styleable.ExpandableFloatingActionButton_small, false)) {
+                LayoutInflater.from(context).inflate(R.layout.button_expandable_fab_small, this@ExpandableFloatingActionButton, true)
+            } else {
+                LayoutInflater.from(context).inflate(R.layout.button_expandable_fab, this@ExpandableFloatingActionButton, true)
+            }
+
             try {
-               addTextView.text = getString(R.styleable.ExpandableFloatingActionButton_buttonText)?.capitalize()
+                expandableFabTextView.text = getString(R.styleable.ExpandableFloatingActionButton_buttonText)?.capitalize()
                 val color = getColor(R.styleable.ExpandableFloatingActionButton_buttonAccentColor,
                         ContextCompat.getColor(context, android.R.color.white))
 
-                addTextView.textColor = color
-                addImageView.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                expandableFabTextView.textColor = color
+                expandableFabImageView.setImageDrawable(getDrawable(R.styleable.ExpandableFloatingActionButton_buttonIcon))
+                expandableFabImageView.setColorFilter(color, PorterDuff.Mode.SRC_IN)
             } finally {
                 recycle()
             }
@@ -77,7 +86,8 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
                 interpolator = AccelerateDecelerateInterpolator()
             })
 
-            addTextView.visibility = View.VISIBLE
+            expandableFabTextView.visibility = View.VISIBLE
+            isExpanded = true
         }
     }
 
@@ -94,7 +104,8 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
                 interpolator = AccelerateDecelerateInterpolator()
             })
 
-            addTextView.visibility = View.GONE
+            expandableFabTextView.visibility = View.GONE
+            isExpanded = false
         }
     }
 

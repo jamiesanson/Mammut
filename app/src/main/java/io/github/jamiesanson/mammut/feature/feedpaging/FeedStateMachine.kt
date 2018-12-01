@@ -102,9 +102,8 @@ fun initialiseFeedState(
     GlobalScope.launch {
         val X = 20
 
-        // Ignore errors here - if no results, just say the timeline's broken and see what happens.
         val remotePage = loadRemotePage() ?: run {
-            store.send(FeedStateEvent.OnTimelineBroken)
+            store.send(FeedStateEvent.OnBrokenTimelineResolved)
             return@launch
         }
         val localPage = loadLocalPage()

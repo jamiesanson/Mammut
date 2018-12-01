@@ -149,7 +149,7 @@ class FeedPager(
             val result = getCallForRange(Range()).run(retryCount = 3)
             when (result) {
                 is Either.Left -> {
-                    networkState.value = NetworkState.Error(result.a.description)
+                    networkState.postValue(NetworkState.Error(result.a.description))
                 }
                 is Either.Right -> {
                     statusDatabase.runInTransaction {

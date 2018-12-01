@@ -51,6 +51,7 @@
         android:layout_height="wrap_content"
         app:buttonText="@string/add_instance"
         app:buttonAccentColor="?attr/colorControlNormal"
+        app:buttonIcon="@drawable/ic_add_black_24dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"/>
 
