@@ -243,8 +243,13 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             }
             networkState is NetworkState.Running -> {
                 // Show start and end loading indicators
-                topLoadingIndicator.isVisible = networkState.start
-                bottomLoadingIndicator.isVisible = networkState.end
+                if (recyclerView.isNearTop()) {
+                    topLoadingIndicator.isVisible = networkState.start
+                }
+
+                if (recyclerView.isNearBottom()) {
+                    bottomLoadingIndicator.isVisible = networkState.end
+                }
             }
             networkState is NetworkState.Loaded -> {
                 topLoadingIndicator.isVisible = false
@@ -253,19 +258,9 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         }
     }
 
-    private fun onInitialLoad(firstPage: List<Status>) {
+    private fun onInitialLoad() {
         viewModel.getPreviousPosition()?.let { pos ->
             recyclerView.scrollToPosition(pos)
-        }
-
-        if (progressBar.visibility == View.VISIBLE && firstPage.isNotEmpty()) {
-            progressBar.visibility = View.GONE
-        } else {
-            // Show empty state
-            TransitionManager.beginDelayedTransition(containerView as ViewGroup)
-            progressBar.isVisible = false
-            emptyStateView.isVisible = true
-            emptyStateView.playAnimation()
         }
 
         // Handle the refreshed event after submitting the list
@@ -281,13 +276,19 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         (recyclerView?.adapter as FeedAdapter?)?.submitList(pagedList)
 
         if (isFirstLoad) {
-            onInitialLoad(pagedList)
+            onInitialLoad()
         }
 
         if (pagedList.isNotEmpty() && progressBar.isVisible) {
             progressBar.isVisible = false
             emptyStateView.isVisible = false
             emptyStateView.pauseAnimation()
+        } else if (progressBar.isVisible && !feedModule.provideType().supportsStreaming) {
+            // TODO - This logic is naf. We can have an empty state with streaming, we just need to
+            // do some magic to keep track to previous timings of requests.
+            progressBar.isVisible = false
+            emptyStateView.isVisible = true
+            emptyStateView.playAnimation()
         }
     }
 
@@ -301,6 +302,11 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             if (tootButtonHidden) {
                 showNewTootsIndicator()
             }
+        }
+
+        if (emptyStateView.isVisible) {
+            emptyStateView.isVisible = false
+            emptyStateView.pauseAnimation()
         }
     }
 
@@ -342,6 +348,11 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
                 return@run findFirstVisibleItemPosition() <= 2
+            } ?: false
+
+    private fun RecyclerView.isNearBottom(): Boolean =
+            (layoutManager as LinearLayoutManager?)?.run {
+                return@run findFirstVisibleItemPosition() >= (recyclerView.adapter?.itemCount ?: Int.MAX_VALUE) - 6
             } ?: false
 
     companion object {
