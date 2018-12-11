@@ -227,7 +227,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private fun onRefreshStateChanged(refreshState: NetworkState) {
         swipeRefreshLayout.isRefreshing = when (refreshState) {
-            NetworkState.Running -> true
+            is NetworkState.Running -> true
             NetworkState.Loaded -> false
             is NetworkState.Error -> {
                 snackbar(refreshState.message)
@@ -241,12 +241,14 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             networkState is NetworkState.Running && viewModel.feedData.pagedList.value == null -> {
                 progressBar.isVisible = true
             }
-            networkState is NetworkState.Loaded && viewModel.feedData.pagedList.value?.isEmpty() == true -> {
-                // Show empty state
-                TransitionManager.beginDelayedTransition(containerView as ViewGroup)
-                progressBar.isVisible = false
-                emptyStateView.isVisible = true
-                emptyStateView.playAnimation()
+            networkState is NetworkState.Running -> {
+                // Show start and end loading indicators
+                topLoadingIndicator.isVisible = networkState.start
+                bottomLoadingIndicator.isVisible = networkState.end
+            }
+            networkState is NetworkState.Loaded -> {
+                topLoadingIndicator.isVisible = false
+                bottomLoadingIndicator.isVisible = false
             }
         }
     }
@@ -259,7 +261,11 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         if (progressBar.visibility == View.VISIBLE && firstPage.isNotEmpty()) {
             progressBar.visibility = View.GONE
         } else {
-            // TODO - Show empty state
+            // Show empty state
+            TransitionManager.beginDelayedTransition(containerView as ViewGroup)
+            progressBar.isVisible = false
+            emptyStateView.isVisible = true
+            emptyStateView.playAnimation()
         }
 
         // Handle the refreshed event after submitting the list

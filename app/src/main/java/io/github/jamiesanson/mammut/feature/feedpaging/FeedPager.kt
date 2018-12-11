@@ -143,7 +143,7 @@ class FeedPager(
         refreshState()
 
         val networkState = MutableLiveData<NetworkState>()
-        networkState.value = NetworkState.Running
+        networkState.value = NetworkState.Running(initial = true)
 
         launch {
             val result = getCallForRange(Range()).run(retryCount = 3)
