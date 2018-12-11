@@ -8,13 +8,11 @@ import io.github.jamiesanson.mammut.extension.applicationComponent
 import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
 import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
 
     @Inject
     lateinit var registrationRepository: RegistrationRepository
@@ -25,26 +23,35 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applicationComponent.inject(this)
+        if (preferencesRepository.takeMeStraightToInstanceBrowser) {
+            startActivity<InstanceBrowserActivity>()
+            finish()
+            return
+        }
 
         launch {
-            val registration = registrationRepository
+            val registrations = registrationRepository
                     .getAllRegistrations()
-                    .firstOrNull()
 
-            withContext(UI) {
-                registration?.run {
-                    when {
-                        preferencesRepository.isAdvancedUser && accessToken != null ->
-                            startActivity<InstanceBrowserActivity>()
-                        accessToken != null ->
-                            InstanceActivity.launch(this@SplashActivity,
-                                    instanceName = instanceName,
-                                    authCode = accessToken.accessToken)
-                        else ->
-                            startActivity<JoinInstanceActivity>()
+            withContext(Dispatchers.Main) {
+                registrations.forEach {
+                    it.run {
+                        when {
+                            accessToken != null && accessToken.accessToken == preferencesRepository.lastAccessedInstanceToken -> {
+                                InstanceActivity.launch(this@SplashActivity,
+                                        instanceName = instanceName,
+                                        authCode = accessToken.accessToken)
+                                finish()
+                                return@withContext
+                            }
+                            else -> {
+                                // no-op
+                            }
+                        }
                     }
-                } ?: startActivity<JoinInstanceActivity>()
+                }
 
+                startActivity<JoinInstanceActivity>()
                 finish()
             }
         }

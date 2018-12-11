@@ -7,12 +7,14 @@ import io.github.jamiesanson.mammut.data.models.InstanceRegistration
 import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
 import io.github.jamiesanson.mammut.data.repo.InstancesRepository
 import io.github.jamiesanson.mammut.extension.postSafely
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class InstanceCardViewModel @Inject constructor(
     private val instancesRepository: InstancesRepository
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by GlobalScope {
 
     val title: LiveData<String> = MutableLiveData()
 

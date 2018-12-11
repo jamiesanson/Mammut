@@ -4,8 +4,8 @@ import android.util.Log
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Right
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
@@ -13,24 +13,30 @@ import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
 import io.github.jamiesanson.mammut.BuildConfig
 import okhttp3.OkHttpClient
 
-tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<String, T> {
+typealias MastodonResult<T> = Either<Error, T>
+
+tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Error, T> {
     val result = try {
         Right(execute())
     } catch (e: Mastodon4jRequestException) {
         Log.e("MastodonRunner", "An error occurred", e)
-        when {
-            BuildConfig.DEBUG -> {
-                if (e.isErrorResponse()) {
-                    val error = Gson().fromJson<Error>(e.response?.body()?.charStream(), Error::class.java)
-                    Log.e("MastodonRunner", "Error body: ${error.description}")
-                    Left("$error")
-                } else {
-                    Left("Exception from non-error response")
+        if (e.isErrorResponse()) {
+            e.response?.body()?.string()?.run {
+                when {
+                    startsWith("{") ->  try {
+                        Left(GsonBuilder()
+                                .excludeFieldsWithoutExposeAnnotation()
+                                .create()
+                                .fromJson<Error>(e.response?.body()?.charStream(), Error::class.java))
+                    } catch (e: Exception) {
+                        null
+                    }
+                    isNotEmpty() -> unknownError(this)
+                    else -> null
                 }
-            }
-            else -> {
-                Left("Oh jeez, something's gone wrong")
-            }
+            } ?: unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+        } else {
+            unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
         }
     }
 
@@ -41,8 +47,13 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Stri
     return result
 }
 
-private data class Error(
+private fun unknownError(description: String) =
+        Left(Error(error = "unknown_error", description = description))
+
+data class Error(
+        @Expose
         val error: String,
+        @Expose
         @SerializedName("error_description")
         val description: String
 )

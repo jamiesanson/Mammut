@@ -8,7 +8,7 @@
     android:background="@drawable/bg_expandable_fab">
 
     <ImageView
-        android:id="@+id/addImageView"
+        android:id="@+id/expandableFabImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -24,7 +24,7 @@
         app:srcCompat="@drawable/ic_add_black_24dp" />
 
     <TextView
-        android:id="@+id/addTextView"
+        android:id="@+id/expandableFabTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -36,7 +36,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addImageView"
+        app:layout_constraintStart_toEndOf="@+id/expandableFabImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

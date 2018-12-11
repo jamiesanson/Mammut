@@ -14,7 +14,9 @@ import io.github.jamiesanson.mammut.extension.postSafely
 import io.github.jamiesanson.mammut.extension.run
 import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -27,7 +29,7 @@ class ProfileViewModel @Inject constructor(
         @InstanceScope
         private val client: MastodonClient,
         private val database: MammutDatabase
-): ViewModel() {
+): ViewModel(), CoroutineScope by GlobalScope {
 
     val accountLiveData: LiveData<Account> = MutableLiveData()
 
@@ -43,7 +45,7 @@ class ProfileViewModel @Inject constructor(
                 val account = when (accountResult) {
                     is Either.Right -> accountResult.b
                     is Either.Left -> {
-                        throw Exception(accountResult.a)
+                        throw Exception(accountResult.a.description)
                     }
                 }.toEntity()
 
@@ -54,8 +56,6 @@ class ProfileViewModel @Inject constructor(
             // Get relationship to current account
             // Go ahead and try and get some account info
             launch accountInfo@{
-                val registration = database.instanceRegistrationDao().getRegistrationByName(instanceName)
-
                 Accounts(client)
                         .getRelationships(accountIds = listOf(account.accountId))
                         .run()

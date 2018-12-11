@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.text.HtmlCompat
@@ -14,6 +15,7 @@ import androidx.core.view.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -31,24 +33,18 @@ import io.github.jamiesanson.mammut.component.GlideApp
 import io.github.jamiesanson.mammut.data.database.entities.feed.Status
 import io.github.jamiesanson.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.image
 import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
-import java.util.concurrent.TimeUnit
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_feed_item)) {
+class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var countJob = Job()
 
@@ -78,11 +74,11 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
             countJob.cancel()
             countJob = launch {
                 while (true) {
-                    withContext(UI) {
+                    withContext(Dispatchers.Main) {
                         val timeSinceSubmission = Duration.between(submissionTime, ZonedDateTime.now())
                         timeTextView.text = timeSinceSubmission.toElapsedTime()
                     }
-                    delay(1, TimeUnit.SECONDS)
+                    delay(1000)
                 }
             }
 
@@ -113,44 +109,39 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                     .apply(RequestOptions.circleCropTransform())
                     .into(profileImageView)
 
-            status.mediaAttachments.firstOrNull()?.let {
+            status.mediaAttachments.firstOrNull()?.let { attachment ->
                 requestManager
                         .clear(tootImageView)
 
-                val aspect = getThumbnailSpec(it)
+                val aspect = getThumbnailSpec(attachment)
 
-                if (tootImageCardView.isInvisible) tootImageCardView.isVisible = true
-
-                fun onImageViewLaidOut(view: View) {
-                    view.updateLayoutParams imageView@{
-                        height = floor(view.width / aspect).toInt()
-                    }
-                    view.doOnLayout { _ ->
-                        loadAttachment(it, requestManager)
-                    }
+                with (ConstraintSet()) {
+                    clone(constraintLayout)
+                    setDimensionRatio(tootImageCardView.id, aspect.toString())
+                    applyTo(constraintLayout)
                 }
 
-                if (tootImageCardView.width > 0) {
-                    // The imageView is already laid out, therefore we don't need to wait for the next pass
-                    onImageViewLaidOut(tootImageCardView)
-                } else {
-                    tootImageCardView.doOnLayout(::onImageViewLaidOut)
+                tootImageCardView.visibility = View.VISIBLE
+
+                tootImageCardView.doOnLayout {
+                    // Wait until the next layout pass to ensure the parent is sized correctly
+                    loadAttachment(attachment, requestManager)
                 }
 
-                tootImageCardView.onClick { _ ->
+                tootImageCardView.onClick {
                     if (!isSensitiveScreenVisible) {
-                        callbacks.onPhotoClicked(tootImageView, it.url)
+                        callbacks.onPhotoClicked(tootImageView, attachment.url)
                     }
                 }
             } ?: run {
-                tootImageCardView.updateLayoutParams {
-                    height = 0
-
-                    doOnLayout {
-                        tootImageView.image = null
-                        tootImageCardView.visibility = View.INVISIBLE
-                    }
+                with (ConstraintSet()) {
+                    clone(constraintLayout)
+                    setDimensionRatio(tootImageCardView.id, "0")
+                    applyTo(constraintLayout)
                 }
+
+                tootImageView.image = null
+                tootImageCardView.visibility = View.INVISIBLE
             }
         }
     }
@@ -223,6 +214,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
                                 .transition(withCrossFade())
                 )
                 .transition(withCrossFade())
+                .apply(RequestOptions.bitmapTransform(FitCenter()))
                 .into(itemView.tootImageView)
     }
 
@@ -309,7 +301,7 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
 
     private fun Duration.toElapsedTime(): String =
             when {
-                this > Duration.of(7, ChronoUnit.DAYS) -> "${toDays().rem(7)} weeks ago"
+                this > Duration.of(7, ChronoUnit.DAYS) -> "${toDays() / 7} weeks ago"
                 this > Duration.of(1, ChronoUnit.DAYS) -> "${toDays()} days ago"
                 this > Duration.of(1, ChronoUnit.HOURS) -> "${toHours()} hours ago"
                 this > Duration.of(1, ChronoUnit.MINUTES) -> "${toMinutes()} mins ago"
@@ -333,7 +325,6 @@ class TootViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate
         }
         countJob.cancel()
         currentStatus = null
-
     }
 
     fun recycle() {

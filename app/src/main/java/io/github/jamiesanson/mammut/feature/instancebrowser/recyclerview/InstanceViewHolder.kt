@@ -14,7 +14,7 @@ import io.github.jamiesanson.mammut.extension.inflate
 import io.github.jamiesanson.mammut.extension.lifecycleOwner
 import io.github.jamiesanson.mammut.extension.observe
 import kotlinx.android.synthetic.main.view_holder_instance_card.view.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class InstanceViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_instance_card)) {
 

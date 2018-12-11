@@ -55,8 +55,8 @@ fun Fragment.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 /**
  * Helper function for allowing simple ViewHolder view inflation
  */
-internal fun ViewGroup.inflate(@LayoutRes resource: Int): View =
-        LayoutInflater.from(context).inflate(resource, this, false)
+internal fun ViewGroup.inflate(@LayoutRes resource: Int, addToRoot: Boolean = false): View =
+        LayoutInflater.from(context).inflate(resource, this, addToRoot)
 
 val RecyclerView.ViewHolder.lifecycleOwner: LifecycleOwner
     get() = itemView.context as LifecycleOwner

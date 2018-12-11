@@ -18,6 +18,10 @@ object ToggleLightDarkMode: SettingsAction()
 
 object ToggleStreaming: SettingsAction()
 
+object TogglePlaceKeeping: SettingsAction()
+
+object ToggleLaunchInstanceBrowser: SettingsAction()
+
 object ViewOssLicenses: SettingsAction()
 
 object ChangeInstance: SettingsAction()

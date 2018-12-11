@@ -14,7 +14,7 @@ import io.github.jamiesanson.mammut.data.database.entities.feed.Status
         version = 1,
         exportSchema = false)
 @TypeConverters(RoomConverters::class)
-abstract class StatusInMemoryDatabase: RoomDatabase() {
+abstract class StatusDatabase: RoomDatabase() {
 
     abstract fun statusDao(): StatusDao
 }

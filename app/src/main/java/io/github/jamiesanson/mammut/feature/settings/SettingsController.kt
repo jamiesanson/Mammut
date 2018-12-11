@@ -2,23 +2,17 @@ package io.github.jamiesanson.mammut.feature.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnLayout
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
 import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
-import com.google.android.gms.oss.licenses.OssLicensesActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import io.github.jamiesanson.mammut.R
 import io.github.jamiesanson.mammut.component.retention.retained
@@ -39,13 +33,12 @@ import kotlinx.android.synthetic.main.controller_settings.*
 import kotlinx.android.synthetic.main.section_settings_footer.view.*
 import kotlinx.android.synthetic.main.section_settings_header.view.*
 import kotlinx.android.synthetic.main.section_toggleable_item.view.*
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
-import org.jetbrains.anko.contentView
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -152,8 +145,8 @@ class SettingsController: BaseController() {
                 toggleableSwitch.onCheckedChange { _, isChecked ->
                     if (isChecked != toggleableItem.isSet) {
                         launch {
-                            delay(250, TimeUnit.MILLISECONDS)
-                            withContext(UI) {
+                            delay(250)
+                            withContext(Dispatchers.Main) {
                                 viewModel.performAction(toggleableItem.action)
                             }
                         }

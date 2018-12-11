@@ -13,7 +13,9 @@ import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
 import io.github.jamiesanson.mammut.feature.settings.model.*
 import io.github.jamiesanson.mammut.feature.themes.StandardLightTheme
 import io.github.jamiesanson.mammut.feature.themes.StandardTheme
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -23,7 +25,7 @@ class SettingsViewModel @Inject constructor(
         @InstanceScope
         @Named("instance_access_token")
         private val accessToken: String
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by GlobalScope {
 
     val settingsItems: LiveData<List<SettingsItem>> = MutableLiveData()
 
@@ -49,6 +51,18 @@ class SettingsViewModel @Inject constructor(
                                 subtitleRes = R.string.disable_streaming_subtitle,
                                 isSet = !preferencesRepository.isStreamingEnabled,
                                 action = ToggleStreaming
+                        ),
+                        ToggleableItem(
+                                titleRes = R.string.keep_your_place,
+                                subtitleRes = R.string.well_keep_your_place,
+                                isSet = preferencesRepository.shouldKeepFeedPlace,
+                                action = TogglePlaceKeeping
+                        ),
+                        ToggleableItem(
+                                titleRes = R.string.launch_chooser_title,
+                                subtitleRes = R.string.launch_chooser_description,
+                                isSet = preferencesRepository.takeMeStraightToInstanceBrowser,
+                                action = ToggleLaunchInstanceBrowser
                         ),
                         SectionHeader(
                                 titleRes = R.string.account_settings
@@ -93,6 +107,14 @@ class SettingsViewModel @Inject constructor(
             }
             ToggleStreaming -> {
                 preferencesRepository.isStreamingEnabled = !preferencesRepository.isStreamingEnabled
+                rebuildSettingsScreen()
+            }
+            TogglePlaceKeeping -> {
+                preferencesRepository.shouldKeepFeedPlace = !preferencesRepository.shouldKeepFeedPlace
+                rebuildSettingsScreen()
+            }
+            ToggleLaunchInstanceBrowser -> {
+                preferencesRepository.takeMeStraightToInstanceBrowser = !preferencesRepository.takeMeStraightToInstanceBrowser
                 rebuildSettingsScreen()
             }
             LogOut -> {
