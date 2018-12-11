@@ -167,6 +167,10 @@ dependencies {
 
     // OSS Licenses
     implementation 'com.google.android.gms:play-services-oss-licenses:16.0.1'
+
+    // Lottie
+    def lottieVersion = "2.8.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 }
 
 androidExtensions {

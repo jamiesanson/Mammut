@@ -241,6 +241,13 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             networkState is NetworkState.Running && viewModel.feedData.pagedList.value == null -> {
                 progressBar.isVisible = true
             }
+            networkState is NetworkState.Loaded && viewModel.feedData.pagedList.value?.isEmpty() == true -> {
+                // Show empty state
+                TransitionManager.beginDelayedTransition(containerView as ViewGroup)
+                progressBar.isVisible = false
+                emptyStateView.isVisible = true
+                emptyStateView.playAnimation()
+            }
         }
     }
 
@@ -273,6 +280,8 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
         if (pagedList.isNotEmpty() && progressBar.isVisible) {
             progressBar.isVisible = false
+            emptyStateView.isVisible = false
+            emptyStateView.pauseAnimation()
         }
     }
 
