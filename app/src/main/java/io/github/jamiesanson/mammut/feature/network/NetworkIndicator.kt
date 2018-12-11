@@ -42,7 +42,7 @@ class NetworkIndicator(context: Context) {
 
             view.offlineModeButton.apply {
                 translationY = if (isConnectedLiveData.value == true) {
-                    -(y + height)
+                    -(y + height + 50)
                 } else {
                     0f.also {
                         view.offlineModeButton.postDelayed({
@@ -82,7 +82,7 @@ class NetworkIndicator(context: Context) {
                         if (view.offlineModeButton.translationY == 0F) {
                             // Animate out
                             view.offlineModeButton.animate()
-                                    .translationY(-(view.offlineModeButton.y + view.offlineModeButton.height))
+                                    .translationY(-(view.offlineModeButton.y + view.offlineModeButton.height + 50))
                                     .setInterpolator(AccelerateInterpolator())
                                     .setDuration(150L)
                                     .start()
