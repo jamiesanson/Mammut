@@ -1,7 +1,7 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger
+package io.github.koss.mammut.feature.instance.subfeature.profile.dagger
 
 import dagger.Subcomponent
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
+import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 
 @ProfileScope
 @Subcomponent(modules = [ProfileModule::class])

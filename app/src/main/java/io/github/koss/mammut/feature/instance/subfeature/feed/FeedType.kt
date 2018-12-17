@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.os.Parcelable
 import com.sys1yagi.mastodon4j.MastodonClient

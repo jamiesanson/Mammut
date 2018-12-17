@@ -1,9 +1,9 @@
-package io.github.jamiesanson.mammut.data.database.dao
+package io.github.koss.mammut.data.database.dao
 
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.room.*
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.database.entities.feed.Status
 
 @Dao
 interface StatusDao {

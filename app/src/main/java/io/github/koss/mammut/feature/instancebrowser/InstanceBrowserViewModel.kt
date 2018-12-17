@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instancebrowser
+package io.github.koss.mammut.feature.instancebrowser
 
 import androidx.lifecycle.ViewModel
 

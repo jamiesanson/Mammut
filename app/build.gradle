@@ -22,7 +22,7 @@ apply from: '../keys.gradle'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "io.github.jamiesanson.mammut"
+        applicationId "io.github.koss.mammut"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 2

@@ -1,11 +1,11 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.RequestManager
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.R
+import io.github.koss.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
         private val tootCallbacks: TootCallbacks,

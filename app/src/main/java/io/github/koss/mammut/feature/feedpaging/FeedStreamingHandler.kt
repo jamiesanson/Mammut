@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.feedpaging
+package io.github.koss.mammut.feature.feedpaging
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
@@ -6,8 +6,8 @@ import com.sys1yagi.mastodon4j.api.Handler
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import com.sys1yagi.mastodon4j.api.entity.Notification
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.jamiesanson.mammut.feature.base.Event
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
+import io.github.koss.mammut.feature.base.Event
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable

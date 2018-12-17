@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.data.database.entities
+package io.github.koss.mammut.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

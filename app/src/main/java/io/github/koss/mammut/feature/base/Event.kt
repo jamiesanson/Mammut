@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.base
+package io.github.koss.mammut.feature.base
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.

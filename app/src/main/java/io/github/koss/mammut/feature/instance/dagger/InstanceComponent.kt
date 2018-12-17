@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.feature.instance.dagger
+package io.github.koss.mammut.feature.instance.dagger
 
 import dagger.Subcomponent
-import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedComponent
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileComponent
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
-import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsComponent
-import io.github.jamiesanson.mammut.feature.settings.dagger.SettingsModule
+import io.github.koss.mammut.feature.instance.InstanceActivity
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedComponent
+import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileComponent
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
+import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
+import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
+import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])

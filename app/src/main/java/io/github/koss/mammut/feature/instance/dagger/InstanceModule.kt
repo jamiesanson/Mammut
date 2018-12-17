@@ -1,11 +1,11 @@
-package io.github.jamiesanson.mammut.feature.instance.dagger
+package io.github.koss.mammut.feature.instance.dagger
 
 import androidx.recyclerview.widget.RecyclerView
 import com.sys1yagi.mastodon4j.MastodonClient
 import dagger.Module
 import dagger.Provides
-import io.github.jamiesanson.mammut.BuildConfig
-import io.github.jamiesanson.mammut.extension.ClientBuilder
+import io.github.koss.mammut.BuildConfig
+import io.github.koss.mammut.extension.ClientBuilder
 import javax.inject.Named
 
 @Module

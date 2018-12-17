@@ -1,8 +1,8 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.navigation
+package io.github.koss.mammut.feature.instance.subfeature.navigation
 
 import android.os.Parcelable
 import androidx.annotation.IdRes
-import io.github.jamiesanson.mammut.R
+import io.github.koss.mammut.R
 import kotlinx.android.parcel.Parcelize
 
 sealed class Tab(@IdRes val menuItemId: Int): Parcelable {

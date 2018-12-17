@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.feedpaging.scaffold
+package io.github.koss.mammut.feature.feedpaging.scaffold
 
 import kotlin.properties.Delegates
 

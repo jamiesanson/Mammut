@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.data.remote.response
+package io.github.koss.mammut.data.remote.response
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

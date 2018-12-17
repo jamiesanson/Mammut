@@ -1,7 +1,7 @@
-package io.github.jamiesanson.mammut.data.remote
+package io.github.koss.mammut.data.remote
 
-import io.github.jamiesanson.mammut.data.remote.response.AllInstancesResponse
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.data.remote.response.AllInstancesResponse
+import io.github.koss.mammut.data.remote.response.InstanceDetail
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

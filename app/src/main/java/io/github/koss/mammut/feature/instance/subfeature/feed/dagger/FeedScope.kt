@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger
+package io.github.koss.mammut.feature.instance.subfeature.feed.dagger
 
 import javax.inject.Scope
 

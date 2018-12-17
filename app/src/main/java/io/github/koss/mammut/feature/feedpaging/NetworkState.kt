@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.feedpaging
+package io.github.koss.mammut.feature.feedpaging
 
 sealed class NetworkState {
 

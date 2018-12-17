@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.navigation
+package io.github.koss.mammut.feature.instance.subfeature.navigation
 
 import android.os.Bundle
 import android.util.SparseArray
@@ -16,13 +16,13 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.extension.comingSoon
-import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedController
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
+import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
+import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
+import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.abc_activity_chooser_view.*

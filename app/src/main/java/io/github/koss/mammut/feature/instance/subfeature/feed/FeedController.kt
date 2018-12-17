@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.content.Context
 import android.os.Bundle
@@ -19,26 +19,26 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bumptech.glide.RequestManager
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.component.retention.retained
-import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
-import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
-import io.github.jamiesanson.mammut.data.models.Account
-import io.github.jamiesanson.mammut.extension.comingSoon
-import io.github.jamiesanson.mammut.extension.observe
-import io.github.jamiesanson.mammut.extension.snackbar
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedState
-import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
-import io.github.jamiesanson.mammut.feature.instance.subfeature.FullScreenPhotoHandler
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedModule
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.FeedScope
-import io.github.jamiesanson.mammut.feature.feedpaging.NetworkState
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.ProfileController
-import io.github.jamiesanson.mammut.feature.network.NetworkIndicator
+import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.extension.observe
+import io.github.koss.mammut.extension.snackbar
+import io.github.koss.mammut.feature.feedpaging.FeedState
+import io.github.koss.mammut.feature.instance.InstanceActivity
+import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
+import io.github.koss.mammut.feature.feedpaging.NetworkState
+import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
+import io.github.koss.mammut.feature.network.NetworkIndicator
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -251,7 +251,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                     bottomLoadingIndicator.isVisible = networkState.end
                 }
             }
-            networkState is NetworkState.Loaded -> {
+            networkState is NetworkState.Loaded || networkState is NetworkState.Error -> {
                 topLoadingIndicator.isVisible = false
                 bottomLoadingIndicator.isVisible = false
             }
@@ -279,16 +279,22 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
             onInitialLoad()
         }
 
-        if (pagedList.isNotEmpty() && progressBar.isVisible) {
+        if (pagedList.isNotEmpty()) {
             progressBar.isVisible = false
             emptyStateView.isVisible = false
             emptyStateView.pauseAnimation()
-        } else if (progressBar.isVisible && !feedModule.provideType().supportsStreaming) {
+        } else {
             // TODO - This logic is naf. We can have an empty state with streaming, we just need to
             // do some magic to keep track to previous timings of requests.
+            if (!feedModule.provideType().supportsStreaming) {
+                emptyStateView.isVisible = true
+                emptyStateView.playAnimation()
+            } else {
+                emptyStateView.isVisible = false
+                emptyStateView.pauseAnimation()
+            }
+
             progressBar.isVisible = false
-            emptyStateView.isVisible = true
-            emptyStateView.playAnimation()
         }
     }
 

@@ -1,12 +1,12 @@
-package io.github.jamiesanson.mammut.data.converters
+package io.github.koss.mammut.data.converters
 
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.jamiesanson.mammut.data.models.Application
-import io.github.jamiesanson.mammut.data.models.Mention
-import io.github.jamiesanson.mammut.data.models.Tag
+import io.github.koss.mammut.data.models.Application
+import io.github.koss.mammut.data.models.Mention
+import io.github.koss.mammut.data.models.Tag
 
-fun Status.toEntity(): io.github.jamiesanson.mammut.data.database.entities.feed.Status =
-        io.github.jamiesanson.mammut.data.database.entities.feed.Status(
+fun Status.toEntity(): io.github.koss.mammut.data.database.entities.feed.Status =
+        io.github.koss.mammut.data.database.entities.feed.Status(
                 id,
                 uri,
                 url,

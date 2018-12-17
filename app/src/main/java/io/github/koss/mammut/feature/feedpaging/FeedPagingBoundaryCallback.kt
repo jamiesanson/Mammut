@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.feedpaging
+package io.github.koss.mammut.feature.feedpaging
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
@@ -7,9 +7,9 @@ import arrow.core.Either
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
-import io.github.jamiesanson.mammut.extension.awaitFirst
-import io.github.jamiesanson.mammut.extension.run
+import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.extension.awaitFirst
+import io.github.koss.mammut.extension.run
 import kotlinx.coroutines.*
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext

@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.feature.joininstance.suggestion
+package io.github.koss.mammut.feature.joininstance.suggestion
 
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.models.InstanceSearchResult
-import io.github.jamiesanson.mammut.extension.inflate
+import io.github.koss.mammut.R
+import io.github.koss.mammut.data.models.InstanceSearchResult
+import io.github.koss.mammut.extension.inflate
 import kotlinx.android.synthetic.main.instance_suggestion_layout.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 

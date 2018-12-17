@@ -1,7 +1,7 @@
-package io.github.jamiesanson.mammut.feature.joininstance.dagger
+package io.github.koss.mammut.feature.joininstance.dagger
 
 import dagger.Subcomponent
-import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 
 @JoinInstanceScope
 @Subcomponent(modules = [ JoinInstanceModule::class ])

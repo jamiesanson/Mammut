@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.data.repo
+package io.github.koss.mammut.data.repo
 
-import io.github.jamiesanson.mammut.BuildConfig
-import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
-import io.github.jamiesanson.mammut.data.converters.toModel
-import io.github.jamiesanson.mammut.data.database.MammutDatabase
-import io.github.jamiesanson.mammut.data.database.entities.InstanceSearchResultEntity
-import io.github.jamiesanson.mammut.data.models.InstanceSearchResult
-import io.github.jamiesanson.mammut.data.remote.MastodonInstancesService
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.BuildConfig
+import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.database.MammutDatabase
+import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
+import io.github.koss.mammut.data.models.InstanceSearchResult
+import io.github.koss.mammut.data.remote.MastodonInstancesService
+import io.github.koss.mammut.data.remote.response.InstanceDetail
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

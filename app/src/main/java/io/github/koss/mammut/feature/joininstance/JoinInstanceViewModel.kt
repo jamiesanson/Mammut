@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.joininstance
+package io.github.koss.mammut.feature.joininstance
 
 import android.content.res.Resources
 import android.net.Uri
@@ -11,16 +11,16 @@ import com.sys1yagi.mastodon4j.api.Scope
 import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.models.*
-import io.github.jamiesanson.mammut.data.repo.InstancesRepository
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
-import io.github.jamiesanson.mammut.extension.ClientBuilder
-import io.github.jamiesanson.mammut.extension.postSafely
-import io.github.jamiesanson.mammut.extension.run
-import io.github.jamiesanson.mammut.feature.base.Event
-import io.github.jamiesanson.mammut.feature.base.InputError
+import io.github.koss.mammut.R
+import io.github.koss.mammut.data.models.*
+import io.github.koss.mammut.data.repo.InstancesRepository
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.extension.ClientBuilder
+import io.github.koss.mammut.extension.postSafely
+import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.feature.base.Event
+import io.github.koss.mammut.feature.base.InputError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

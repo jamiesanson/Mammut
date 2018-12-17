@@ -1,14 +1,14 @@
-package io.github.jamiesanson.mammut.dagger.application
+package io.github.koss.mammut.dagger.application
 
 import dagger.Component
-import io.github.jamiesanson.mammut.MammutApplication
-import io.github.jamiesanson.mammut.dagger.network.NetworkModule
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceComponent
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceModule
-import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
-import io.github.jamiesanson.mammut.feature.joininstance.dagger.JoinInstanceComponent
-import io.github.jamiesanson.mammut.feature.joininstance.dagger.JoinInstanceModule
-import io.github.jamiesanson.mammut.feature.splash.SplashActivity
+import io.github.koss.mammut.MammutApplication
+import io.github.koss.mammut.dagger.network.NetworkModule
+import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
+import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
+import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceComponent
+import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
+import io.github.koss.mammut.feature.splash.SplashActivity
 
 @ApplicationScope
 @Component(modules = [ApplicationModule::class, NetworkModule::class])

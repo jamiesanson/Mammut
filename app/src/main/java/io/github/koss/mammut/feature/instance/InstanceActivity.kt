@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance
+package io.github.koss.mammut.feature.instance
 
 import android.content.Context
 import android.content.Intent
@@ -7,16 +7,16 @@ import androidx.fragment.app.FragmentTransaction
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.extension.applicationComponent
-import io.github.jamiesanson.mammut.feature.base.BaseActivity
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceComponent
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceModule
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.InstanceController
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.ReselectListener
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.Tab
+import io.github.koss.mammut.R
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.extension.applicationComponent
+import io.github.koss.mammut.feature.base.BaseActivity
+import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
+import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
+import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
+import io.github.koss.mammut.feature.instance.subfeature.navigation.Tab
 import kotlinx.android.synthetic.main.activity_instance.*
 import org.jetbrains.anko.contentView
 import javax.inject.Inject

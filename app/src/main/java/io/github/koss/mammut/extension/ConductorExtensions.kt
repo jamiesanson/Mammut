@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.extension
+package io.github.koss.mammut.extension
 
 import android.content.Intent
 import com.bluelinelabs.conductor.Controller

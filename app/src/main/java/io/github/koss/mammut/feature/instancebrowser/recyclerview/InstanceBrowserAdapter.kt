@@ -1,11 +1,11 @@
-package io.github.jamiesanson.mammut.feature.instancebrowser.recyclerview
+package io.github.koss.mammut.feature.instancebrowser.recyclerview
 
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import io.github.jamiesanson.mammut.data.models.InstanceRegistration
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.data.models.InstanceRegistration
+import io.github.koss.mammut.data.remote.response.InstanceDetail
 import kotlinx.android.synthetic.main.view_holder_instance_card.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 

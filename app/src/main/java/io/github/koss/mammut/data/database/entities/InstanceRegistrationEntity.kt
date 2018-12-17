@@ -1,10 +1,10 @@
-package io.github.jamiesanson.mammut.data.database.entities
+package io.github.koss.mammut.data.database.entities
 
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.jamiesanson.mammut.data.models.Account
-import io.github.jamiesanson.mammut.data.models.InstanceAccessToken
+import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.data.models.InstanceAccessToken
 import kotlinx.android.parcel.RawValue
 
 @Entity

@@ -1,8 +1,8 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.widget.ImageView
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
-import io.github.jamiesanson.mammut.data.models.Account
+import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Account
 
 interface TootCallbacks {
 

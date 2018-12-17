@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.feedpaging
+package io.github.koss.mammut.feature.feedpaging
 
 import android.util.Log
 import androidx.annotation.MainThread
@@ -11,13 +11,13 @@ import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.jamiesanson.mammut.data.converters.toEntity
-import io.github.jamiesanson.mammut.data.database.StatusDatabase
-import io.github.jamiesanson.mammut.data.database.dao.StatusDao
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.extension.run
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
+import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.database.StatusDatabase
+import io.github.koss.mammut.data.database.dao.StatusDao
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -64,7 +64,7 @@ class FeedPager(
     /**
      * Initialise and begin paging
      */
-    fun initialise(): FeedData<io.github.jamiesanson.mammut.data.database.entities.feed.Status> {
+    fun initialise(): FeedData<io.github.koss.mammut.data.database.entities.feed.Status> {
         val refreshTrigger = MutableLiveData<Unit>()
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh()
@@ -75,7 +75,7 @@ class FeedPager(
                 .setInitialLoadKey(getPreviousPosition())
                 .build()
 
-        return FeedData<io.github.jamiesanson.mammut.data.database.entities.feed.Status>(
+        return FeedData<io.github.koss.mammut.data.database.entities.feed.Status>(
                 pagedList = liveList,
                 networkState = boundaryCallback.networkState,
                 itemStreamed = streamHandler.itemStreamed,
@@ -90,7 +90,7 @@ class FeedPager(
         )
     }
 
-    fun forceLoadAtFront(frontItem: io.github.jamiesanson.mammut.data.database.entities.feed.Status) {
+    fun forceLoadAtFront(frontItem: io.github.koss.mammut.data.database.entities.feed.Status) {
         boundaryCallback.onItemAtFrontLoaded(frontItem)
     }
 

@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.dagger.application
+package io.github.koss.mammut.dagger.application
 
 import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
-import io.github.jamiesanson.mammut.data.database.MammutDatabase
-import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.feature.network.NetworkIndicator
+import io.github.koss.mammut.data.database.MammutDatabase
+import io.github.koss.mammut.feature.themes.ThemeEngine
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.feature.network.NetworkIndicator
 
 @Module(includes = [ ApplicationViewModelModule::class ])
 class ApplicationModule(private val appContext: Context) {

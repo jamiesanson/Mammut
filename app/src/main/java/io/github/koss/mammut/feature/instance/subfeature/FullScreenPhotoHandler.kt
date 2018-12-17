@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature
+package io.github.koss.mammut.feature.instance.subfeature
 
 import android.widget.ImageView
 

@@ -1,11 +1,11 @@
-package io.github.jamiesanson.mammut.component.retention
+package io.github.koss.mammut.component.retention
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
 import kotlin.reflect.KProperty
 
 /**

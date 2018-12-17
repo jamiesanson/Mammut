@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.joininstance.dagger
+package io.github.koss.mammut.feature.joininstance.dagger
 
 import dagger.Module
 

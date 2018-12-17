@@ -1,9 +1,9 @@
-package io.github.jamiesanson.mammut.feature.feedpaging
+package io.github.koss.mammut.feature.feedpaging
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.jamiesanson.mammut.feature.base.Event
+import io.github.koss.mammut.feature.base.Event
 
 data class FeedData<T>(
         // the LiveData of paged lists for the UI to observe

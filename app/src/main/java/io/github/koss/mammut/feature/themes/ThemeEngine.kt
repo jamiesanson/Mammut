@@ -1,11 +1,11 @@
-package io.github.jamiesanson.mammut.feature.themes
+package io.github.koss.mammut.feature.themes
 
 import android.graphics.Typeface
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.R
+import io.github.koss.mammut.data.repo.PreferencesRepository
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 class ThemeEngine(

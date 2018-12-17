@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.data.database
+package io.github.koss.mammut.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import io.github.jamiesanson.mammut.data.converters.RoomConverters
-import io.github.jamiesanson.mammut.data.database.dao.InstanceRegistrationDao
-import io.github.jamiesanson.mammut.data.database.dao.InstanceSearchDao
-import io.github.jamiesanson.mammut.data.database.entities.InstanceRegistrationEntity
-import io.github.jamiesanson.mammut.data.database.entities.InstanceSearchResultEntity
+import io.github.koss.mammut.data.converters.RoomConverters
+import io.github.koss.mammut.data.database.dao.InstanceRegistrationDao
+import io.github.koss.mammut.data.database.dao.InstanceSearchDao
+import io.github.koss.mammut.data.database.entities.InstanceRegistrationEntity
+import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
 
 @Database(
         entities = [

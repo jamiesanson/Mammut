@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.data.models
+package io.github.koss.mammut.data.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

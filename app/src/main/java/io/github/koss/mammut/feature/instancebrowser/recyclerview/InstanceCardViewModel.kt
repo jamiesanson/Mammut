@@ -1,12 +1,12 @@
-package io.github.jamiesanson.mammut.feature.instancebrowser.recyclerview
+package io.github.koss.mammut.feature.instancebrowser.recyclerview
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.jamiesanson.mammut.data.models.InstanceRegistration
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
-import io.github.jamiesanson.mammut.data.repo.InstancesRepository
-import io.github.jamiesanson.mammut.extension.postSafely
+import io.github.koss.mammut.data.models.InstanceRegistration
+import io.github.koss.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.data.repo.InstancesRepository
+import io.github.koss.mammut.extension.postSafely
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

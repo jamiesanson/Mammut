@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.settings.model
+package io.github.koss.mammut.feature.settings.model
 
 import androidx.annotation.StringRes
 

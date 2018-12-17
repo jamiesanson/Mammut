@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.base
+package io.github.koss.mammut.feature.base
 
 import android.content.Context
 import android.os.Build
@@ -8,8 +8,8 @@ import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
+import io.github.koss.mammut.R
+import io.github.koss.mammut.feature.themes.ThemeEngine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import org.jetbrains.anko.attr

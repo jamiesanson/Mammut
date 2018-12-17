@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.feature.splash
+package io.github.koss.mammut.feature.splash
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.data.repo.RegistrationRepository
-import io.github.jamiesanson.mammut.extension.applicationComponent
-import io.github.jamiesanson.mammut.feature.instance.InstanceActivity
-import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
-import io.github.jamiesanson.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.extension.applicationComponent
+import io.github.koss.mammut.feature.instance.InstanceActivity
+import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
+import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import kotlinx.coroutines.*
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject

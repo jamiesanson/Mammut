@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instancebrowser.about
+package io.github.koss.mammut.feature.instancebrowser.about
 
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
@@ -10,11 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.request.RequestOptions
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
-import io.github.jamiesanson.mammut.extension.observe
-import io.github.jamiesanson.mammut.feature.instancebrowser.InstanceBrowserActivity
+import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.extension.observe
+import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import kotlinx.android.synthetic.main.fragment_about_instance.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.textColorResource

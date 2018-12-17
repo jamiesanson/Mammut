@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.base
+package io.github.koss.mammut.feature.base
 
 import android.content.res.Resources
 

@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.data.models
+package io.github.koss.mammut.data.models
 
 /**
  * Model describing an instance registration.

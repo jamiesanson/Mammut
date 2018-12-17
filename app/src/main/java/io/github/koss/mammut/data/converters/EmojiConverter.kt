@@ -1,6 +1,6 @@
-package io.github.jamiesanson.mammut.data.converters
+package io.github.koss.mammut.data.converters
 
-import io.github.jamiesanson.mammut.data.models.Emoji
+import io.github.koss.mammut.data.models.Emoji
 
 fun com.sys1yagi.mastodon4j.api.entity.Emoji.toEntity(): Emoji =
         Emoji(shortcode, staticUrl, url, visibleInPicker)

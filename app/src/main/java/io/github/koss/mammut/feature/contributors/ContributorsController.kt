@@ -1,10 +1,10 @@
-package io.github.jamiesanson.mammut.feature.contributors
+package io.github.koss.mammut.feature.contributors
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.R
+import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 

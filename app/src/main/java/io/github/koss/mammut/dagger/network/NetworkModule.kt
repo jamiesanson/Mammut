@@ -1,10 +1,10 @@
-package io.github.jamiesanson.mammut.dagger.network
+package io.github.koss.mammut.dagger.network
 
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
-import io.github.jamiesanson.mammut.extension.ClientBuilder
+import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.extension.ClientBuilder
 import okhttp3.OkHttpClient
 
 @Module

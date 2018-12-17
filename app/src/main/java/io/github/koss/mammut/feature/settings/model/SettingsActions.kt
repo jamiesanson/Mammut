@@ -1,7 +1,7 @@
-package io.github.jamiesanson.mammut.feature.settings.model
+package io.github.koss.mammut.feature.settings.model
 
 import com.bluelinelabs.conductor.Controller
-import io.github.jamiesanson.mammut.feature.contributors.ContributorsController
+import io.github.koss.mammut.feature.contributors.ContributorsController
 
 /**
  * File defining the actions which can be performed on the settings screen.

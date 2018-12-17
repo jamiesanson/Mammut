@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut
+package io.github.koss.mammut
 
 import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.fabric.sdk.android.Fabric
-import io.github.jamiesanson.mammut.dagger.application.ApplicationComponent
-import io.github.jamiesanson.mammut.dagger.application.ApplicationModule
-import io.github.jamiesanson.mammut.dagger.application.DaggerApplicationComponent
-import io.github.jamiesanson.mammut.feature.themes.ThemeEngine
+import io.github.koss.mammut.dagger.application.ApplicationComponent
+import io.github.koss.mammut.dagger.application.ApplicationModule
+import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
+import io.github.koss.mammut.feature.themes.ThemeEngine
 import javax.inject.Inject
 
 class MammutApplication: Application() {

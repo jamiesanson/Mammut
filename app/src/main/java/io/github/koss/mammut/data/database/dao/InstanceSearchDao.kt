@@ -1,9 +1,9 @@
-package io.github.jamiesanson.mammut.data.database.dao
+package io.github.koss.mammut.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import io.github.jamiesanson.mammut.data.database.entities.InstanceSearchResultEntity
+import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
 
 @Dao
 interface InstanceSearchDao {

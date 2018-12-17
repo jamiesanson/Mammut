@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -28,10 +28,10 @@ import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.data.database.entities.feed.Status
-import io.github.jamiesanson.mammut.extension.inflate
+import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.image

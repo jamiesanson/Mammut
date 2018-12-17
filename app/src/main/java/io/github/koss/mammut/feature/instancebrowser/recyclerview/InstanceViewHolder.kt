@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instancebrowser.recyclerview
+package io.github.koss.mammut.feature.instancebrowser.recyclerview
 
 import android.view.View
 import android.view.ViewGroup
@@ -7,12 +7,12 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.component.GlideApp
-import io.github.jamiesanson.mammut.data.remote.response.InstanceDetail
-import io.github.jamiesanson.mammut.extension.inflate
-import io.github.jamiesanson.mammut.extension.lifecycleOwner
-import io.github.jamiesanson.mammut.extension.observe
+import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.extension.inflate
+import io.github.koss.mammut.extension.lifecycleOwner
+import io.github.koss.mammut.extension.observe
 import kotlinx.android.synthetic.main.view_holder_instance_card.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 

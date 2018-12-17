@@ -1,10 +1,10 @@
-package io.github.jamiesanson.mammut.data.repo
+package io.github.koss.mammut.data.repo
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import io.github.jamiesanson.mammut.feature.themes.StandardTheme
+import io.github.koss.mammut.feature.themes.StandardTheme
 import kotlin.reflect.KProperty
 
 /**

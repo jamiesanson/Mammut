@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.navigation
+package io.github.koss.mammut.feature.instance.subfeature.navigation
 
 interface ModuleOwner {
 

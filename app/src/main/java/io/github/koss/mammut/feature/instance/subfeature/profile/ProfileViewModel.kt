@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.profile
+package io.github.koss.mammut.feature.instance.subfeature.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,13 +7,13 @@ import arrow.core.Either
 import arrow.core.orNull
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
-import io.github.jamiesanson.mammut.data.converters.toEntity
-import io.github.jamiesanson.mammut.data.database.MammutDatabase
-import io.github.jamiesanson.mammut.data.models.Account
-import io.github.jamiesanson.mammut.extension.postSafely
-import io.github.jamiesanson.mammut.extension.run
-import io.github.jamiesanson.mammut.feature.instance.dagger.InstanceScope
-import io.github.jamiesanson.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
+import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.database.MammutDatabase
+import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.extension.postSafely
+import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

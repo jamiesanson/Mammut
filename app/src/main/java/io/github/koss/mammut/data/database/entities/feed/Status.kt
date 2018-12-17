@@ -1,10 +1,10 @@
-package io.github.jamiesanson.mammut.data.database.entities.feed
+package io.github.koss.mammut.data.database.entities.feed
 
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.jamiesanson.mammut.data.models.*
+import io.github.koss.mammut.data.models.*
 
 @Entity
 data class Status @JvmOverloads constructor(

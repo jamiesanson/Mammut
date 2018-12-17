@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.extension
+package io.github.koss.mammut.extension
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers

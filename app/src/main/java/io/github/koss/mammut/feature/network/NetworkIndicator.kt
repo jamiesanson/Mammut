@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.network
+package io.github.koss.mammut.feature.network
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,10 +12,10 @@ import androidx.core.view.doOnLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.extension.inflate
-import io.github.jamiesanson.mammut.extension.observe
-import io.github.jamiesanson.mammut.extension.postSafely
+import io.github.koss.mammut.R
+import io.github.koss.mammut.extension.inflate
+import io.github.koss.mammut.extension.observe
+import io.github.koss.mammut.extension.postSafely
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.connectivityManager

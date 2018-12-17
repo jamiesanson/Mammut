@@ -1,13 +1,13 @@
-package io.github.jamiesanson.mammut.data.repo
+package io.github.koss.mammut.data.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import io.github.jamiesanson.mammut.dagger.application.ApplicationScope
-import io.github.jamiesanson.mammut.data.converters.toEntity
-import io.github.jamiesanson.mammut.data.converters.toModel
-import io.github.jamiesanson.mammut.data.database.MammutDatabase
-import io.github.jamiesanson.mammut.data.models.InstanceRegistration
-import io.github.jamiesanson.mammut.extension.filterElements
+import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.database.MammutDatabase
+import io.github.koss.mammut.data.models.InstanceRegistration
+import io.github.koss.mammut.extension.filterElements
 import javax.inject.Inject
 
 /**

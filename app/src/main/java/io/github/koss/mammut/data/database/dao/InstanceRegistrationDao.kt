@@ -1,8 +1,8 @@
-package io.github.jamiesanson.mammut.data.database.dao
+package io.github.koss.mammut.data.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.github.jamiesanson.mammut.data.database.entities.InstanceRegistrationEntity
+import io.github.koss.mammut.data.database.entities.InstanceRegistrationEntity
 
 @Dao
 interface InstanceRegistrationDao {

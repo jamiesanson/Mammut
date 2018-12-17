@@ -1,14 +1,14 @@
-package io.github.jamiesanson.mammut.extension
+package io.github.koss.mammut.extension
 
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
-import io.github.jamiesanson.mammut.MammutApplication
-import io.github.jamiesanson.mammut.R
-import io.github.jamiesanson.mammut.dagger.MammutViewModelFactory
-import io.github.jamiesanson.mammut.dagger.application.ApplicationComponent
+import io.github.koss.mammut.MammutApplication
+import io.github.koss.mammut.R
+import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.dagger.application.ApplicationComponent
 import kotlinx.android.synthetic.main.design_layout_snackbar_include.view.*
 import org.jetbrains.anko.contentView
 import androidx.annotation.ColorInt

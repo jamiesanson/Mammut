@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.extension
+package io.github.koss.mammut.extension
 
 import android.util.Log
 import arrow.core.Either
@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
-import io.github.jamiesanson.mammut.BuildConfig
+import io.github.koss.mammut.BuildConfig
 import okhttp3.OkHttpClient
 
 typealias MastodonResult<T> = Either<Error, T>

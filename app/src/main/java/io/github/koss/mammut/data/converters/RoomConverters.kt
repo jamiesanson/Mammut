@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.data.converters
+package io.github.koss.mammut.data.converters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
@@ -9,7 +9,7 @@ import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import com.sys1yagi.mastodon4j.extension.RuntimeTypeAdapterFactory
-import io.github.jamiesanson.mammut.data.models.*
+import io.github.koss.mammut.data.models.*
 
 class RoomConverters {
 

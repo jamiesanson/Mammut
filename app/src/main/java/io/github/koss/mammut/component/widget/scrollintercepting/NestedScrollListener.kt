@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.component.widget.scrollintercepting
+package io.github.koss.mammut.component.widget.scrollintercepting
 
 interface NestedScrollListener {
     fun onScroll(direction: Direction)

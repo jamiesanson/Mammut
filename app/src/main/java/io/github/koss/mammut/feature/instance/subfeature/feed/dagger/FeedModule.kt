@@ -1,4 +1,4 @@
-package io.github.jamiesanson.mammut.feature.instance.subfeature.feed.dagger
+package io.github.koss.mammut.feature.instance.subfeature.feed.dagger
 
 import android.content.Context
 import androidx.room.Room
@@ -8,15 +8,15 @@ import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import dagger.Module
 import dagger.Provides
-import io.github.jamiesanson.mammut.data.converters.toEntity
-import io.github.jamiesanson.mammut.data.database.StatusDatabase
-import io.github.jamiesanson.mammut.data.database.dao.StatusDao
-import io.github.jamiesanson.mammut.data.repo.PreferencesRepository
-import io.github.jamiesanson.mammut.extension.run
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedPager
-import io.github.jamiesanson.mammut.feature.feedpaging.FeedStateData
-import io.github.jamiesanson.mammut.feature.feedpaging.initialiseFeedState
-import io.github.jamiesanson.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.database.StatusDatabase
+import io.github.koss.mammut.data.database.dao.StatusDao
+import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.feature.feedpaging.FeedPager
+import io.github.koss.mammut.feature.feedpaging.FeedStateData
+import io.github.koss.mammut.feature.feedpaging.initialiseFeedState
+import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import javax.inject.Named
 
 @Module(includes = [FeedViewModelModule::class])
