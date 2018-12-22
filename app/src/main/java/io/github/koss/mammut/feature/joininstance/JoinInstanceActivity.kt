@@ -12,7 +12,6 @@ import android.widget.PopupWindow
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.BuildConfig
-import io.github.koss.mammut.R
 import io.github.koss.mammut.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.InstanceSearchResult
 import io.github.koss.mammut.extension.applicationComponent
@@ -29,6 +28,11 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
+import androidx.browser.customtabs.CustomTabsIntent
+import io.github.koss.mammut.R
+import org.jetbrains.anko.colorAttr
+import saschpe.android.customtabs.CustomTabsHelper
+import saschpe.android.customtabs.WebViewFallback
 
 class JoinInstanceActivity: BaseActivity() {
 
@@ -95,15 +99,7 @@ class JoinInstanceActivity: BaseActivity() {
             }
 
             oauthUrl.observe(this@JoinInstanceActivity) {
-                it.getContentIfNotHandled()?.let { url ->
-                    val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    if (viewIntent.resolveActivity(packageManager) != null) {
-                        startActivity(viewIntent)
-                    } else {
-                        stopLoading()
-                        showError(getString(R.string.error_no_browser))
-                    }
-                }
+                it.getContentIfNotHandled()?.let(::launchOauthUrl)
             }
 
             registrationCompleteEvent.observe(this@JoinInstanceActivity) {
@@ -124,6 +120,20 @@ class JoinInstanceActivity: BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun launchOauthUrl(url: String) {
+        val customTabsIntent = CustomTabsIntent.Builder()
+                .addDefaultShareMenuItem()
+                .setToolbarColor(colorAttr(R.attr.colorPrimary))
+                .setShowTitle(true)
+                .build()
+
+        CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
+
+        CustomTabsHelper.openCustomTab(this, customTabsIntent,
+                Uri.parse(url),
+                WebViewFallback())
     }
 
     private fun InstanceSuggestionPopupWindow.show() {

@@ -171,6 +171,9 @@ dependencies {
     // Lottie
     def lottieVersion = "2.8.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    // Custom tabs helper
+    implementation 'saschpe.android:customtabs:2.0.0'
 }
 
 androidExtensions {

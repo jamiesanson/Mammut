@@ -9,6 +9,7 @@ import io.github.koss.mammut.dagger.application.ApplicationModule
 import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
 import io.github.koss.mammut.feature.themes.ThemeEngine
 import javax.inject.Inject
+import saschpe.android.customtabs.CustomTabsActivityLifecycleCallbacks
 
 class MammutApplication: Application() {
 
@@ -29,5 +30,8 @@ class MammutApplication: Application() {
         AndroidThreeTen.init(this)
 
         Fabric.with(this, Crashlytics())
+
+        // Preload custom tabs
+        registerActivityLifecycleCallbacks(CustomTabsActivityLifecycleCallbacks())
     }
 }
