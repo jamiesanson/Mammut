@@ -235,7 +235,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
 
             fun View.largestDimension(): Float = sqrt(this.width.toFloat().pow(2F) + this.height.toFloat().pow(2F))
 
-            sensitiveContentToggleButton.onClick {
+            fun toggleContentWarningVisibility() {
                 if (isSensitiveScreenVisible) {
                     ViewAnimationUtils.createCircularReveal(
                             sensitiveContentFrameLayout,
@@ -244,7 +244,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                             sensitiveContentFrameLayout.largestDimension(),
                             0F
                     ).apply {
-                        doOnEnd { _ ->
+                        doOnEnd {
                             sensitiveContentFrameLayout.isVisible = false
                         }
                         duration = 250L
@@ -261,7 +261,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                             0F,
                             sensitiveContentFrameLayout.largestDimension()
                     ).apply {
-                        doOnStart { _ ->
+                        doOnStart {
                             sensitiveContentFrameLayout.isVisible = true
                         }
                         duration = 250L
@@ -272,6 +272,9 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                     isSensitiveScreenVisible = true
                 }
             }
+
+            sensitiveContentToggleButton.onClick { toggleContentWarningVisibility() }
+            sensitiveContentFrameLayout.onClick { toggleContentWarningVisibility() }
         }
     }
 
