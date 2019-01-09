@@ -8,6 +8,10 @@
 # Java class files
 *.class
 
+app/.DS_Store
+app/fabric.properties
+app/release/
+
 # Generated files
 bin/
 gen/
