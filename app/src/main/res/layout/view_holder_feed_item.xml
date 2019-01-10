@@ -221,6 +221,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textAlignment="center"
+            android:shadowColor="?attr/colorPrimaryDark"
+            android:shadowRadius="4"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             tools:text="Watch out you're getting spoiled"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"/>
     </FrameLayout>
