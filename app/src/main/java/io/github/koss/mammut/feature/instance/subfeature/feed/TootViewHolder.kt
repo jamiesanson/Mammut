@@ -8,11 +8,12 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.text.HtmlCompat
 import androidx.core.view.*
+import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -38,79 +39,78 @@ import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.threeten.bp.Duration
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.temporal.ChronoUnit
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
-
-    private var countJob = Job()
-
-    private var currentStatus: Status? = null
+class TootViewHolder(
+        parent: ViewGroup,
+        private val requestManager: RequestManager,
+        private val callbacks: TootCallbacks
+) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var exoPlayer: SimpleExoPlayer? = null
 
     private var isSensitiveScreenVisible = false
 
-    fun bind(status: Status, callbacks: TootCallbacks, requestManager: RequestManager) {
-        if (status.id == currentStatus?.id) return
+    private var viewModel: TootViewModel = TootViewModel()
 
-        currentStatus = status
+    init {
+        // Set up viewModel observations
+        viewModel.statusViewState.observeForever(::onViewStateChanged)
+        viewModel.timeSince.observeForever(itemView.timeTextView::setText)
 
-        val submissionTime = ZonedDateTime.parse(status.createdAt)
+        // Set up click listeners
+        itemView.onClick {
+            viewModel.currentStatus?.let(callbacks::onTootClicked)
+        }
 
-        with(itemView) {
-            onClick {
-                callbacks.onTootClicked(status)
-            }
+        itemView.profileImageView.onClick {
+            viewModel.currentStatus?.account?.let(callbacks::onProfileClicked)
+        }
+    }
 
-            displayNameTextView.text = if (status.account?.displayName?.isEmpty() == true) status.account.acct else status.account?.displayName
-            usernameTextView.text = "@${status.account?.userName}"
-            contentTextView.text = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
+    fun bind(status: Status) {
+        viewModel.bind(status)
 
-            // Configure counting
-            countJob.cancel()
-            countJob = launch {
-                while (true) {
-                    withContext(Dispatchers.Main) {
-                        val timeSinceSubmission = Duration.between(submissionTime, ZonedDateTime.now())
-                        timeTextView.text = timeSinceSubmission.toElapsedTime()
-                    }
-                    delay(1000)
-                }
-            }
+        // Setup sensitive content screen
+        setupContentWarning(isSensitive = viewModel.currentStatus?.isSensitive ?: false)
 
-            // Configure profile click
-            status.account?.let { account ->
-                profileImageView.onClick {
-                    callbacks.onProfileClicked(account)
-                }
-            }
+        // Resolve colors
+        val typedValue = TypedValue()
+        val theme = itemView.context.theme ?: return
+        theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
+        @ColorInt val color = typedValue.data
 
-            // Setup sensitive content screen
-            setupContentWarning(isSensitive = status.isSensitive)
+        requestManager
+                .load(viewModel.currentStatus?.account?.avatar)
+                .thumbnail(
+                        requestManager
+                                .load(ColorDrawable(color))
+                                .apply(RequestOptions.circleCropTransform())
+                )
+                .transition(withCrossFade())
+                .apply(RequestOptions.circleCropTransform())
+                .into(itemView.profileImageView)
 
-            // Resolve colors
-            val typedValue = TypedValue()
-            val theme = itemView.context.theme ?: return
-            theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
-            @ColorInt val color = typedValue.data
 
-            requestManager
-                    .load(status.account?.avatar)
-                    .thumbnail(
-                            requestManager
-                                    .load(ColorDrawable(color))
-                                    .apply(RequestOptions.circleCropTransform())
-                    )
-                    .transition(withCrossFade())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(profileImageView)
+        // Setup spoilers
+        setupSpoiler(viewModel.currentStatus?.spoilerText ?: "")
+    }
 
-            status.mediaAttachments.firstOrNull()?.let { attachment ->
+    private fun onViewStateChanged(viewState: TootViewState) {
+        with (itemView) {
+            displayNameTextView.text = viewState.name
+            usernameTextView.text = viewState.username
+            contentTextView.text = viewState.content
+        }
+
+        viewState.displayAttachment.let(::processAttachment)
+    }
+
+    private fun processAttachment(att: Attachment<*>?) {
+        with (itemView) {
+            att?.let { attachment ->
                 requestManager
                         .clear(tootImageView)
 
@@ -126,7 +126,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
 
                 tootImageCardView.doOnLayout {
                     // Wait until the next layout pass to ensure the parent is sized correctly
-                    loadAttachment(attachment, requestManager)
+                    loadAttachment(attachment)
                 }
 
                 tootImageCardView.onClick {
@@ -145,12 +145,9 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                 tootImageCardView.visibility = View.INVISIBLE
             }
         }
-
-        // Setup spoilers
-        setupSpoiler(status.spoilerText)
     }
 
-    private fun loadAttachment(attachment: Attachment<*>, requestManager: RequestManager) {
+    private fun loadAttachment(attachment: Attachment<*>) {
         when (attachment) {
             is PhotoAttachment -> loadImage(attachment, requestManager)
             is VideoAttachment -> loadVideo(attachment)
@@ -342,17 +339,6 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
         }
     }
 
-    private fun Duration.toElapsedTime(): String =
-            when {
-                this > Duration.of(7, ChronoUnit.DAYS) -> "${toDays() / 7} weeks ago"
-                this > Duration.of(1, ChronoUnit.DAYS) -> "${toDays()} days ago"
-                this > Duration.of(1, ChronoUnit.HOURS) -> "${toHours()} hours ago"
-                this > Duration.of(1, ChronoUnit.MINUTES) -> "${toMinutes()} mins ago"
-                this > Duration.of(1, ChronoUnit.SECONDS) -> "${toMillis() / 1000} secs ago"
-                else -> "Just now"
-            }
-
-
     fun clear() {
         with(itemView) {
             displayNameTextView.text = null
@@ -366,8 +352,8 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                     .clear(tootImageView)
             tootImageView.visibility = View.GONE
         }
-        countJob.cancel()
-        currentStatus = null
+
+        viewModel.onCleared()
     }
 
     fun recycle() {
