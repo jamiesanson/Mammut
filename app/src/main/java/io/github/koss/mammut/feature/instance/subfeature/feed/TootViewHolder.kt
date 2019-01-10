@@ -8,12 +8,10 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
-import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
