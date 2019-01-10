@@ -29,7 +29,7 @@ interface StatusDao {
     @Query("DELETE FROM status WHERE source = :source")
     fun deleteByFeed(source: String)
 
-    @Query("SELECT * FROM status WHERE source = :source ORDER BY statusIndex ASC")
+    @Query("SELECT * FROM status WHERE source = :source ORDER BY createdAt DESC")
     fun getAllPagedInFeed(source: String): DataSource.Factory<Int, Status>
 
     @Query("SELECT MAX(statusIndex) + 1 FROM status WHERE source = :source")
@@ -38,6 +38,6 @@ interface StatusDao {
     @Query("SELECT MIN(statusIndex) - 1 FROM status WHERE source = :source")
     fun getPreviousIndexInFeed(source: String): Int
 
-    @Query("SELECT * FROM status WHERE source = :source ORDER BY statusIndex ASC LIMIT :count")
+    @Query("SELECT * FROM status WHERE source = :source ORDER BY createdAt DESC LIMIT :count")
     fun getMostRecent(count: Int, source: String): List<Status>
 }

@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feature.feedpaging
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +13,6 @@ import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
-import io.github.koss.mammut.data.repo.PreferencesRepository
 import io.github.koss.mammut.extension.run
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
@@ -109,19 +107,15 @@ class FeedPager(
         statusDatabase.runInTransaction {
             when {
                 addToFront -> {
-                    val frontIndex = statusDao.getPreviousIndexInFeed(feedType.key)
-                    statusDao.insertNewPage(statuses.mapIndexed { index, status ->
+                    statusDao.insertNewPage(statuses.map { status ->
                         status.toEntity().copy(
-                                statusIndex = frontIndex + (index - statuses.size),
                                 source = feedType.key
                         )
                     })
                 }
                 else -> {
-                    val endIndex = statusDao.getNextIndexInFeed(feedType.key)
-                    statusDao.insertNewPage(statuses.mapIndexed { index, status ->
+                    statusDao.insertNewPage(statuses.map { status ->
                         status.toEntity().copy(
-                                statusIndex = index + endIndex,
                                 source = feedType.key
                         )
                     })
@@ -139,7 +133,6 @@ class FeedPager(
      */
     @MainThread
     private fun refresh(): LiveData<NetworkState> {
-        Log.d("Pager", "Refreshing from state ${feedStateData.store.state}")
         refreshState()
 
         val networkState = MutableLiveData<NetworkState>()
