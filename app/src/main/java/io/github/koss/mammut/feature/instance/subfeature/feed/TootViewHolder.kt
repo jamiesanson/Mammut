@@ -72,6 +72,16 @@ class TootViewHolder(
 
     fun bind(status: Status) {
         viewModel.bind(status)
+    }
+
+    private fun onViewStateChanged(viewState: TootViewState?) {
+        with (itemView) {
+            displayNameTextView.text = viewState?.name
+            usernameTextView.text = viewState?.username
+            contentTextView.text = viewState?.content
+        }
+
+        viewState?.displayAttachment.let(::processAttachment)
 
         // Setup sensitive content screen
         setupContentWarning(isSensitive = viewModel.currentStatus?.isSensitive ?: false)
@@ -96,16 +106,6 @@ class TootViewHolder(
 
         // Setup spoilers
         setupSpoiler(viewModel.currentStatus?.spoilerText ?: "")
-    }
-
-    private fun onViewStateChanged(viewState: TootViewState) {
-        with (itemView) {
-            displayNameTextView.text = viewState.name
-            usernameTextView.text = viewState.username
-            contentTextView.text = viewState.content
-        }
-
-        viewState.displayAttachment.let(::processAttachment)
     }
 
     private fun processAttachment(att: Attachment<*>?) {
@@ -280,10 +280,10 @@ class TootViewHolder(
     }
 
     private fun setupSpoiler(spoilerText: String) {
-        itemView.spoilerTextView.text = spoilerText
         if (spoilerText.isNotEmpty()) {
             itemView.doOnPreDraw {
                 itemView.blurParentLayout.isVisible = true
+                itemView.spoilerTextView.text = spoilerText
             }
             itemView.doOnNextLayout {
                 Glide.with(itemView)
@@ -311,6 +311,7 @@ class TootViewHolder(
 
             itemView.blurParentLayout.alpha = 1F
         } else {
+            itemView.spoilerTextView.text = spoilerText
             itemView.blurParentLayout.isVisible = false
         }
     }
