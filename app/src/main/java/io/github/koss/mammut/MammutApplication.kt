@@ -4,6 +4,7 @@ import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.fabric.sdk.android.Fabric
+import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.dagger.application.ApplicationComponent
 import io.github.koss.mammut.dagger.application.ApplicationModule
 import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
@@ -28,6 +29,8 @@ class MammutApplication: Application() {
         themeEngine.updateFontDefaults()
 
         AndroidThreeTen.init(this)
+
+        Blurrer.initialise(this)
 
         Fabric.with(this, Crashlytics())
 

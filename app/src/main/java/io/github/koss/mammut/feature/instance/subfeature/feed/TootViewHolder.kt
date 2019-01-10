@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feature.instance.subfeature.feed
 
+import android.animation.Animator
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.util.TypedValue
@@ -12,8 +13,8 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.text.HtmlCompat
 import androidx.core.view.*
-import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -30,12 +31,12 @@ import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
-import org.jetbrains.anko.image
-import org.jetbrains.anko.imageResource
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
@@ -115,7 +116,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
 
                 val aspect = getThumbnailSpec(attachment)
 
-                with (ConstraintSet()) {
+                with(ConstraintSet()) {
                     clone(constraintLayout)
                     setDimensionRatio(tootImageCardView.id, aspect.toString())
                     applyTo(constraintLayout)
@@ -134,7 +135,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                     }
                 }
             } ?: run {
-                with (ConstraintSet()) {
+                with(ConstraintSet()) {
                     clone(constraintLayout)
                     setDimensionRatio(tootImageCardView.id, "0")
                     applyTo(constraintLayout)
@@ -144,6 +145,9 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
                 tootImageCardView.visibility = View.INVISIBLE
             }
         }
+
+        // Setup spoilers
+        setupSpoiler(status.spoilerText)
     }
 
     private fun loadAttachment(attachment: Attachment<*>, requestManager: RequestManager) {
@@ -219,7 +223,7 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
     }
 
     private fun setupContentWarning(isSensitive: Boolean) {
-        with (itemView) {
+        with(itemView) {
             // If not sensitive content, short circuit
             if (!isSensitive) {
                 isSensitiveScreenVisible = false
@@ -275,6 +279,42 @@ class TootViewHolder(parent: ViewGroup) : FeedItemViewHolder(parent.inflate(R.la
 
             sensitiveContentToggleButton.onClick { toggleContentWarningVisibility() }
             sensitiveContentFrameLayout.onClick { toggleContentWarningVisibility() }
+        }
+    }
+
+    private fun setupSpoiler(spoilerText: String) {
+        itemView.spoilerTextView.text = spoilerText
+        if (spoilerText.isNotEmpty()) {
+            itemView.doOnPreDraw {
+                itemView.blurParentLayout.isVisible = true
+            }
+            itemView.doOnNextLayout {
+                Glide.with(itemView)
+                        .load(Blurrer.blurView(itemView, 25F))
+                        .transition(withCrossFade())
+                        .into(itemView.blurLayout)
+            }
+
+            itemView.blurParentLayout.onClick {
+                itemView.blurParentLayout.animate()
+                        .alpha(0F)
+                        .setDuration(300L)
+                        .setListener(object : Animator.AnimatorListener {
+                            override fun onAnimationRepeat(animation: Animator?) {}
+                            override fun onAnimationCancel(animation: Animator?) {}
+                            override fun onAnimationStart(animation: Animator?) {}
+
+                            override fun onAnimationEnd(animation: Animator?) {
+                                itemView.blurParentLayout.isVisible = false
+                            }
+                        })
+
+                        .start()
+            }
+
+            itemView.blurParentLayout.alpha = 1F
+        } else {
+            itemView.blurParentLayout.isVisible = false
         }
     }
 
