@@ -94,7 +94,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="@id/nameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -174,12 +173,6 @@
                 android:text="@string/sensitive_content_warning"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/sensitive_content_description"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
         </LinearLayout>
 
         <ImageView
@@ -200,5 +193,40 @@
             app:srcCompat="@drawable/ic_visibility_off_black_24dp" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <FrameLayout
+        android:id="@+id/blurParentLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:translationZ="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/colorPrimary"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <ImageView
+            android:id="@+id/blurLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="center"/>
+
+        <TextView
+            android:id="@+id/spoilerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:shadowColor="?attr/colorPrimaryDark"
+            android:shadowRadius="4"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            tools:text="Watch out you're getting spoiled"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"/>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

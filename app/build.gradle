@@ -70,7 +70,7 @@ dependencies {
 
     // AndroidX
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
 
     // Dagger
     def dagger_version = '2.17'
@@ -135,7 +135,7 @@ dependencies {
     implementation "me.saket:inboxrecyclerview:$inbox_recyclerview_version"
 
     // Paging
-    def paging_version = "2.1.0-beta01"
+    def paging_version = "2.1.0-rc01"
     implementation "androidx.paging:paging-runtime:$paging_version"
 
     // JSR-310 backport

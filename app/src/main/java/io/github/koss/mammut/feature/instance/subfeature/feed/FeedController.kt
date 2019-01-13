@@ -183,6 +183,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     private fun initialiseRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
         recyclerView.adapter = FeedAdapter(this, requestManager, viewModel::onBrokenTimelineResolved)
+        recyclerView.itemAnimator?.addDuration = 150L
         recyclerView.setRecycledViewPool(viewPool)
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
@@ -353,7 +354,7 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstVisibleItemPosition() <= 2
+                return@run findFirstCompletelyVisibleItemPosition() < 2
             } ?: false
 
     private fun RecyclerView.isNearBottom(): Boolean =

@@ -31,7 +31,7 @@ class FeedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
             when (viewType) {
                 R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
-                else -> TootViewHolder(parent)
+                else -> TootViewHolder(parent, requestManager, tootCallbacks)
             }
 
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {
@@ -42,7 +42,7 @@ class FeedAdapter(
                     return
                 }
 
-                holder.bind(current, tootCallbacks, requestManager)
+                holder.bind(current)
             }
             is BrokenTimelineViewHolder -> {
                 holder.bind(onBrokenTimelineResolved)

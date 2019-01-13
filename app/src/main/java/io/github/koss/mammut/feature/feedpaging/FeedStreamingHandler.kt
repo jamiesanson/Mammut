@@ -37,7 +37,7 @@ class FeedStreamingHandler(
 
     private val bufferedItemFlowable: Flowable<Event<List<Status>>> = Flowable
             .fromPublisher(itemStreamedPublishSubject.toFlowable(BackpressureStrategy.BUFFER))
-            .buffer(100, TimeUnit.MILLISECONDS)
+            .buffer(350, TimeUnit.MILLISECONDS)
             .map { Event(it) }
 
     val itemStreamed: LiveData<Event<List<Status>>> = LiveDataReactiveStreams
