@@ -38,8 +38,7 @@ class NetworkIndicator(context: Context) {
         }
 
         // Observe network state
-        view.offlineModeButton.doOnLayout { _ ->
-
+        view.offlineModeButton.doOnLayout {
             view.offlineModeButton.apply {
                 translationY = if (isConnectedLiveData.value == true) {
                     -(y + height + 50)
