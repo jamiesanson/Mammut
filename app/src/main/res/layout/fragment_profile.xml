@@ -336,7 +336,8 @@
         android:orientation="vertical"
         android:background="?attr/colorPrimary"
         android:layout_gravity="center"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
