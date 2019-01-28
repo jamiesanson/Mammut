@@ -68,10 +68,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     lateinit var factory: MammutViewModelFactory
 
     @Inject
-    @InstanceScope
-    lateinit var viewPool: RecyclerView.RecycledViewPool
-
-    @Inject
     @ApplicationScope
     lateinit var networkIndicator: NetworkIndicator
 
@@ -184,7 +180,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
         recyclerView.adapter = FeedAdapter(this, requestManager, viewModel::onBrokenTimelineResolved)
         recyclerView.itemAnimator?.addDuration = 150L
-        recyclerView.setRecycledViewPool(viewPool)
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
             containerView ?: return@onScrollChange

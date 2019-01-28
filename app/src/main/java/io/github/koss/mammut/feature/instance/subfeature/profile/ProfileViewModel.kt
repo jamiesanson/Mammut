@@ -1,15 +1,18 @@
 package io.github.koss.mammut.feature.instance.subfeature.profile
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.orNull
+import com.crashlytics.android.Crashlytics
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.extension.run
 import io.github.koss.mammut.feature.instance.dagger.InstanceScope
@@ -31,11 +34,19 @@ class ProfileViewModel @Inject constructor(
         private val database: MammutDatabase
 ): ViewModel(), CoroutineScope by GlobalScope {
 
+    val networkState: LiveData<NetworkState> = MutableLiveData()
+
     val accountLiveData: LiveData<Account> = MutableLiveData()
 
     val followStateLiveData: LiveData<FollowState> = MutableLiveData()
 
     init {
+       load()
+    }
+
+    fun load() {
+        networkState.postSafely(NetworkState.Loading)
+
         if (account == null) {
             launch {
                 val registration = database.instanceRegistrationDao().getRegistrationByName(instanceName)
@@ -45,12 +56,16 @@ class ProfileViewModel @Inject constructor(
                 val account = when (accountResult) {
                     is Either.Right -> accountResult.b
                     is Either.Left -> {
-                        throw Exception(accountResult.a.description)
+                        // We're most likely offline. Log this as a warning just in case
+                        networkState.postSafely(NetworkState.Offline)
+                        Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.a.error)
+                        null
                     }
-                }.toEntity()
+                }?.toEntity() ?: return@launch
 
                 accountLiveData.postSafely(account)
                 followStateLiveData.postSafely(FollowState.IsMe)
+                networkState.postSafely(NetworkState.Loaded)
             }
         } else {
             // Get relationship to current account
@@ -74,6 +89,7 @@ class ProfileViewModel @Inject constructor(
             }
 
             accountLiveData.postSafely(account)
+            networkState.postSafely(NetworkState.Loaded)
         }
     }
 

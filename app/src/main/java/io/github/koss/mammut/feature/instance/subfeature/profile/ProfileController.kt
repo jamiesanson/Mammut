@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
@@ -26,6 +27,7 @@ import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.comingSoon
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.instance.InstanceActivity
@@ -84,6 +86,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
         setupToolbar()
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
+        viewModel.networkState.observe(this, ::bindNetworkState)
     }
 
     override fun displayFullScreenPhoto(imageView: ImageView, photoUrl: String) {
@@ -178,6 +181,35 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
         tabLayout.setupWithViewPager(pager)
         pager.adapter = pagerAdapter
+    }
+
+    private fun bindNetworkState(networkState: NetworkState) {
+        when (networkState) {
+            NetworkState.Loading -> {
+                view?.let {
+                    TransitionManager.beginDelayedTransition(it as ViewGroup)
+                    loadingLayout.isVisible = true
+                    networkOfflineLayout.isVisible = false
+                }
+            }
+            NetworkState.Loaded -> {
+                view?.let {
+                    TransitionManager.beginDelayedTransition(it as ViewGroup)
+                    loadingLayout.isVisible = false
+                    networkOfflineLayout.isVisible = false
+                }
+            }
+            NetworkState.Offline -> {
+                view?.let {
+                    TransitionManager.beginDelayedTransition(it as ViewGroup)
+                    loadingLayout.isVisible = false
+                    networkOfflineLayout.isVisible = true
+                    retryButton.onClick {
+                        viewModel.load()
+                    }
+                }
+            }
+        }
     }
 
     private fun bindAccount(account: Account) {
