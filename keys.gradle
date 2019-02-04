@@ -1,0 +1,2 @@
+// Dummy keys.gradle file. You should fill this out with your own keys when trying to build
+ext.INSTANCES_SECRET = "Get yours here: https://instances.social/api/token"
