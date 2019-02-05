@@ -20,17 +20,19 @@ apply plugin: 'io.fabric'
 apply from: '../keys.gradle'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "io.github.koss.mammut"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 4
-        versionName "0.4-beta"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "INSTANCES_SECRET", INSTANCES_SECRET
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -64,116 +66,80 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1"
+    implementation rootProject.ext.kotlinRuntime
+    implementation rootProject.ext.coroutinesCore
+    implementation rootProject.ext.coroutinesAndroid
 
-    // AndroidX
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation rootProject.ext.appCompat
+    implementation rootProject.ext.constraintLayout
 
-    // Dagger
-    def dagger_version = '2.17'
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation rootProject.ext.dagger
+    kapt rootProject.ext.daggerCompiler
 
-    // Randux
-    def randux_version = '1.0.0'
-    implementation "com.github.k-oss.Randux:randux:$randux_version"
+    implementation rootProject.ext.randux
 
-    // Lifecycle
-    def lifecycle_version = "2.0.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
+    implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleRx
 
-    // Anko
-    implementation "org.jetbrains.anko:anko:0.10.8"
+    implementation rootProject.ext.anko
 
-    // Material
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation rootProject.ext.material
 
-    // RxJava
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation rootProject.ext.rxJava
+    implementation rootProject.ext.rxAndroid
+    implementation rootProject.ext.rxKotlin
 
-    // Arrow
-    def arrow_version = "0.7.3"
-    implementation "io.arrow-kt:arrow-core:$arrow_version"
-    implementation "io.arrow-kt:arrow-syntax:$arrow_version"
-    implementation "io.arrow-kt:arrow-typeclasses:$arrow_version"
-    implementation "io.arrow-kt:arrow-data:$arrow_version"
-    implementation "io.arrow-kt:arrow-instances-core:$arrow_version"
-    implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
-    implementation "io.arrow-kt:arrow-optics:$arrow_version"
-    kapt "io.arrow-kt:arrow-annotations-processor:$arrow_version"
+    implementation rootProject.ext.arrowCore
+    implementation rootProject.ext.arrowSyntax
+    implementation rootProject.ext.arrowTypeclasses
+    implementation rootProject.ext.arrowData
+    implementation rootProject.ext.arrowInstancesCore
+    implementation rootProject.ext.arrowInstancesCoreData
+    implementation rootProject.ext.arrowOptics
+    kapt rootProject.ext.arrowProcessor
 
-    // Calligraphy
-    def calligraphy_version = "2.3.0"
-    implementation "uk.co.chrisjenx:calligraphy:$calligraphy_version"
+    implementation rootProject.ext.calligraphy
 
-    // m4j
-    implementation 'com.github.jamiesanson.mastodon4j:mastodon4j:e410f1c137'
+    implementation rootProject.ext.mastodon4j
 
-    // Room
-    def room_version = "1.1.1"
-    implementation "android.arch.persistence.room:runtime:$room_version"
-    kapt "android.arch.persistence.room:compiler:$room_version"
+    implementation rootProject.ext.room
+    kapt rootProject.ext.roomCompiler
 
-    // Retrofit
-    def retrofit_version = "2.4.0"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation rootProject.ext.retrofit
+    implementation rootProject.ext.retrofitGsonConverter
 
-    // Glide
-    def glide_version = "4.8.0"
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
-    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation rootProject.ext.glide
+    implementation rootProject.ext.glideTransformations
+    kapt rootProject.ext.glideCompiler
 
-    def inbox_recyclerview_version = "1.0.0-beta2"
-    implementation "me.saket:inboxrecyclerview:$inbox_recyclerview_version"
+    implementation rootProject.ext.inboxRecyclerView
 
-    // Paging
-    def paging_version = "2.1.0-rc01"
-    implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation rootProject.ext.paging
 
-    // JSR-310 backport
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
+    implementation rootProject.ext.threetenabp
 
-    // Fragments are gross
-    implementation 'com.bluelinelabs:conductor:2.1.5'
-    implementation 'com.bluelinelabs:conductor-archlifecycle:2.1.5'
-    implementation 'com.bluelinelabs:conductor-support:2.1.5'
+    implementation rootProject.ext.conductor
+    implementation rootProject.ext.conductorArchLifecycle
+    implementation rootProject.ext.conductorSupport
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+    implementation(rootProject.ext.crashlytics) {
         transitive = true
     }
 
-    // ktx
-    implementation 'androidx.core:core-ktx:1.0.1'
+    implementation rootProject.ext.ktx
 
-    // Gesture view for full screen image viewer
-    implementation 'com.alexvasilkov:gesture-views:2.5.2'
+    implementation rootProject.ext.gestureView
 
-    // Exoplayer for GIFVs and MP4s
-    def exoplayer_version = "2.9.0"
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+    implementation rootProject.ext.exoCore
+    implementation rootProject.ext.exoUi
 
-    // FlexAdapter for simple screen composition
-    def flexadapter_version = "2.2.0"
-    implementation "com.github.ajalt:flexadapter:$flexadapter_version"
+    implementation rootProject.ext.flexAdapter
 
-    // OSS Licenses
-    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.1'
+    implementation rootProject.ext.ossLicenses
 
-    // Lottie
-    def lottieVersion = "2.8.0"
-    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation rootProject.ext.lottie
 
-    // Custom tabs helper
-    implementation 'saschpe.android:customtabs:2.0.0'
+    implementation rootProject.ext.customTabsHelper
 }
 
 androidExtensions {
