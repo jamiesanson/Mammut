@@ -66,80 +66,83 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
 
-    implementation rootProject.ext.appCompat
-    implementation rootProject.ext.constraintLayout
+    api project(":architecture")
 
-    implementation rootProject.ext.dagger
+    api rootProject.ext.kotlinRuntime
+    api rootProject.ext.coroutinesCore
+    api rootProject.ext.coroutinesAndroid
+
+    api rootProject.ext.appCompat
+    api rootProject.ext.constraintLayout
+
+    api rootProject.ext.dagger
     kapt rootProject.ext.daggerCompiler
 
-    implementation rootProject.ext.randux
+    api rootProject.ext.randux
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
+    api rootProject.ext.lifecycle
+    api rootProject.ext.lifecycleRx
 
-    implementation rootProject.ext.anko
+    api rootProject.ext.anko
 
-    implementation rootProject.ext.material
+    api rootProject.ext.material
 
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxKotlin
+    api rootProject.ext.rxJava
+    api rootProject.ext.rxAndroid
+    api rootProject.ext.rxKotlin
 
-    implementation rootProject.ext.arrowCore
-    implementation rootProject.ext.arrowSyntax
-    implementation rootProject.ext.arrowTypeclasses
-    implementation rootProject.ext.arrowData
-    implementation rootProject.ext.arrowInstancesCore
-    implementation rootProject.ext.arrowInstancesCoreData
-    implementation rootProject.ext.arrowOptics
+    api rootProject.ext.arrowCore
+    api rootProject.ext.arrowSyntax
+    api rootProject.ext.arrowTypeclasses
+    api rootProject.ext.arrowData
+    api rootProject.ext.arrowInstancesCore
+    api rootProject.ext.arrowInstancesCoreData
+    api rootProject.ext.arrowOptics
     kapt rootProject.ext.arrowProcessor
 
-    implementation rootProject.ext.calligraphy
+    api rootProject.ext.calligraphy
 
-    implementation rootProject.ext.mastodon4j
+    api rootProject.ext.mastodon4j
 
-    implementation rootProject.ext.room
+    api rootProject.ext.room
     kapt rootProject.ext.roomCompiler
 
-    implementation rootProject.ext.retrofit
-    implementation rootProject.ext.retrofitGsonConverter
+    api rootProject.ext.retrofit
+    api rootProject.ext.retrofitGsonConverter
 
-    implementation rootProject.ext.glide
-    implementation rootProject.ext.glideTransformations
+    api rootProject.ext.glide
+    api rootProject.ext.glideTransformations
     kapt rootProject.ext.glideCompiler
 
-    implementation rootProject.ext.inboxRecyclerView
+    api rootProject.ext.inboxRecyclerView
 
-    implementation rootProject.ext.paging
+    api rootProject.ext.paging
 
-    implementation rootProject.ext.threetenabp
+    api rootProject.ext.threetenabp
 
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
+    api rootProject.ext.conductor
+    api rootProject.ext.conductorArchLifecycle
+    api rootProject.ext.conductorSupport
 
-    implementation(rootProject.ext.crashlytics) {
+    api(rootProject.ext.crashlytics) {
         transitive = true
     }
 
-    implementation rootProject.ext.ktx
+    api rootProject.ext.ktx
 
-    implementation rootProject.ext.gestureView
+    api rootProject.ext.gestureView
 
-    implementation rootProject.ext.exoCore
-    implementation rootProject.ext.exoUi
+    api rootProject.ext.exoCore
+    api rootProject.ext.exoUi
 
-    implementation rootProject.ext.flexAdapter
+    api rootProject.ext.flexAdapter
 
-    implementation rootProject.ext.ossLicenses
+    api rootProject.ext.ossLicenses
 
-    implementation rootProject.ext.lottie
+    api rootProject.ext.lottie
 
-    implementation rootProject.ext.customTabsHelper
+    api rootProject.ext.customTabsHelper
 }
 
 androidExtensions {

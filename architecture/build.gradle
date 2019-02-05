@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -11,4 +12,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.kotlinRuntime
+
+    implementation rootProject.ext.rxKotlin
+    implementation rootProject.ext.rxJava
+    implementation rootProject.ext.rxAndroid
 }
