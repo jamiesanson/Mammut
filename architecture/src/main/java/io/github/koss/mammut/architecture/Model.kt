@@ -1,14 +1,17 @@
 package io.github.koss.mammut.architecture
 
+import android.os.Bundle
+import android.os.Parcelable
 import androidx.lifecycle.LiveDataReactiveStreams
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.zipWith
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.lang.RuntimeException
 
-abstract class Model<ViewState>(initialViewState: ViewState) {
+private const val KEY_STATE = "model_state"
+
+abstract class Model<ViewState: Parcelable>(initialViewState: ViewState) {
 
     // Internal backing field for the ViewState
     private val viewStateRx = BehaviorSubject.create<ViewState>()
@@ -70,9 +73,30 @@ abstract class Model<ViewState>(initialViewState: ViewState) {
     }
 
     /**
+     * Function to be called by the model implementation to trigger a new ViewState mapping
+     */
+    protected fun onNewSideEffect(sideEffect: SideEffect) {
+        sideEffectsEx.onNext(sideEffect)
+    }
+
+    /**
      * Function for handling side effects passed in to the model
      */
     protected abstract fun handleSideEffect(currentState: ViewState, sideEffect: SideEffect): ViewState
+
+    /**
+     * Function for saving the model to a given Bundle
+     */
+    fun save(savedInstanceState: Bundle) {
+        savedInstanceState.putParcelable(KEY_STATE, viewState.value)
+    }
+
+    /**
+     * Function for restoring the model from a given Bundle
+     */
+    fun restore(savedInstanceState: Bundle) {
+        savedInstanceState.getParcelable<ViewState>(KEY_STATE)?.let(::onNewViewState)
+    }
 
     /**
      * Private inner class allowing directly setting the ViewState to act as a side effect

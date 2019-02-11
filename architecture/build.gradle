@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
@@ -21,4 +22,8 @@ dependencies {
     implementation rootProject.ext.rxKotlin
     implementation rootProject.ext.rxJava
     implementation rootProject.ext.rxAndroid
+}
+
+androidExtensions {
+    experimental = true
 }
