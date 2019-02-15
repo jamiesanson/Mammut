@@ -14,14 +14,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
-
-    implementation rootProject.ext.kotlinRuntime
-
-    implementation rootProject.ext.rxKotlin
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
+    implementation rootProject.ext.retrofit
+    implementation rootProject.ext.retrofitGsonConverter
 }
 
 androidExtensions {

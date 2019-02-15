@@ -6,8 +6,8 @@ import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
 import io.github.koss.mammut.data.models.InstanceSearchResult
-import io.github.koss.mammut.data.remote.MastodonInstancesService
-import io.github.koss.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.instances.MastodonInstancesService
+import io.github.koss.mammut.instances.InstanceDetail
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,7 +32,7 @@ class InstancesRepository @Inject constructor(
                 .baseUrl(INSTANCES_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(MastodonInstancesService::class.java)
+                .create(io.github.koss.mammut.instances.MastodonInstancesService::class.java)
     }
 
     suspend fun getInstanceInformation(name: String): InstanceDetail? {

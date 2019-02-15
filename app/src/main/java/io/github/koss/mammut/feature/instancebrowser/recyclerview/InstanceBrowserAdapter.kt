@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import io.github.koss.mammut.data.models.InstanceRegistration
-import io.github.koss.mammut.data.remote.response.InstanceDetail
+import io.github.koss.mammut.instances.InstanceDetail
 import kotlinx.android.synthetic.main.view_holder_instance_card.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
