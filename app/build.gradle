@@ -67,8 +67,8 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api project(":architecture")
     api project(":instances")
+    api project(":toot")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore

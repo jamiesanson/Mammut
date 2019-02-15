@@ -1,1 +1,1 @@
-include ':app', ':architecture', ':instances'
+include ':app', ':instances', ':toot'
