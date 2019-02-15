@@ -2,8 +2,8 @@ package io.github.koss.mammut.feature.splash
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import io.github.koss.mammut.data.repo.PreferencesRepository
-import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.repo.PreferencesRepository
+import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
@@ -37,10 +37,10 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
                 registrations.forEach {
                     it.run {
                         when {
-                            accessToken != null && accessToken.accessToken == preferencesRepository.lastAccessedInstanceToken -> {
+                            accessToken?.accessToken == preferencesRepository.lastAccessedInstanceToken -> {
                                 InstanceActivity.launch(this@SplashActivity,
                                         instanceName = instanceName,
-                                        authCode = accessToken.accessToken)
+                                        authCode = accessToken!!.accessToken)
                                 finish()
                                 return@withContext
                             }

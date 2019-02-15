@@ -69,6 +69,7 @@ dependencies {
 
     api project(":instances")
     api project(":toot")
+    api project(":data")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore

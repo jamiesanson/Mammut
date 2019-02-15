@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.feature.themes.ThemeEngine
-import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feature.network.NetworkIndicator
 
 @Module(includes = [ ApplicationViewModelModule::class ])

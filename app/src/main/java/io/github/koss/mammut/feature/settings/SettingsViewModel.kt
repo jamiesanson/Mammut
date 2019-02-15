@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
-import io.github.koss.mammut.data.repo.PreferencesRepository
-import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.repo.PreferencesRepository
+import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.instance.dagger.InstanceScope

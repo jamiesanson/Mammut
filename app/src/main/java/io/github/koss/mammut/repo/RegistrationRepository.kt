@@ -1,4 +1,4 @@
-package io.github.koss.mammut.data.repo
+package io.github.koss.mammut.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations

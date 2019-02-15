@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(":instances")
+
+    implementation rootProject.ext.room
+    kapt rootProject.ext.roomCompiler
+
+    implementation rootProject.ext.mastodon4j
+
+    implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.paging
+}
+
+androidExtensions {
+    experimental = true
+}

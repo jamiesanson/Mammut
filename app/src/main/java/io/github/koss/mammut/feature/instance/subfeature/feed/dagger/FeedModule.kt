@@ -11,7 +11,7 @@ import dagger.Provides
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
-import io.github.koss.mammut.data.repo.PreferencesRepository
+import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.extension.run
 import io.github.koss.mammut.feature.feedpaging.FeedPager
 import io.github.koss.mammut.feature.feedpaging.FeedStateData

@@ -1,4 +1,4 @@
-package io.github.koss.mammut.data.repo
+package io.github.koss.mammut.repo
 
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.dagger.application.ApplicationScope

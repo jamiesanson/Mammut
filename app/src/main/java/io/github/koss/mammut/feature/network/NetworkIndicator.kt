@@ -27,6 +27,7 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 class NetworkIndicator(context: Context) {
 
     init {
+        @Suppress("DEPRECATION") // Deprecation suppressed here as this is the most simple solution for now.
         context.registerReceiver(NetworkIndicatorReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 

@@ -1,4 +1,4 @@
-package io.github.koss.mammut.data.repo
+package io.github.koss.mammut.repo
 
 import android.annotation.SuppressLint
 import android.content.Context

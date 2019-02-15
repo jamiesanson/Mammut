@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
@@ -43,8 +45,6 @@ import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_profile.*
-import org.jetbrains.anko.bundleOf
-import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -118,8 +118,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
         } else {
             // Inflate edit and settings items
             toolbar.inflateMenu(R.menu.user_profile_menu)
-            toolbar.menu
-                    .itemsSequence()
+            toolbar.menu.children
                     .forEach {
                         it.icon.setTint(colorControlNormal)
                         it.icon.setTintMode(PorterDuff.Mode.SRC_IN)

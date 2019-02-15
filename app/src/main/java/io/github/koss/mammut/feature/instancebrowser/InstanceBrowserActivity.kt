@@ -10,7 +10,7 @@ import io.github.koss.mammut.component.widget.scrollintercepting.NestedScrollLis
 import io.github.koss.mammut.component.widget.scrollintercepting.ScrollInterceptionBehavior
 import io.github.koss.mammut.dagger.MammutViewModelFactory
 import io.github.koss.mammut.instances.InstanceDetail
-import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.base.BaseActivity

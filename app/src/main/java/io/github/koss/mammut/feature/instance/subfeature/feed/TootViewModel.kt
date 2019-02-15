@@ -42,7 +42,7 @@ class TootViewModel: ViewModel() {
 
     private fun processViewState() {
         val status = currentStatus ?: return
-        val name = (if (status.account?.displayName?.isEmpty() == true) status.account.acct else status.account?.displayName) ?: ""
+        val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName) ?: ""
         val username = "@${status.account?.userName}"
         val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
 
