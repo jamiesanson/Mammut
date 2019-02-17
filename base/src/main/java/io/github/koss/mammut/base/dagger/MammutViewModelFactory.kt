@@ -1,4 +1,4 @@
-package io.github.koss.mammut.dagger
+package io.github.koss.mammut.base.dagger
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

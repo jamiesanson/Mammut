@@ -8,11 +8,13 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseActivity
+import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
+import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.synthetic.main.activity_instance.*
 import javax.inject.Inject
 
@@ -22,7 +24,8 @@ private const val EXTRA_AUTH_CODE = "auth_code"
 /**
  * Main fragment for hosting an instance. Handles navigation within the instance.
  */
-class InstanceActivity : BaseActivity() {
+class InstanceActivity : BaseActivity(), SubcomponentFactory {
+
 
     lateinit var component: InstanceComponent
 
@@ -57,6 +60,14 @@ class InstanceActivity : BaseActivity() {
                 .plus(InstanceModule(instanceName, authCode)).also {
                     it.inject(this)
                 }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
+        return when (module) {
+            is ComposeTootModule -> component.plus(module)
+            else -> throw IllegalArgumentException("Unknown module type")
+        } as Subcomponent
     }
 
     override fun onStop() {

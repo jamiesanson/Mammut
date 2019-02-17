@@ -28,7 +28,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.comingSoon

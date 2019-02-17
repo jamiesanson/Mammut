@@ -7,21 +7,19 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import io.github.koss.mammut.MammutApplication
 import io.github.koss.mammut.R
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationComponent
-import kotlinx.android.synthetic.main.design_layout_snackbar_include.view.*
 import org.jetbrains.anko.contentView
 import androidx.annotation.ColorInt
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import org.jetbrains.anko.attr
-import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.textColor
 
 
@@ -44,7 +42,7 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 
     Snackbar.make(contentView!!, message, length).apply {
         view.background.setTint(primaryDarkColor)
-        view.snackbar_text.textColor = lightAccentColor
+        view.findViewById<TextView>(R.id.snackbar_text).textColor = lightAccentColor
     }.show()
 }
 

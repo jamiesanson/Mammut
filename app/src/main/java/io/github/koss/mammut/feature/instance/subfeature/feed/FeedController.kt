@@ -23,7 +23,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.Account
@@ -32,7 +32,6 @@ import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
 import io.github.koss.mammut.feature.instance.InstanceActivity
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
@@ -44,6 +43,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
+import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -331,6 +331,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     private fun hideNewTootsIndicator(animate: Boolean = true) {
+        containerView ?: return
+
         if (animate) {
             newTootButton.animate()
                     .translationY(-(newTootButton.y + newTootButton.height))

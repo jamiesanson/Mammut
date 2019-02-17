@@ -24,6 +24,7 @@ import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.base.BaseController
+import io.github.koss.mammut.toot.ComposeTootController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_instance.*
@@ -54,7 +55,9 @@ private const val ROUTER_STATES_KEY = "STATE"
  * The main idea came from [this PR](https://github.com/bluelinelabs/Conductor/pull/316).
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class InstanceController : BaseController(), BottomNavigationView.OnNavigationItemSelectedListener, FullScreenPhotoHandler {
+class InstanceController : BaseController(),
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        FullScreenPhotoHandler {
 
     /**
      * This will hold all the information about the tabs.
@@ -85,7 +88,7 @@ class InstanceController : BaseController(), BottomNavigationView.OnNavigationIt
         }
 
         view.addButton.onClick {
-            comingSoon()
+            router.pushController(RouterTransaction.with(ComposeTootController()))
         }
 
         // We have not a single bundle/state saved.

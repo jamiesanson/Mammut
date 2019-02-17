@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -11,7 +12,6 @@ android {
     }
 }
 
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -20,12 +20,17 @@ dependencies {
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
 
+    implementation rootProject.ext.appCompat
+
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
     implementation rootProject.ext.conductor
     implementation rootProject.ext.conductorArchLifecycle
     implementation rootProject.ext.conductorSupport
+
+    implementation rootProject.ext.dagger
+    kapt rootProject.ext.daggerCompiler
 
     implementation rootProject.ext.mastodon4j
 

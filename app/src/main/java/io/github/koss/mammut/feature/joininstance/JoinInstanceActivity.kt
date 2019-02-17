@@ -11,7 +11,7 @@ import android.widget.PopupWindow
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.BuildConfig
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.InstanceSearchResult
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.extension.observe

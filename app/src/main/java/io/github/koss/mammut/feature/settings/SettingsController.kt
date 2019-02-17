@@ -18,7 +18,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.startActivity
@@ -39,7 +39,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)

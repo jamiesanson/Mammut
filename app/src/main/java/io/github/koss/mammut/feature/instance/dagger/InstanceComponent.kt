@@ -8,6 +8,8 @@ import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
+import io.github.koss.mammut.toot.dagger.ComposeTootComponent
+import io.github.koss.mammut.toot.dagger.ComposeTootModule
 
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])
@@ -20,4 +22,6 @@ interface InstanceComponent {
     fun plus(profileModule: ProfileModule): ProfileComponent
 
     fun plus(settingsModule: SettingsModule): SettingsComponent
+
+    fun plus(composeTootModule: ComposeTootModule): ComposeTootComponent
 }
