@@ -36,6 +36,10 @@ class ComposeTootViewModel @Inject constructor(
             spoilerText = null
     )
 
+    /**
+     * Function for initialising the ViewModel. Useful when resetting the model, and
+     * also allows supplying of an `inReplyToId`
+     */
     fun initialise(inReplyToId: Long?, force: Boolean = false) {
         // Initialise
         if (!hasBeenModified || force) {
