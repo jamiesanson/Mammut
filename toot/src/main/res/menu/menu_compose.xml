@@ -6,10 +6,4 @@
         android:title="@string/delete"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_delete_black_24dp"/>
-
-    <item
-        android:id="@+id/toot_item"
-        android:title="@string/toot"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_send_black_24dp"/>
 </menu>

@@ -7,7 +7,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import androidx.core.view.children
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import io.github.koss.mammut.base.BaseController
@@ -18,6 +21,7 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.compose_toot_controller.*
 import org.jetbrains.anko.colorAttr
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import java.lang.IllegalStateException
 import javax.inject.Inject
@@ -47,6 +51,15 @@ class ComposeTootController: BaseController() {
                 .of(context as FragmentActivity, factory)[ComposeTootViewModel::class.java]
     }
 
+    override fun onDetach(view: View) {
+        super.onDetach(view)
+        // Hide Keyboard
+        activity?.findViewById<View>(android.R.id.content)?.run {
+            activity?.getSystemService<InputMethodManager>()
+                    ?.hideSoftInputFromWindow(windowToken, 0)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
             inflater.inflate(R.layout.compose_toot_controller, container, false)
 
@@ -54,6 +67,14 @@ class ComposeTootController: BaseController() {
         super.initialise(savedInstanceState)
         setupToolbar()
         setupRemainingCharacters()
+        setupTootButton()
+    }
+
+    private fun setupTootButton() {
+        updateTootButton()
+        tootButton.onClick {
+            viewModel.onSendTootClicked()
+        }
     }
 
     private fun setupRemainingCharacters() {
@@ -63,11 +84,14 @@ class ComposeTootController: BaseController() {
             afterTextChanged { text ->
                 val length = text?.length ?: 0
                 remainingCharactersTextView.text = "${MAX_TOOT_LENGTH - length}"
+                updateTootButton()
             }
         }
     }
 
     private fun setupToolbar() {
+        if (toolbar.menu.isNotEmpty()) return
+
         // Inflate delete and send items
         val colorControlNormal = toolbar.context.colorAttr(R.attr.colorControlNormal)
         toolbar.inflateMenu(R.menu.menu_compose)
@@ -90,14 +114,14 @@ class ComposeTootController: BaseController() {
         }
     }
 
+    private fun updateTootButton() {
+        tootButton.isEnabled = inputEditText.length() > 0
+    }
+
     private fun onMenuItemClicked(menuItem: MenuItem): Boolean =
             when (menuItem.itemId) {
                 R.id.delete_item -> {
                     viewModel.onDeleteClicked()
-                    true
-                }
-                R.id.toot_item -> {
-                    viewModel.onSendTootClicked()
                     true
                 }
                 else -> false
