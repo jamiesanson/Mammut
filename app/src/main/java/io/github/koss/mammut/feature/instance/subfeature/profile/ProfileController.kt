@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
 import androidx.core.view.children
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
@@ -117,6 +118,8 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
             }
         } else {
             // Inflate edit and settings items
+            if (toolbar.menu.isNotEmpty()) return
+
             toolbar.inflateMenu(R.menu.user_profile_menu)
             toolbar.menu.children
                     .forEach {
