@@ -4,4 +4,9 @@
     <string name="delete">Delete</string>
     <string name="toot">Toot</string>
     <string name="toot_action">Toot!</string>
+    <string name="start_toot_again">Start this Toot again?</string>
+    <string name="start_again">Start Again</string>
+    <string name="cancel">Cancel</string>
+    <string name="toot_posted">Toot posted!</string>
+    <string name="submitting_your_toot">Submitting your toot</string>
 </resources>

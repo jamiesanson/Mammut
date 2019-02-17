@@ -1,4 +1,4 @@
-package io.github.koss.mammut.toot
+package io.github.koss.mammut.toot.model
 
 import android.os.Parcelable
 import com.sys1yagi.mastodon4j.api.entity.Status

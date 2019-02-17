@@ -22,9 +22,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:text="@string/compose"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="?attr/colorControlNormal"
-                android:text="@string/compose"/>
+                android:textColor="?attr/colorControlNormal" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -36,19 +36,19 @@
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:gravity="top"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLength="500"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:maxLength="500"
-        android:inputType="textCapSentences|textMultiLine"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:cardElevation="16dp"
+        android:backgroundTint="?attr/colorPrimary"
         app:cardCornerRadius="0dp"
-        android:backgroundTint="?attr/colorPrimary">
+        app:cardElevation="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,28 +58,66 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/remainingCharactersTextView"
-                android:layout_margin="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical"
+                android:layout_margin="16dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/tootButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
-                android:text="@string/toot_action"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                android:layout_gravity="center_vertical"/>
+                android:text="@string/toot_action" />
         </LinearLayout>
 
 
-
     </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/submissionLoadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="?attr/colorPrimaryTransparency"
+        android:clickable="true"
+        android:elevation="20dp"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="?attr/colorAccent"
+            android:indeterminateTintMode="src_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:text="@string/submitting_your_toot"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

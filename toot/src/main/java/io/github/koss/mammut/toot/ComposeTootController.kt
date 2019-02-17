@@ -3,20 +3,28 @@ package io.github.koss.mammut.toot
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import androidx.core.view.children
 import androidx.core.view.isNotEmpty
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.toot.dagger.*
+import io.github.koss.mammut.toot.model.SubmissionState
+import io.github.koss.mammut.toot.model.TootModel
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.compose_toot_controller.*
@@ -66,8 +74,45 @@ class ComposeTootController: BaseController() {
     override fun initialise(savedInstanceState: Bundle?) {
         super.initialise(savedInstanceState)
         setupToolbar()
-        setupRemainingCharacters()
+        setupTextChangedListeners()
         setupTootButton()
+
+        viewModel.initialise(null)
+
+        viewModel.model.observe(this, Observer(::onModelChanged))
+        viewModel.submissionState.observe(this, Observer(::onSubmissionStateChanged))
+    }
+
+    private fun onModelChanged(model: TootModel?) {
+        model ?: return
+
+        if (inputEditText.text.toString() != model.status) {
+            inputEditText.setText(model.status)
+        }
+    }
+    
+    private fun onSubmissionStateChanged(submissionState: SubmissionState?) {
+        submissionState ?: return
+
+        TransitionManager.beginDelayedTransition(view as ViewGroup)
+        submissionLoadingLayout.isVisible = submissionState.isSubmitting
+        
+        when {
+            submissionState.hasSubmitted -> {
+                // Close and toast
+                view?.let {
+                    Toast.makeText(it.context, R.string.toot_posted, Toast.LENGTH_SHORT).show()
+                }
+                
+                close()
+            }
+            submissionState.error != null -> {
+                // Show error
+                view?.let {
+                    Snackbar.make(it, submissionState.error, Snackbar.LENGTH_LONG)
+                }
+            }
+        }
     }
 
     private fun setupTootButton() {
@@ -77,7 +122,7 @@ class ComposeTootController: BaseController() {
         }
     }
 
-    private fun setupRemainingCharacters() {
+    private fun setupTextChangedListeners() {
         remainingCharactersTextView.text = (MAX_TOOT_LENGTH - inputEditText.length()).toString()
 
         inputEditText.textChangedListener {
@@ -85,6 +130,7 @@ class ComposeTootController: BaseController() {
                 val length = text?.length ?: 0
                 remainingCharactersTextView.text = "${MAX_TOOT_LENGTH - length}"
                 updateTootButton()
+                viewModel.onStatusChanged(text?.toString() ?: "")
             }
         }
     }
@@ -110,7 +156,7 @@ class ComposeTootController: BaseController() {
                 }
         toolbar.navigationIcon = navigationIcon
         toolbar.setNavigationOnClickListener {
-            router.popCurrentController()
+            close()
         }
     }
 
@@ -121,11 +167,19 @@ class ComposeTootController: BaseController() {
     private fun onMenuItemClicked(menuItem: MenuItem): Boolean =
             when (menuItem.itemId) {
                 R.id.delete_item -> {
-                    viewModel.onDeleteClicked()
+                    if (viewModel.hasBeenModified) {
+                        AlertDialog.Builder(view?.context!!)
+                                .setMessage(R.string.start_toot_again)
+                                .setPositiveButton(R.string.start_again) { _, _ -> viewModel.deleteTootContents() }
+                                .setNegativeButton(R.string.cancel) { _, _ -> }
+                                .show()
+                    }
                     true
                 }
                 else -> false
             }
 
-
+    private fun close() {
+        router.popCurrentController()
+    }
 }
