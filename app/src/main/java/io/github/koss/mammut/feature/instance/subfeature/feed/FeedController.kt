@@ -20,6 +20,7 @@ import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bumptech.glide.RequestManager
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.dagger.MammutViewModelFactory
@@ -36,7 +37,7 @@ import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.koss.mammut.feature.feedpaging.NetworkState
-import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
 import kotlinx.android.extensions.CacheImplementation
@@ -57,7 +58,7 @@ import kotlin.run
  * *any* pageable status endpoint. So far, I think it is, but I can't be sure.
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
+class FeedController(args: Bundle) : BaseController(args), ReselectListener, TootCallbacks {
 
     private lateinit var viewModel: FeedViewModel
 

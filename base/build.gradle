@@ -15,10 +15,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(":base")
-
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
+
+    implementation rootProject.ext.appCompat
 
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
@@ -35,6 +35,14 @@ dependencies {
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.anko
+
+    implementation rootProject.ext.calligraphy
+
+    implementation rootProject.ext.dagger
+
+    implementation rootProject.ext.material
 }
 
 androidExtensions {

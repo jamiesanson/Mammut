@@ -4,11 +4,11 @@ import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.fabric.sdk.android.Fabric
+import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.dagger.application.ApplicationComponent
 import io.github.koss.mammut.dagger.application.ApplicationModule
 import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
-import io.github.koss.mammut.feature.themes.ThemeEngine
 import javax.inject.Inject
 import saschpe.android.customtabs.CustomTabsActivityLifecycleCallbacks
 

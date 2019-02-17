@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.themes
+package io.github.koss.mammut.base.themes
 
 sealed class Font(val path: String)
 

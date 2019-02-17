@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.themes.StandardLightTheme
+import io.github.koss.mammut.base.themes.StandardTheme
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.instance.dagger.InstanceScope
 import io.github.koss.mammut.feature.settings.model.*
-import io.github.koss.mammut.feature.themes.StandardLightTheme
-import io.github.koss.mammut.feature.themes.StandardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

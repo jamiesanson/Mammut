@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.base.BaseController
 import kotlin.reflect.KProperty
 
 /**

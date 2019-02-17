@@ -23,6 +23,7 @@ import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
+import io.github.koss.mammut.base.BaseController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_instance.*

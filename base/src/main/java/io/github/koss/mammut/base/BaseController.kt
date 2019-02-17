@@ -1,18 +1,15 @@
-package io.github.koss.mammut.feature.instance.subfeature.navigation
+package io.github.koss.mammut.base
 
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
-import kotlinx.android.extensions.CacheImplementation
-import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlin.coroutines.CoroutineContext
 
-@ContainerOptions(cache = CacheImplementation.NO_CACHE)
-abstract class BaseController: LifecycleController, LayoutContainer, ReselectListener, CoroutineScope {
+abstract class BaseController: LifecycleController, LayoutContainer, CoroutineScope {
 
     constructor(): super()
 
@@ -23,8 +20,6 @@ abstract class BaseController: LifecycleController, LayoutContainer, ReselectLis
 
     override val coroutineContext: CoroutineContext
         get() = GlobalScope.coroutineContext
-
-    override fun onTabReselected() {}
 
     private var restoreCalled: Boolean = false
 

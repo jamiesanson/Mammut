@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
+import io.github.koss.mammut.base.themes.ThemeConfig
+import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.data.database.MammutDatabase
-import io.github.koss.mammut.feature.themes.ThemeEngine
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feature.network.NetworkIndicator
 
@@ -25,7 +26,13 @@ class ApplicationModule(private val appContext: Context) {
     @Provides
     @ApplicationScope
     fun provideThemeEngine(preferencesRepository: PreferencesRepository): ThemeEngine =
-            ThemeEngine(preferencesRepository)
+            ThemeEngine(object: ThemeConfig {
+                override var currentThemeId: String?
+                    get() = preferencesRepository.themeId
+                    set(value) {
+                        preferencesRepository.themeId = value
+                    }
+            })
 
     @Provides
     @ApplicationScope

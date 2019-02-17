@@ -7,9 +7,9 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.BaseActivity
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.feature.base.BaseActivity
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController

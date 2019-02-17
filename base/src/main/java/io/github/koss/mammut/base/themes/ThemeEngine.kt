@@ -1,27 +1,26 @@
-package io.github.koss.mammut.feature.themes
+package io.github.koss.mammut.base.themes
 
 import android.graphics.Typeface
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import io.github.koss.mammut.R
-import io.github.koss.mammut.repo.PreferencesRepository
+import io.github.koss.mammut.base.R
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 class ThemeEngine(
-        private val preferencesRepository: PreferencesRepository
+        private val config: ThemeConfig
 ) {
 
     private val currentTheme: Theme
-       get() = when (preferencesRepository.themeId) {
-           StandardTheme.themeId -> StandardTheme
-           StandardLightTheme.themeId -> StandardLightTheme
-           else -> {
-               preferencesRepository.themeId = StandardTheme.themeId
-               Log.w("ThemeEngine", "Invalid theme ID. Resetting to standard")
-               StandardTheme
-           }
-       }
+        get() = when (config.currentThemeId) {
+            StandardTheme.themeId -> StandardTheme
+            StandardLightTheme.themeId -> StandardLightTheme
+            else -> {
+                config.currentThemeId = StandardTheme.themeId
+                Log.w("ThemeEngine", "Invalid theme ID. Resetting to standard")
+                StandardTheme
+            }
+        }
 
     val isLightTheme: Boolean
         get() = currentTheme.themeId.contains("light")

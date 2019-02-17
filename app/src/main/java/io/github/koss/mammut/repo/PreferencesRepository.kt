@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import io.github.koss.mammut.feature.themes.StandardTheme
+import io.github.koss.mammut.base.themes.StandardTheme
 import kotlin.reflect.KProperty
 
 /**

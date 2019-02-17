@@ -67,6 +67,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    api project(":base")
     api project(":instances")
     api project(":toot")
     api project(":data")

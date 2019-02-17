@@ -1,7 +1,7 @@
-package io.github.koss.mammut.feature.themes
+package io.github.koss.mammut.base.themes
 
 import androidx.annotation.StyleRes
-import io.github.koss.mammut.R
+import io.github.koss.mammut.base.R
 
 sealed class Theme(
         val themeId: String,

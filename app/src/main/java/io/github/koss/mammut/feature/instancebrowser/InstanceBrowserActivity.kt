@@ -5,6 +5,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.BaseActivity
 import io.github.koss.mammut.component.widget.scrollintercepting.Direction
 import io.github.koss.mammut.component.widget.scrollintercepting.NestedScrollListener
 import io.github.koss.mammut.component.widget.scrollintercepting.ScrollInterceptionBehavior
@@ -13,7 +14,6 @@ import io.github.koss.mammut.instances.InstanceDetail
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.feature.base.BaseActivity
 import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instancebrowser.about.InstanceAboutFragment
 import io.github.koss.mammut.feature.instancebrowser.recyclerview.InstanceBrowserAdapter

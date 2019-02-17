@@ -25,6 +25,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.dagger.MammutViewModelFactory
@@ -36,7 +37,6 @@ import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
 import io.github.koss.mammut.feature.settings.SettingsController
