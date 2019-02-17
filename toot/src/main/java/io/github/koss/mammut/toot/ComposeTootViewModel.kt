@@ -7,6 +7,7 @@ import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
+import io.github.koss.mammut.toot.repo.StatusRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +25,8 @@ class ComposeTootViewModel @Inject constructor(
 
     val hasBeenModified: Boolean
         get() = model.value != null && model.value?.copy(inReplyToId = null) != emptyModel
+
+    val statusRepo: StatusRepository by lazy { StatusRepository(mastodonClient) }
 
     private val emptyModel: TootModel = TootModel(
             status = "",
@@ -58,35 +61,17 @@ class ComposeTootViewModel @Inject constructor(
 
     fun onSendTootClicked() {
         model.value?.let {
+            // Validate
             if (it.status.isEmpty()) throw IllegalStateException("Status can't be empty")
 
+            // Begin Loading
+            (submissionState as MutableLiveData).value = SubmissionState(
+                    isSubmitting = true
+            )
+
+            // Submit Toot
             launch(Dispatchers.IO) {
-                (submissionState as MutableLiveData).postValue(SubmissionState(
-                        isSubmitting = true
-                ))
-
-                // Submit the status
-                try {
-                    Statuses(mastodonClient).postStatus(
-                            status = it.status,
-                            inReplyToId = it.inReplyToId,
-                            mediaIds = it.mediaIds,
-                            sensitive = it.sensitive,
-                            spoilerText = it.spoilerText,
-                            visibility = it.visibility
-                    ).execute()
-
-                    submissionState.postValue(SubmissionState(
-                            isSubmitting = false,
-                            hasSubmitted = true
-                    ))
-
-                } catch (e: Exception) {
-                    submissionState.postValue(SubmissionState(
-                            isSubmitting = false,
-                            error = e.message
-                    ))
-                }
+                submissionState.postValue(statusRepo.post(it))
             }
         }
     }

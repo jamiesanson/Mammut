@@ -13,7 +13,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
-import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.base.extensions.run
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.StreamingBuilder
 import kotlinx.coroutines.CoroutineScope

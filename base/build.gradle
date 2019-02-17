@@ -43,6 +43,8 @@ dependencies {
     implementation rootProject.ext.dagger
 
     implementation rootProject.ext.material
+
+    api rootProject.ext.arrowCore
 }
 
 androidExtensions {
