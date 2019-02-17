@@ -1,4 +1,4 @@
-package io.github.koss.mammut.instances
+package io.github.koss.mammut.instances.response
 
 import com.google.gson.annotations.SerializedName
 

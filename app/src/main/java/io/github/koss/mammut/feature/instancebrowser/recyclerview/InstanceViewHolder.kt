@@ -9,7 +9,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.instances.InstanceDetail
+import io.github.koss.mammut.instances.response.InstanceDetail
 import io.github.koss.mammut.extension.inflate
 import io.github.koss.mammut.extension.lifecycleOwner
 import io.github.koss.mammut.extension.observe

@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.request.RequestOptions
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.instances.InstanceDetail
+import io.github.koss.mammut.instances.response.InstanceDetail
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import kotlinx.android.synthetic.main.fragment_about_instance.*
@@ -85,7 +85,7 @@ class InstanceAboutFragment: Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun presentTechnicalDetails(detail: io.github.koss.mammut.instances.InstanceDetail) {
+    private fun presentTechnicalDetails(detail: InstanceDetail) {
         val ipv6Info = if (detail.ipv6) "IPV6 Enabled" else "No IPV6"
 
         technicalInfoTextView.text = "$ipv6Info • ${detail.version}"

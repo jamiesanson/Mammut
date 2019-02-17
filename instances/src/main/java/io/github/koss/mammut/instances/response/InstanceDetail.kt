@@ -1,4 +1,4 @@
-package io.github.koss.mammut.instances
+package io.github.koss.mammut.instances.response
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
