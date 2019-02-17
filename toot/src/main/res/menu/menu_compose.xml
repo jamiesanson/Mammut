@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/delete_item"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_delete_black_24dp"/>
+
+    <item
+        android:id="@+id/toot_item"
+        android:title="@string/toot"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_send_black_24dp"/>
+</menu>

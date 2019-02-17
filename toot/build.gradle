@@ -22,6 +22,8 @@ dependencies {
 
     implementation rootProject.ext.appCompat
 
+    implementation rootProject.ext.material
+
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
@@ -40,6 +42,8 @@ dependencies {
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.anko
 }
 
 androidExtensions {

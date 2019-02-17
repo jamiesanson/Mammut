@@ -8,4 +8,10 @@ class ComposeTootViewModel @Inject constructor(
         private val mastodonClient: MastodonClient
 ): ViewModel() {
 
+    fun onDeleteClicked() {
+
+    }
+
+    fun onSendTootClicked() {
+    }
 }

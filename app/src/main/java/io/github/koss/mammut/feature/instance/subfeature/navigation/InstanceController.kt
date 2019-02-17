@@ -13,6 +13,7 @@ import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -27,6 +28,7 @@ import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.toot.ComposeTootController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -88,7 +90,7 @@ class InstanceController : BaseController(),
         }
 
         view.addButton.onClick {
-            router.pushController(RouterTransaction.with(ComposeTootController()))
+            performComposeTootOpen()
         }
 
         // We have not a single bundle/state saved.
@@ -240,5 +242,16 @@ class InstanceController : BaseController(),
                 .transition(withCrossFade())
                 .transform(FitCenter())
                 .into(fullScreenGestureImageView)
+    }
+
+    /**
+     * Function for coordinating the animations which lead to the reveal of the [ComposeTootController]
+     */
+    private fun performComposeTootOpen() {
+        // TODO - Improve this to incorporate circular reveals, arc motion etc.
+        router.pushController(RouterTransaction
+                .with(ComposeTootController())
+                .popChangeHandler(VerticalChangeHandler())
+                .pushChangeHandler(VerticalChangeHandler()))
     }
 }
