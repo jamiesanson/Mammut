@@ -1,12 +1,12 @@
 package io.github.koss.mammut.dagger.application
 
 import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.base.themes.ThemeConfig
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.data.database.MammutDatabase
+import io.github.koss.mammut.data.database.MammutDatabaseInitialiser
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feature.network.NetworkIndicator
 
@@ -37,7 +37,7 @@ class ApplicationModule(private val appContext: Context) {
     @Provides
     @ApplicationScope
     fun provideMammutDatabase(context: Context): MammutDatabase =
-            Room.databaseBuilder(context, MammutDatabase::class.java, "mammut-db").build()
+            MammutDatabaseInitialiser.initialise(context)
 
     @Provides
     @ApplicationScope
