@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
+import com.sys1yagi.mastodon4j.api.entity.Emoji
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
@@ -81,6 +83,7 @@ class ComposeTootController: BaseController() {
 
         viewModel.model.observe(this, Observer(::onModelChanged))
         viewModel.submissionState.observe(this, Observer(::onSubmissionStateChanged))
+        viewModel.availableEmojis.observe(this, Observer(::onEmojisRetrieved))
     }
 
     private fun onModelChanged(model: TootModel?) {
@@ -113,6 +116,10 @@ class ComposeTootController: BaseController() {
                 }
             }
         }
+    }
+
+    private fun onEmojisRetrieved(emojis: List<Emoji>?) {
+        Log.d("ComposeToot", "Got Emoji: $emojis")
     }
 
     private fun setupTootButton() {

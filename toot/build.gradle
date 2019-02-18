@@ -16,6 +16,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(":base")
+    implementation project(":data")
 
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx

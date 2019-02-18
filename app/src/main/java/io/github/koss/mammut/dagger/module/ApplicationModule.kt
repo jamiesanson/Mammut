@@ -1,10 +1,11 @@
-package io.github.koss.mammut.dagger.application
+package io.github.koss.mammut.dagger.module
 
 import android.content.Context
 import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.base.themes.ThemeConfig
 import io.github.koss.mammut.base.themes.ThemeEngine
+import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.MammutDatabaseInitialiser
 import io.github.koss.mammut.repo.PreferencesRepository

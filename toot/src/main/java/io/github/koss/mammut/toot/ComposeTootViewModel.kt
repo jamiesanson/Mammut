@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sys1yagi.mastodon4j.MastodonClient
+import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
@@ -16,17 +17,17 @@ import java.lang.Exception
 import javax.inject.Inject
 
 class ComposeTootViewModel @Inject constructor(
-        private val mastodonClient: MastodonClient
+        private val statusRepository: StatusRepository
 ): ViewModel(), CoroutineScope by GlobalScope {
 
     val model: LiveData<TootModel> = MutableLiveData()
 
     val submissionState: LiveData<SubmissionState> = MutableLiveData()
 
+    val availableEmojis: LiveData<List<Emoji>> = MutableLiveData()
+
     val hasBeenModified: Boolean
         get() = model.value != null && model.value?.copy(inReplyToId = null) != emptyModel
-
-    val statusRepo: StatusRepository by lazy { StatusRepository(mastodonClient) }
 
     private val emptyModel: TootModel = TootModel(
             status = "",
@@ -35,6 +36,14 @@ class ComposeTootViewModel @Inject constructor(
             sensitive = false,
             spoilerText = null
     )
+
+    init {
+        // Load emojis
+        launch {
+            val emojis = statusRepository.loadVisibleEmojis()
+            (availableEmojis as MutableLiveData).postValue(emojis)
+        }
+    }
 
     /**
      * Function for initialising the ViewModel. Useful when resetting the model, and
@@ -75,7 +84,7 @@ class ComposeTootViewModel @Inject constructor(
 
             // Submit Toot
             launch(Dispatchers.IO) {
-                submissionState.postValue(statusRepo.post(it))
+                submissionState.postValue(statusRepository.post(it))
             }
         }
     }

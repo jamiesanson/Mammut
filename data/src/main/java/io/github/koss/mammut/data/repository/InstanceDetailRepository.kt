@@ -23,6 +23,8 @@ class InstanceDetailRepository(
      * * Checks in DB first
      * * If found, return them
      * * Else call the API to retrieve them, then save them back to the db.
+     *
+     * TODO - Add a local cache timeout, or add caching to OkHttp (I think it supports ETags)
      */
     suspend fun loadEmojisForInstance(instance: String): List<Emoji> =
         mammutDatabase.instanceDetailDao().getEmojisForUrl(instance)?.emojis

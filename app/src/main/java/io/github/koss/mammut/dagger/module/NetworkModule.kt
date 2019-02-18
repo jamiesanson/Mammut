@@ -1,4 +1,4 @@
-package io.github.koss.mammut.dagger.network
+package io.github.koss.mammut.dagger.module
 
 import com.google.gson.GsonBuilder
 import dagger.Module
