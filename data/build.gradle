@@ -23,6 +23,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(":instances")
+    implementation project(":base")
 
     implementation rootProject.ext.room
     kapt rootProject.ext.roomCompiler

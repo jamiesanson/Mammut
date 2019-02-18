@@ -1,6 +1,7 @@
 package io.github.koss.mammut.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import io.github.koss.mammut.data.database.entities.EmojiListEntity
 
@@ -8,5 +9,8 @@ import io.github.koss.mammut.data.database.entities.EmojiListEntity
 interface InstanceDetailDao {
 
     @Query("SELECT * FROM emojilistentity WHERE instance = :url LIMIT 1")
-    fun getEmojisForUrl(url: String): EmojiListEntity
+    fun getEmojisForUrl(url: String): EmojiListEntity?
+
+    @Insert
+    fun insertEmojis(emojiListEntity: EmojiListEntity)
 }
