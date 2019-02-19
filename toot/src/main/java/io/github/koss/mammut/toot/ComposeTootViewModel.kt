@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class ComposeTootViewModel @Inject constructor(
         private val statusRepository: StatusRepository
-): ViewModel(), CoroutineScope by GlobalScope {
+) : ViewModel(), CoroutineScope by GlobalScope {
 
     val model: LiveData<TootModel> = MutableLiveData()
 
@@ -65,6 +65,24 @@ class ComposeTootViewModel @Inject constructor(
 
     fun onStatusChanged(status: String) {
         updateModel { it?.copy(status = status) }
+    }
+
+    /**
+     * Updates status with emoji text when clicked. Only updates the status text if
+     * the resulting text is shorter than [MAX_TOOT_LENGTH]
+     */
+    fun onEmojiAdded(emoji: Emoji) {
+        updateModel {
+            val status = it?.status ?: ""
+            val emojiText = ":${emoji.shortcode}:"
+
+            when {
+                ("$status$emojiText").length <= MAX_TOOT_LENGTH -> {
+                    it?.copy(status = "$status$emojiText")
+                }
+                else -> it
+            }
+        }
     }
 
     fun deleteTootContents() {

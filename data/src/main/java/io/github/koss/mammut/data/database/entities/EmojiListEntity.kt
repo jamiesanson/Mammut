@@ -8,5 +8,6 @@ import io.github.koss.mammut.data.models.Emoji
 data class EmojiListEntity(
         @PrimaryKey
         val instance: String,
-        val emojis: ArrayList<Emoji>
+        val emojis: ArrayList<Emoji>,
+        val retrievalTimeMs: Long
 )

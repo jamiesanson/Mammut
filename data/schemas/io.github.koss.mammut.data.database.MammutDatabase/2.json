@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "ffa354421d7fd865977551a963b10d92",
+    "identityHash": "271c0041fd5c61fa6d50ef1507435b9c",
     "entities": [
       {
         "tableName": "InstanceRegistrationEntity",
@@ -190,7 +190,7 @@
       },
       {
         "tableName": "EmojiListEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`instance` TEXT NOT NULL, `emojis` TEXT NOT NULL, PRIMARY KEY(`instance`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`instance` TEXT NOT NULL, `emojis` TEXT NOT NULL, `retrievalTimeMs` INTEGER NOT NULL, PRIMARY KEY(`instance`))",
         "fields": [
           {
             "fieldPath": "instance",
@@ -202,6 +202,12 @@
             "fieldPath": "emojis",
             "columnName": "emojis",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retrievalTimeMs",
+            "columnName": "retrievalTimeMs",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -217,7 +223,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ffa354421d7fd865977551a963b10d92\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"271c0041fd5c61fa6d50ef1507435b9c\")"
     ]
   }
 }

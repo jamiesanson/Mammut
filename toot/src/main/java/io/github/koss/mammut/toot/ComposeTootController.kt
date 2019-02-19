@@ -3,6 +3,7 @@ package io.github.koss.mammut.toot
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
@@ -19,12 +21,16 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.data.database.entities.EmojiListEntity
 import io.github.koss.mammut.toot.dagger.*
+import io.github.koss.mammut.toot.emoji.EmojiAdapter
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import kotlinx.android.extensions.CacheImplementation
@@ -36,7 +42,7 @@ import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
-private const val MAX_TOOT_LENGTH = 500
+const val MAX_TOOT_LENGTH = 500
 
 /**
  * This is the main controller for composing a toot. All things related to how this controller operates
@@ -78,6 +84,7 @@ class ComposeTootController: BaseController() {
         setupToolbar()
         setupTextChangedListeners()
         setupTootButton()
+        setupEmojis()
 
         viewModel.initialise(null)
 
@@ -91,6 +98,7 @@ class ComposeTootController: BaseController() {
 
         if (inputEditText.text.toString() != model.status) {
             inputEditText.setText(model.status)
+            inputEditText.setSelection(model.status.length)
         }
     }
     
@@ -119,7 +127,7 @@ class ComposeTootController: BaseController() {
     }
 
     private fun onEmojisRetrieved(emojis: List<Emoji>?) {
-        Log.d("ComposeToot", "Got Emoji: $emojis")
+        (emojiListRecyclerView.adapter as? EmojiAdapter)?.submitList(emojis)
     }
 
     private fun setupTootButton() {
@@ -165,6 +173,14 @@ class ComposeTootController: BaseController() {
         toolbar.setNavigationOnClickListener {
             close()
         }
+    }
+
+    private fun setupEmojis() {
+        insertEmojiButton.onClick {
+            emojiListRecyclerView.isVisible = !emojiListRecyclerView.isVisible
+        }
+        emojiListRecyclerView.adapter = EmojiAdapter(onEmojiClicked = viewModel::onEmojiAdded)
+        emojiListRecyclerView.layoutManager = GridLayoutManager(view!!.context, 3, RecyclerView.HORIZONTAL, false)
     }
 
     private fun updateTootButton() {

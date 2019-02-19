@@ -9,4 +9,5 @@
     <string name="cancel">Cancel</string>
     <string name="toot_posted">Toot posted!</string>
     <string name="submitting_your_toot">Submitting your toot</string>
+    <string name="insert_emoji_content_description">Insert Emoji</string>
 </resources>
