@@ -71,14 +71,14 @@ class ComposeTootViewModel @Inject constructor(
      * Updates status with emoji text when clicked. Only updates the status text if
      * the resulting text is shorter than [MAX_TOOT_LENGTH]
      */
-    fun onEmojiAdded(emoji: Emoji) {
+    fun onEmojiAdded(emoji: Emoji, index: Int) {
         updateModel {
             val status = it?.status ?: ""
             val emojiText = ":${emoji.shortcode}:"
 
             when {
                 ("$status$emojiText").length <= MAX_TOOT_LENGTH -> {
-                    it?.copy(status = "$status$emojiText")
+                    it?.copy(status = StringBuilder(status).insert(index, emojiText).toString())
                 }
                 else -> it
             }

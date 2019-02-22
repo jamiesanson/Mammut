@@ -99,8 +99,12 @@ class ComposeTootController: BaseController() {
         model ?: return
 
         if (inputEditText.text.toString() != model.status) {
+            // Move the selection by the difference in length of the two strings
+            val lengthDifference = model.status.length - inputEditText.length()
+            val previousSelection = inputEditText.selectionStart
+
             inputEditText.setText(model.status)
-            inputEditText.setSelection(model.status.length)
+            inputEditText.setSelection(previousSelection + lengthDifference)
         }
     }
     
@@ -185,7 +189,9 @@ class ComposeTootController: BaseController() {
             emojiListRecyclerView.isVisible = !emojiListRecyclerView.isVisible
         }
 
-        emojiListRecyclerView.adapter = EmojiAdapter(onEmojiClicked = viewModel::onEmojiAdded)
+        emojiListRecyclerView.adapter = EmojiAdapter {
+            viewModel.onEmojiAdded(it, inputEditText.selectionStart)
+        }
         emojiListRecyclerView.layoutManager = GridLayoutManager(view!!.context, 3, RecyclerView.HORIZONTAL, false)
     }
 
