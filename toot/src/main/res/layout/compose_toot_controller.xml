@@ -96,6 +96,8 @@
                     android:layout_marginStart="16dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/insert_emoji_content_description"
+                    android:tint="?attr/colorControlNormal"
+                    android:tintMode="src_in"
                     android:src="@drawable/ic_insert_emoticon_black_24dp" />
 
                 <Space
@@ -121,7 +123,6 @@
                     android:text="@string/toot_action" />
             </LinearLayout>
         </LinearLayout>
-
 
     </com.google.android.material.card.MaterialCardView>
 

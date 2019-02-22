@@ -10,7 +10,7 @@ object Migration_1_2: Migration(1, 2) {
 
         // Create EmojiList table
         @Language("RoomSql")
-        val query = "CREATE TABLE IF NOT EXISTS `emojilistentity` (`instance` TEXT NOT NULL, `emojis` TEXT NOT NULL, PRIMARY KEY(`instance`))"
+        val query = "CREATE TABLE IF NOT EXISTS `emojilistentity` (`instance` TEXT NOT NULL, `emojis` TEXT NOT NULL, `retrievalTimeMs` INTEGER NOT NULL, PRIMARY KEY(`instance`))"
 
         database.execSQL(query)
     }
