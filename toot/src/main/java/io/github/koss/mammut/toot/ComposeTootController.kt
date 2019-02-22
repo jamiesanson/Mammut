@@ -1,8 +1,10 @@
 package io.github.koss.mammut.toot
 
+import android.animation.Animator
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.util.Log
@@ -14,10 +16,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.getSystemService
-import androidx.core.view.children
-import androidx.core.view.isNotEmpty
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -177,8 +179,12 @@ class ComposeTootController: BaseController() {
 
     private fun setupEmojis() {
         insertEmojiButton.onClick {
+            TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
+                duration = 200L
+            })
             emojiListRecyclerView.isVisible = !emojiListRecyclerView.isVisible
         }
+
         emojiListRecyclerView.adapter = EmojiAdapter(onEmojiClicked = viewModel::onEmojiAdded)
         emojiListRecyclerView.layoutManager = GridLayoutManager(view!!.context, 3, RecyclerView.HORIZONTAL, false)
     }
