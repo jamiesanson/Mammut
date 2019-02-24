@@ -1,24 +1,19 @@
 package io.github.koss.mammut.toot
 
-import android.animation.Animator
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.text.Spannable
 import android.transition.AutoTransition
-import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.GridLayout
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.getSystemService
 import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
@@ -28,17 +23,23 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
-import io.github.koss.mammut.data.database.entities.EmojiListEntity
 import io.github.koss.mammut.toot.dagger.*
 import io.github.koss.mammut.toot.emoji.EmojiAdapter
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
+import io.github.koss.mammut.toot.model.iconRes
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.compose_toot_controller.*
+import kotlinx.android.synthetic.main.layout_privacy.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
@@ -59,6 +60,17 @@ class ComposeTootController: BaseController() {
     @Inject
     @ComposeTootScope
     lateinit var factory: MammutViewModelFactory
+
+    /**
+     * List of bottom menu items and their content views
+     */
+    private val bottomMenuItems: List<Pair<ImageView, View>>?
+            get() = view?.run {
+                listOf(
+                    insertEmojiButton to emojiListRecyclerView,
+                    privacyButton to privacyLayout
+                )
+            }
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
@@ -88,6 +100,8 @@ class ComposeTootController: BaseController() {
         setupTextChangedListeners()
         setupTootButton()
         setupEmojis()
+        setupBottomMenu()
+        setupPrivacySelector()
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 
@@ -101,6 +115,8 @@ class ComposeTootController: BaseController() {
         model ?: return
 
         // TODO - Update other controls when added
+        privacyLayout.selectedVisibility = model.visibility
+        privacyButton.setImageResource(model.visibility.iconRes)
     }
 
     private fun onInputTextChanged(inputText: Spannable) {
@@ -188,17 +204,40 @@ class ComposeTootController: BaseController() {
     }
 
     private fun setupEmojis() {
-        insertEmojiButton.onClick {
-            TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
-                duration = 200L
-            })
-            emojiListRecyclerView.isVisible = !emojiListRecyclerView.isVisible
-        }
-
         emojiListRecyclerView.adapter = EmojiAdapter {
             viewModel.onEmojiAdded(it, inputEditText.selectionStart)
         }
         emojiListRecyclerView.layoutManager = GridLayoutManager(view!!.context, 3, RecyclerView.HORIZONTAL, false)
+    }
+
+    private fun setupPrivacySelector() {
+        privacyLayout.setOnVisibilityChangedListener {
+            viewModel.onVisibilityChanged(it)
+        }
+    }
+
+    private fun setupBottomMenu() {
+        // Setup click listeners
+        bottomMenuItems?.forEach { (button, content) ->
+            button.onClick { displayContentForImageView(button, content) }
+        }
+    }
+
+    private fun displayContentForImageView(imageViewClicked: ImageView, contentView: View) {
+        TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
+            duration = 200L
+        })
+
+        // Make every other content view invisible then toggle the visibility of this one
+        bottomMenuItems
+                ?.filterNot { it.first == imageViewClicked }
+                ?.forEach {
+                    it.first.isSelected = false
+                    it.second.isVisible = false
+                }
+
+        contentView.isVisible = !contentView.isVisible
+        imageViewClicked.isSelected = !imageViewClicked.isSelected
     }
 
     private fun updateTootButton() {

@@ -88,6 +88,12 @@
                 android:padding="8dp"
                 android:visibility="gone"/>
 
+            <io.github.koss.mammut.toot.view.TootVisibilityChooser
+                android:id="@+id/privacyLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,16 +101,29 @@
 
                 <ImageView
                     android:id="@+id/insertEmojiButton"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_margin="8dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_margin="4dp"
+                    android:padding="4dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/insert_emoji_content_description"
-                    android:tint="?attr/colorControlNormal"
+                    android:tint="@drawable/bottom_menu_tint"
                     android:tintMode="src_in"
                     android:src="@drawable/ic_insert_emoticon_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/privacyButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="4dp"
+                    android:padding="4dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/insert_emoji_content_description"
+                    android:tint="@drawable/bottom_menu_tint"
+                    android:tintMode="src_in"
+                    android:src="@drawable/ic_public_black_24dp" />
 
                 <Space
                     android:layout_width="0dp"

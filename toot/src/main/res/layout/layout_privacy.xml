@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/privacyLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/publicCell"
+        layout="@layout/layout_privacy_cell"/>
+
+    <include
+        android:id="@+id/unlistedCell"
+        layout="@layout/layout_privacy_cell"/>
+
+    <include
+        android:id="@+id/followersOnlyCell"
+        layout="@layout/layout_privacy_cell"/>
+
+    <include
+        android:id="@+id/directCell"
+        layout="@layout/layout_privacy_cell"/>
+
+</LinearLayout>

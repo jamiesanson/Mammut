@@ -10,4 +10,12 @@
     <string name="toot_posted">Toot posted!</string>
     <string name="submitting_your_toot">Submitting your toot</string>
     <string name="insert_emoji_content_description">Insert Emoji</string>
+    <string name="privacy_public">Public</string>
+    <string name="privacy_public_description">Post to public timelines</string>
+    <string name="privacy_unlisted">Unlisted</string>
+    <string name="privacy_unlisted_description">Do not post on public timelines</string>
+    <string name="privacy_followers_only">Followers-only</string>
+    <string name="privacy_followers_only_description">Post to followers only</string>
+    <string name="privacy_direct">Direct</string>
+    <string name="privacy_direct_description">Post to mentioned users only</string>
 </resources>

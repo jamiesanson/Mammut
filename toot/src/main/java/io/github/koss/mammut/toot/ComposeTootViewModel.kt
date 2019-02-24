@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.toot.emoji.EmojiRenderer
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
@@ -100,6 +101,10 @@ class ComposeTootViewModel @Inject constructor(
                 else -> it
             }
         }
+    }
+
+    fun onVisibilityChanged(visibility: Status.Visibility) {
+        updateModel { it?.copy(visibility = visibility) }
     }
 
     fun deleteTootContents() {
