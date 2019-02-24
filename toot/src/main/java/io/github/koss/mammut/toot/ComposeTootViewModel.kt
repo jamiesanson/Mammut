@@ -34,6 +34,8 @@ class ComposeTootViewModel @Inject constructor(
 
     val renderedStatus: LiveData<SpannableStringBuilder> = Transformations.switchMap(model, ::renderStatus)
 
+    val renderedContentWarning: LiveData<SpannableStringBuilder> = Transformations.switchMap(model, ::renderContentWarning)
+
     val submissionState: LiveData<SubmissionState> = MutableLiveData()
 
     val availableEmojis: LiveData<List<Emoji>> = MutableLiveData()
@@ -85,20 +87,42 @@ class ComposeTootViewModel @Inject constructor(
         updateModel { it?.copy(status = formatStatus(it.status, status)) }
     }
 
+    fun onContentWarningChanged(warning: String?) {
+        val model = model.value
+        if (warning == model?.spoilerText) return
+
+        val newText = if (warning != null) {
+            formatStatus(model?.spoilerText ?: "", warning)
+        } else {
+            null
+        }
+
+        updateModel { it?.copy(spoilerText = newText) }
+    }
+
     /**
      * Updates status with emoji text when clicked. Only updates the status text if
      * the resulting text is shorter than [MAX_TOOT_LENGTH]
      */
-    fun onEmojiAdded(emoji: Emoji, index: Int) {
-        updateModel {
-            val status = it?.status ?: ""
-            val emojiText = ":${emoji.shortcode}:"
+    fun onEmojiAdded(emoji: Emoji, index: Int, isContentWarningFocussed: Boolean) {
+        val emojiText = ":${emoji.shortcode}:"
 
-            when {
-                ("$status$emojiText").length <= MAX_TOOT_LENGTH -> {
-                    it?.copy(status = StringBuilder(status).insert(index, emojiText).toString())
+        updateModel {
+            if (isContentWarningFocussed) {
+                it?.copy(
+                        spoilerText = StringBuilder(it.spoilerText ?: "").insert(index, emojiText).toString()
+                )
+            } else {
+                val status = it?.status ?: ""
+
+                when {
+                    ("$status$emojiText").length <= MAX_TOOT_LENGTH -> {
+                        it?.copy(
+                                status = StringBuilder(status).insert(index, emojiText).toString()
+                        )
+                    }
+                    else -> it
                 }
-                else -> it
             }
         }
     }
@@ -180,18 +204,27 @@ class ComposeTootViewModel @Inject constructor(
         return newStatus
     }
 
-    /**
-     * Function for rendering the status off the main thread - works with switchMap to allow
-     * asynchronous rendering.
-     */
-    private fun renderStatus(model: TootModel): LiveData<SpannableStringBuilder> {
+    private fun renderEmojiText(string: String): LiveData<SpannableStringBuilder> {
         val liveData = MutableLiveData<SpannableStringBuilder>()
-        val status = model.status
 
         launch {
-            liveData.postValue(EmojiRenderer.render(context, status, availableEmojis.value ?: emptyList(), textHeight))
+            liveData.postValue(EmojiRenderer.render(context, string, availableEmojis.value ?: emptyList(), textHeight))
         }
 
         return liveData
     }
+
+    /**
+     * Function for rendering the status off the main thread - works with switchMap to allow
+     * asynchronous rendering.
+     */
+    private fun renderStatus(model: TootModel): LiveData<SpannableStringBuilder> =
+            renderEmojiText(model.status)
+
+    /**
+     * Function for rendering the status off the main thread - works with switchMap to allow
+     * asynchronous rendering.
+     */
+    private fun renderContentWarning(model: TootModel): LiveData<SpannableStringBuilder> =
+            renderEmojiText(model.spoilerText ?: "")
 }

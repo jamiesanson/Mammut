@@ -32,6 +32,7 @@ import io.github.koss.mammut.toot.emoji.EmojiAdapter
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import io.github.koss.mammut.toot.model.iconRes
+import io.github.koss.mammut.toot.view.update
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.compose_toot_controller.*
@@ -102,6 +103,7 @@ class ComposeTootController: BaseController() {
         setupEmojis()
         setupBottomMenu()
         setupPrivacySelector()
+        setupContentWarnings()
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 
@@ -109,26 +111,28 @@ class ComposeTootController: BaseController() {
         viewModel.submissionState.observe(this, Observer(::onSubmissionStateChanged))
         viewModel.availableEmojis.observe(this, Observer(::onEmojisRetrieved))
         viewModel.renderedStatus.observe(this, Observer(::onInputTextChanged))
+        viewModel.renderedContentWarning.observe(this, Observer(::onContentWarningChanged))
     }
 
     private fun onModelChanged(model: TootModel?) {
         model ?: return
 
-        // TODO - Update other controls when added
         privacyLayout.selectedVisibility = model.visibility
         privacyButton.setImageResource(model.visibility.iconRes)
-    }
 
-    private fun onInputTextChanged(inputText: Spannable) {
-        if (inputEditText.text.toString() != inputText.toString()) {
-            // Move the selection by the difference in length of the two strings
-            val lengthDifference = inputText.length - inputEditText.length()
-            val previousSelection = inputEditText.selectionStart
-
-            inputEditText.setText(inputText)
-            inputEditText.setSelection(previousSelection + lengthDifference)
+        if (model.spoilerText != null && !contentWarningLayout.isVisible) {
+            // Show content warning if it's in the model but not user visible. Only makes sense if
+            // showing for the first time, i.e initialised from a draft.
+            contentWarningButton.isSelected = true
+            contentWarningLayout.isVisible = true
         }
     }
+
+    private fun onInputTextChanged(inputText: Spannable) =
+            inputEditText.update(inputText)
+
+    private fun onContentWarningChanged(contentWarning: Spannable) =
+            contentWarningEditText.update(contentWarning)
     
     private fun onSubmissionStateChanged(submissionState: SubmissionState?) {
         submissionState ?: return
@@ -205,7 +209,11 @@ class ComposeTootController: BaseController() {
 
     private fun setupEmojis() {
         emojiListRecyclerView.adapter = EmojiAdapter {
-            viewModel.onEmojiAdded(it, inputEditText.selectionStart)
+            val contentWarningFocused = contentWarningEditText.hasFocus()
+            viewModel.onEmojiAdded(
+                    emoji = it,
+                    index = (if (contentWarningFocused) contentWarningEditText else inputEditText).selectionStart,
+                    isContentWarningFocussed = contentWarningFocused)
         }
         emojiListRecyclerView.layoutManager = GridLayoutManager(view!!.context, 3, RecyclerView.HORIZONTAL, false)
     }
@@ -213,6 +221,34 @@ class ComposeTootController: BaseController() {
     private fun setupPrivacySelector() {
         privacyLayout.setOnVisibilityChangedListener {
             viewModel.onVisibilityChanged(it)
+        }
+    }
+
+    private fun setupContentWarnings() {
+        contentWarningButton.onClick {
+            TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
+                duration = 200L
+            })
+            
+            // Toggle visibility
+            contentWarningButton.isSelected = !contentWarningButton.isSelected
+            contentWarningLayout.isVisible = !contentWarningLayout.isVisible
+
+            // If no longer visible, clear the text and focus the inputEditText
+            if (!contentWarningLayout.isVisible) {
+                viewModel.onContentWarningChanged(null)
+                inputEditText.requestFocus()
+            } else {
+                contentWarningEditText.setText("")
+                contentWarningEditText.requestFocus()
+            }
+        }
+        contentWarningEditText.textChangedListener {
+            afterTextChanged { text ->
+                if (contentWarningLayout.isVisible) {
+                    viewModel.onContentWarningChanged(text?.toString())
+                }
+            }
         }
     }
 

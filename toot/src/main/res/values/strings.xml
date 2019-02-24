@@ -18,4 +18,6 @@
     <string name="privacy_followers_only_description">Post to followers only</string>
     <string name="privacy_direct">Direct</string>
     <string name="privacy_direct_description">Post to mentioned users only</string>
+    <string name="content_warning">Content Warning</string>
+    <string name="what_s_on_your_mind">What\'s on your mind?</string>
 </resources>

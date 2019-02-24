@@ -11,7 +11,6 @@
         android:id="@+id/appBarLayout"
         android:layout_width="0dp"
         android:layout_height="?actionBarSize"
-        android:layout_marginBottom="8dp"
         app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,25 +36,62 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/contentWarningLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bottomCardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintVertical_bias="0.0">
+
+        <EditText
+            android:id="@+id/contentWarningEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/content_warning"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textSize="18sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <View
+            android:id="@+id/bottomDividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.5"
+            android:background="?attr/colorControlNormalTransparent" />
+
+    </LinearLayout>
+
     <EditText
         android:id="@+id/inputEditText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="top"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
         android:gravity="top"
         android:inputType="textCapSentences|textMultiLine"
         android:maxLength="500"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
+        android:scrollbars="vertical"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="18sp"
-        android:background="@android:color/transparent"
-        android:scrollbars="vertical"
+        android:hint="@string/what_s_on_your_mind"
         app:layout_constraintBottom_toTopOf="@+id/bottomCardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintTop_toBottomOf="@id/contentWarningLayout"
         tools:ignore="Autofill,LabelFor" />
 
     <com.google.android.material.card.MaterialCardView
@@ -65,10 +101,10 @@
         android:layout_gravity="bottom"
         android:layout_marginTop="8dp"
         android:backgroundTint="?attr/colorPrimary"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="16dp"
         android:clickable="true"
         android:focusable="true"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,13 +122,13 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:padding="8dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <io.github.koss.mammut.toot.view.TootVisibilityChooser
                 android:id="@+id/privacyLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,12 +141,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_margin="4dp"
-                    android:padding="4dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/insert_emoji_content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_insert_emoticon_black_24dp"
                     android:tint="@drawable/bottom_menu_tint"
-                    android:tintMode="src_in"
-                    android:src="@drawable/ic_insert_emoticon_black_24dp" />
+                    android:tintMode="src_in" />
 
                 <ImageView
                     android:id="@+id/privacyButton"
@@ -118,12 +154,25 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_margin="4dp"
-                    android:padding="4dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/insert_emoji_content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_public_black_24dp"
                     android:tint="@drawable/bottom_menu_tint"
-                    android:tintMode="src_in"
-                    android:src="@drawable/ic_public_black_24dp" />
+                    android:tintMode="src_in" />
+
+                <ImageView
+                    android:id="@+id/contentWarningButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="4dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/insert_emoji_content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_warning_black_24dp"
+                    android:tint="@drawable/bottom_menu_tint"
+                    android:tintMode="src_in" />
 
                 <Space
                     android:layout_width="0dp"
@@ -160,12 +209,12 @@
         android:clickable="true"
         android:elevation="20dp"
         android:focusable="true"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <Space
             android:layout_width="0dp"
