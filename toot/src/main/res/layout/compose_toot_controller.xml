@@ -48,6 +48,8 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textSize="18sp"
         android:background="@android:color/transparent"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/bottomCardView"

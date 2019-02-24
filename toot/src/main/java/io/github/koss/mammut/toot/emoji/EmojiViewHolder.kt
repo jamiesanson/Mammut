@@ -2,6 +2,7 @@ package io.github.koss.mammut.toot.emoji
 
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import androidx.appcompat.widget.TooltipCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -35,7 +36,7 @@ class EmojiViewHolder(
             clickCallback(emoji)
         }
 
-        emojiImageView.contentDescription = emoji.shortcode
+        TooltipCompat.setTooltipText(emojiImageView, emoji.shortcode)
     }
 
 }

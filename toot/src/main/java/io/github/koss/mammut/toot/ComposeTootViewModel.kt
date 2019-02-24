@@ -1,11 +1,17 @@
 package io.github.koss.mammut.toot
 
+import android.content.Context
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.DynamicDrawableSpan
+import android.text.style.ImageSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.sys1yagi.mastodon4j.MastodonClient
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.sys1yagi.mastodon4j.api.entity.Emoji
-import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import io.github.koss.mammut.toot.repo.StatusRepository
@@ -13,14 +19,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import org.jetbrains.anko.Bold
+import org.jetbrains.anko.Underline
 import javax.inject.Inject
 
 class ComposeTootViewModel @Inject constructor(
+        private val context: Context,
         private val statusRepository: StatusRepository
 ) : ViewModel(), CoroutineScope by GlobalScope {
 
     val model: LiveData<TootModel> = MutableLiveData()
+
+    val renderedStatus: LiveData<SpannableStringBuilder> = Transformations.switchMap(model, ::renderStatus)
 
     val submissionState: LiveData<SubmissionState> = MutableLiveData()
 
@@ -37,6 +47,8 @@ class ComposeTootViewModel @Inject constructor(
             spoilerText = null
     )
 
+    private var textHeight: Int = 64
+
     init {
         // Load emojis
         launch {
@@ -49,8 +61,10 @@ class ComposeTootViewModel @Inject constructor(
      * Function for initialising the ViewModel. Useful when resetting the model, and
      * also allows supplying of an `inReplyToId`
      */
-    fun initialise(inReplyToId: Long?, force: Boolean = false) {
+    fun initialise(inReplyToId: Long?, textHeight: Int, force: Boolean = false) {
         // Initialise
+        this.textHeight = textHeight
+
         if (!hasBeenModified || force) {
             updateModel {
                 if (inReplyToId != null) {
@@ -64,7 +78,9 @@ class ComposeTootViewModel @Inject constructor(
     }
 
     fun onStatusChanged(status: String) {
-        updateModel { it?.copy(status = status) }
+        if (status == model.value?.status) return
+
+        updateModel { it?.copy(status = formatStatus(it.status, status)) }
     }
 
     /**
@@ -87,9 +103,12 @@ class ComposeTootViewModel @Inject constructor(
 
     fun deleteTootContents() {
         // Reset everything but the replyToId
-        initialise(model.value?.inReplyToId, force = true)
+        initialise(model.value?.inReplyToId, textHeight, force = true)
     }
 
+    /**
+     * Function for submitting the toot.
+     */
     fun onSendTootClicked() {
         model.value?.let {
             // Validate
@@ -107,7 +126,91 @@ class ComposeTootViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Utility function for updating the underlying model
+     */
     private fun updateModel(updater: (TootModel?) -> TootModel?) {
         (model as MutableLiveData).value = updater(model.value)
+    }
+
+    /**
+     * Function for formatting the status text when it's modified. Used primarily for deletion of
+     * emoji when a colon is found to be deleted.
+     */
+    private fun formatStatus(oldStatus: String, newStatus: String): String {
+        // If there's a deletion of a colon, we should check if we can delete an entire emoji
+        if (newStatus.filter { it == ':' }.length < oldStatus.filter { it == ':' }.length) {
+            // Iterate along until the first colon which is different.
+            oldStatus.forEachIndexed { index, c ->
+                // if we encounter the first change and it happens to not be an emoji, finish
+                if (newStatus.getOrNull(index) != c) {
+                    when (c) {
+                        ':' -> {
+                            // Search backwards for an emoji
+                            val potentialEmoji = oldStatus.substring(0 until index)
+                                    .takeLastWhile { it != ':' }
+
+                            // Check to see if the deleted text was actually an emoji
+                            val emojiDeleted = availableEmojis.value?.any {
+                                it.shortcode == potentialEmoji
+                            } ?: false
+
+                            // If emoji deleted, remove it from the string
+                            if (emojiDeleted) {
+                                val emojiStartIndex = oldStatus
+                                        .substring(0 until index)
+                                        .indexOfLast { it == ':' }
+
+                                return oldStatus.substring(0 until emojiStartIndex) + oldStatus.substring(index + 1 until oldStatus.length)
+                            }
+                        }
+                        else -> return newStatus
+                    }
+                }
+            }
+        }
+
+        // if we haven't returned by this point, return the new status
+        return newStatus
+    }
+
+    /**
+     * Function for rendering the status off the main thread - works with switchMap to allow
+     * asynchronous rendering.
+     */
+    private fun renderStatus(model: TootModel): LiveData<SpannableStringBuilder> {
+        val liveData = MutableLiveData<SpannableStringBuilder>()
+        val status = model.status
+
+        launch {
+            // Iterate through the status, picking out emojis and their start index
+            val emojis = status.mapIndexed { index, char -> if (char == ':') index else null }
+                    .asSequence()
+                    .filterNotNull()
+                    .windowed(2, 1)
+                    .map { (start, end) -> (start to end) to status.substring(start + 1 until end) }
+                    .map { (indices, text) -> indices to availableEmojis.value?.find { it.shortcode == text }}
+                    .filter { (_, emoji) -> emoji != null }
+                    .toList()
+
+            // Build spannable
+            val builder = SpannableStringBuilder().apply {
+                append(status)
+                emojis.sortedBy { it.first.first }.forEach { (indices, emoji) ->
+                    // Load image synchronously
+                    val emojiDrawable = Glide.with(context)
+                            .asBitmap()
+                            .load(emoji!!.url)
+                            .apply(RequestOptions.overrideOf(textHeight, textHeight))
+                            .submit()
+                            .get()
+
+                    setSpan(ImageSpan(context, emojiDrawable), indices.first, indices.second + 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            }
+
+            liveData.postValue(builder)
+        }
+        return liveData
     }
 }

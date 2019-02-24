@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.text.Spannable
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
@@ -88,22 +89,27 @@ class ComposeTootController: BaseController() {
         setupTootButton()
         setupEmojis()
 
-        viewModel.initialise(null)
+        viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 
         viewModel.model.observe(this, Observer(::onModelChanged))
         viewModel.submissionState.observe(this, Observer(::onSubmissionStateChanged))
         viewModel.availableEmojis.observe(this, Observer(::onEmojisRetrieved))
+        viewModel.renderedStatus.observe(this, Observer(::onInputTextChanged))
     }
 
     private fun onModelChanged(model: TootModel?) {
         model ?: return
 
-        if (inputEditText.text.toString() != model.status) {
+        // TODO - Update other controls when added
+    }
+
+    private fun onInputTextChanged(inputText: Spannable) {
+        if (inputEditText.text.toString() != inputText.toString()) {
             // Move the selection by the difference in length of the two strings
-            val lengthDifference = model.status.length - inputEditText.length()
+            val lengthDifference = inputText.length - inputEditText.length()
             val previousSelection = inputEditText.selectionStart
 
-            inputEditText.setText(model.status)
+            inputEditText.setText(inputText)
             inputEditText.setSelection(previousSelection + lengthDifference)
         }
     }
