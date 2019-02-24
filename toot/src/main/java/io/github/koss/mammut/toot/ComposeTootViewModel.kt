@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import io.github.koss.mammut.toot.emoji.EmojiRenderer
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import io.github.koss.mammut.toot.repo.StatusRepository
@@ -183,34 +184,9 @@ class ComposeTootViewModel @Inject constructor(
         val status = model.status
 
         launch {
-            // Iterate through the status, picking out emojis and their start index
-            val emojis = status.mapIndexed { index, char -> if (char == ':') index else null }
-                    .asSequence()
-                    .filterNotNull()
-                    .windowed(2, 1)
-                    .map { (start, end) -> (start to end) to status.substring(start + 1 until end) }
-                    .map { (indices, text) -> indices to availableEmojis.value?.find { it.shortcode == text }}
-                    .filter { (_, emoji) -> emoji != null }
-                    .toList()
-
-            // Build spannable
-            val builder = SpannableStringBuilder().apply {
-                append(status)
-                emojis.sortedBy { it.first.first }.forEach { (indices, emoji) ->
-                    // Load image synchronously
-                    val emojiDrawable = Glide.with(context)
-                            .asBitmap()
-                            .load(emoji!!.url)
-                            .apply(RequestOptions.overrideOf(textHeight, textHeight))
-                            .submit()
-                            .get()
-
-                    setSpan(ImageSpan(context, emojiDrawable), indices.first, indices.second + 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-            }
-
-            liveData.postValue(builder)
+            liveData.postValue(EmojiRenderer.render(context, status, availableEmojis.value ?: emptyList(), textHeight))
         }
+
         return liveData
     }
 }
