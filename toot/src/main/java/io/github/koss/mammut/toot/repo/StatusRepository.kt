@@ -61,5 +61,6 @@ class StatusRepository(
         instanceDetailRepository
                 .loadEmojisForInstance(client.getInstanceName())
                 .filter { it.visibleInPicker }
+                .sortedBy { it.shortcode }
                 .map { it.toModel() }
 }
