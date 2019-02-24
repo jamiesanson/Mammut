@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
-import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
@@ -37,10 +36,6 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.compose_toot_controller.*
 import kotlinx.android.synthetic.main.layout_privacy.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
@@ -98,7 +93,7 @@ class ComposeTootController: BaseController() {
     override fun initialise(savedInstanceState: Bundle?) {
         super.initialise(savedInstanceState)
         setupToolbar()
-        setupTextChangedListeners()
+        setupInputEditText()
         setupTootButton()
         setupEmojis()
         setupBottomMenu()
@@ -169,7 +164,7 @@ class ComposeTootController: BaseController() {
         }
     }
 
-    private fun setupTextChangedListeners() {
+    private fun setupInputEditText() {
         remainingCharactersTextView.text = (MAX_TOOT_LENGTH - inputEditText.length()).toString()
 
         inputEditText.textChangedListener {
@@ -229,7 +224,7 @@ class ComposeTootController: BaseController() {
             TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
                 duration = 200L
             })
-            
+
             // Toggle visibility
             contentWarningButton.isSelected = !contentWarningButton.isSelected
             contentWarningLayout.isVisible = !contentWarningLayout.isVisible
