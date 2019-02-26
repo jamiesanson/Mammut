@@ -18,7 +18,7 @@ object EmojiRenderer {
      * Main render function, takes context, list of emojis and line height, and builds a [Spannable]
      * based on the input [status]
      */
-    suspend fun render(context: Context, status: String, emojis: List<Emoji>, lineHeight: Int): SpannableStringBuilder {
+    suspend fun render(context: Context, status: CharSequence, emojis: List<Emoji>, lineHeight: Int = 64): SpannableStringBuilder {
         // Iterate through the status, picking out emojis and their start index
         val foundEmojis = status.mapIndexed { index, char -> if (char == ':') index else null }
                 .asSequence()

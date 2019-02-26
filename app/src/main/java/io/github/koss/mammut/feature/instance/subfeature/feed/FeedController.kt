@@ -179,7 +179,13 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     private fun initialiseRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
-        recyclerView.adapter = FeedAdapter(this, requestManager, viewModel::onBrokenTimelineResolved)
+
+        recyclerView.adapter = FeedAdapter(
+                viewModelProvider = ViewModelProviders.of(view!!.context as InstanceActivity, factory),
+                tootCallbacks = this,
+                requestManager = requestManager,
+                onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)
+
         recyclerView.itemAnimator?.addDuration = 150L
 
         recyclerView.onScrollChange { _, _, _, _, _ ->

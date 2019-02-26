@@ -12,6 +12,10 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -33,16 +37,18 @@ import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
+import io.github.koss.mammut.extension.observe
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
 class TootViewHolder(
         parent: ViewGroup,
+        viewModelProvider: ViewModelProvider,
         private val requestManager: RequestManager,
         private val callbacks: TootCallbacks
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
@@ -51,7 +57,7 @@ class TootViewHolder(
 
     private var isSensitiveScreenVisible = false
 
-    private var viewModel: TootViewModel = TootViewModel()
+    private var viewModel: TootViewModel = viewModelProvider.get(UUID.randomUUID().toString(), TootViewModel::class.java)
 
     init {
         // Set up viewModel observations
@@ -357,5 +363,6 @@ class TootViewHolder(
 
     fun recycle() {
         exoPlayer?.release()
+        viewModel.onCleared()
     }
 }
