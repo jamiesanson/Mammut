@@ -41,6 +41,11 @@ class FeedAdapter(
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {
         when (holder) {
             is TootViewHolder -> {
+                // Occasionally when scrolling down quickly, we can get in to race conditions
+                // where binding isn't complete when an insertion or deletion occurs due to streaming.
+                // This statement is a guard for that case.
+                if (position == currentList?.size ?: -1) return
+
                 val current = getItem(position) ?: run {
                     holder.clear()
                     return
