@@ -358,7 +358,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstCompletelyVisibleItemPosition() < 2
+                return@run findFirstVisibleItemPosition() < 3
             } ?: false
 
     private fun RecyclerView.isNearBottom(): Boolean =
