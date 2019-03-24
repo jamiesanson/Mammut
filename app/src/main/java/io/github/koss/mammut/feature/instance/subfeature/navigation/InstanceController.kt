@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feature.instance.subfeature.navigation
 
+import android.content.Context
 import android.os.Bundle
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -8,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.updateLayoutParams
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
@@ -17,6 +21,8 @@ import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.extension.comingSoon
@@ -25,7 +31,13 @@ import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.base.BaseController
+import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.extension.applicationComponent
+import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
+import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.toot.ComposeTootController
+import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -34,6 +46,9 @@ import kotlinx.android.synthetic.main.controller_instance.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 private const val ROUTER_STATES_KEY = "STATE"
+
+const val ARG_INSTANCE_NAME = "instance_name"
+const val ARG_AUTH_CODE = "auth_code"
 
 /**
  * The following is an adaption of a brilliant Gist which did everything I wanted.
@@ -57,9 +72,10 @@ private const val ROUTER_STATES_KEY = "STATE"
  * The main idea came from [this PR](https://github.com/bluelinelabs/Conductor/pull/316).
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class InstanceController : BaseController(),
+class InstanceController(args: Bundle) : BaseController(args),
         BottomNavigationView.OnNavigationItemSelectedListener,
-        FullScreenPhotoHandler {
+        FullScreenPhotoHandler,
+        SubcomponentFactory {
 
     /**
      * This will hold all the information about the tabs.
@@ -70,6 +86,14 @@ class InstanceController : BaseController(),
 
     private lateinit var childRouter: Router
 
+    lateinit var component: InstanceComponent
+
+    private val instanceModule: InstanceModule by retained(key = { args.getString(ARG_AUTH_CODE)!! }) {
+       InstanceModule(
+               instanceName = args.getString(ARG_INSTANCE_NAME)!!,
+               accessToken = args.getString(ARG_AUTH_CODE)!!)
+    }
+
     private var fullScreenImageAnimator: ViewsTransitionAnimator<*>? = null
 
     /**
@@ -77,6 +101,12 @@ class InstanceController : BaseController(),
      */
     @IdRes
     private var currentSelectedItemId: Int = -1
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        component = (context as AppCompatActivity).applicationComponent
+                .plus(instanceModule)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_instance, container, false)
@@ -92,6 +122,8 @@ class InstanceController : BaseController(),
         view.addButton.onClick {
             performComposeTootOpen()
         }
+
+        view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
 
         // We have not a single bundle/state saved.
         // Looks like this [HomeController] was created for the first time
@@ -201,6 +233,14 @@ class InstanceController : BaseController(),
         }
     }
 
+    override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
+        @Suppress("UNCHECKED_CAST")
+        return when (module) {
+            is ComposeTootModule -> component.plus(module)
+            else -> throw IllegalArgumentException("Unknown module type")
+        } as Subcomponent
+    }
+
     /**
      * Function for rendering an interactive full screen image
      */
@@ -250,7 +290,7 @@ class InstanceController : BaseController(),
     private fun performComposeTootOpen() {
         // TODO - Improve this to incorporate circular reveals, arc motion etc.
         router.pushController(RouterTransaction
-                .with(ComposeTootController())
+                .with(ComposeTootController().apply { targetController = this@InstanceController })
                 .popChangeHandler(VerticalChangeHandler())
                 .pushChangeHandler(VerticalChangeHandler()))
     }

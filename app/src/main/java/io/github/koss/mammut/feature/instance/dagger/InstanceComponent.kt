@@ -10,6 +10,7 @@ import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 import io.github.koss.mammut.toot.dagger.ComposeTootComponent
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
+import javax.inject.Named
 
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])
@@ -24,4 +25,7 @@ interface InstanceComponent {
     fun plus(settingsModule: SettingsModule): SettingsComponent
 
     fun plus(composeTootModule: ComposeTootModule): ComposeTootComponent
+
+    @Named("instance_access_token")
+    fun accessToken(): String
 }

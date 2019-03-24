@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.startActivity
 import io.github.koss.mammut.feature.instance.InstanceActivity
@@ -60,12 +62,11 @@ class SettingsController: BaseController() {
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as InstanceActivity)
-                .component
+        instanceComponent()
                 .plus(settingsModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, viewModelFactory).get(SettingsViewModel::class.java)
+        viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(SettingsViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =

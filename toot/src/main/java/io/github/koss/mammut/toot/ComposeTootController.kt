@@ -70,9 +70,9 @@ class ComposeTootController: BaseController() {
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as? SubcomponentFactory)
+        (targetController as? SubcomponentFactory)
                 ?.buildSubcomponent<ComposeTootModule, ComposeTootComponent>(ComposeTootModule())
-                ?.inject(this) ?: throw IllegalStateException("Context must be subcomponent factory")
+                ?.inject(this) ?: throw IllegalStateException("ParentController must be subcomponent factory")
 
         viewModel = ViewModelProviders
                 .of(context as FragmentActivity, factory)[ComposeTootViewModel::class.java]

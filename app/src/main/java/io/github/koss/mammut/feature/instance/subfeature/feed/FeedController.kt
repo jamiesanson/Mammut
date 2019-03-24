@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
@@ -28,6 +29,7 @@ import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
@@ -36,6 +38,8 @@ import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.koss.mammut.feature.feedpaging.NetworkState
+import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
@@ -51,6 +55,7 @@ import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onScrollChange
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.run
 
 /**
@@ -79,20 +84,24 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         get() = args.getParcelable(FeedController.ARG_TYPE)
                 ?: throw IllegalArgumentException("Missing feed attachmentType for feed fragment")
 
-    private val feedModule: FeedModule by retained(key = {
-        type.toString()
-    }) {
+    private val instanceAccessToken: String
+        get() = instanceComponent().accessToken()
+
+    private val uniqueId: String by lazy {
+        "$instanceAccessToken$type"
+    }
+
+    private val feedModule: FeedModule by retained(key = ::uniqueId) {
         FeedModule(type)
     }
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as InstanceActivity)
-                .component
+        instanceComponent()
                 .plus(feedModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, factory).get(type.toString(), FeedViewModel::class.java)
+        viewModel = ViewModelProviders.of(context as AppCompatActivity, factory).get(uniqueId, FeedViewModel::class.java)
         requestManager = GlideApp.with(context)
     }
 
@@ -166,7 +175,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     override fun onProfileClicked(account: Account) {
-        router.pushController(RouterTransaction.with(ProfileController.newInstance(account)))
+        router.pushController(RouterTransaction.with(ProfileController.newInstance(account).apply {
+            targetController = this@FeedController.parentController
+        }))
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
@@ -181,7 +192,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 
         recyclerView.adapter = FeedAdapter(
-                viewModelProvider = ViewModelProviders.of(view!!.context as InstanceActivity, factory),
+                viewModelProvider = ViewModelProviders.of(view!!.context as AppCompatActivity, factory),
                 tootCallbacks = this,
                 requestManager = requestManager,
                 onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)

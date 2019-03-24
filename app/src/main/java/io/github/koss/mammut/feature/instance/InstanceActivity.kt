@@ -3,6 +3,7 @@ package io.github.koss.mammut.feature.instance
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
@@ -13,6 +14,8 @@ import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
+import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
 import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.synthetic.main.activity_instance.*
@@ -40,7 +43,14 @@ class InstanceActivity : BaseActivity(), SubcomponentFactory {
 
         router = Conductor.attachRouter(this, baseLayout, savedInstanceState)
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(InstanceController()))
+            val instanceName: String = intent?.extras?.getString(EXTRA_INSTANCE_NAME)
+                    ?: throw NullPointerException("Instance name must not be null")
+            val authCode: String = intent?.extras?.getString(EXTRA_AUTH_CODE)
+                    ?: throw NullPointerException("Auth code must not be null")
+
+            router.setRoot(RouterTransaction.with(InstanceController(bundleOf(
+                    ARG_AUTH_CODE to authCode,
+                    ARG_INSTANCE_NAME to instanceName))))
         }
     }
 

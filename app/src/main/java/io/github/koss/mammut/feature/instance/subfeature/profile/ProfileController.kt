@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
@@ -33,11 +34,13 @@ import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
 import io.github.koss.mammut.feature.settings.SettingsController
@@ -74,12 +77,12 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as InstanceActivity)
-                .component
+        router.getControllerWithTag("")
+        instanceComponent()
                 .plus(profileModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, viewModelFactory).get(key, ProfileViewModel::class.java)
+        viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(key, ProfileViewModel::class.java)
     }
 
     override fun onAttach(view: View) {

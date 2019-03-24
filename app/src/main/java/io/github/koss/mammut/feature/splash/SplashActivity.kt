@@ -6,6 +6,8 @@ import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.InstanceActivity
+import io.github.koss.mammut.feature.instance.MultiInstanceActivity
+import io.github.koss.mammut.feature.instance.MultiInstanceController
 import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import kotlinx.coroutines.*
@@ -28,6 +30,10 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
             finish()
             return
         }
+
+        startActivity<MultiInstanceActivity>()
+        finish()
+        return
 
         launch {
             val registrations = registrationRepository
