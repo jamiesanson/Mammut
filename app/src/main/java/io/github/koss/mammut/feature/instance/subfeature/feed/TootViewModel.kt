@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.entities.feed.Status
-import io.github.koss.mammut.data.models.Emoji
-import io.github.koss.mammut.data.repository.InstanceDetailRepository
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.toot.emoji.EmojiRenderer
 import kotlinx.coroutines.*
@@ -17,16 +15,12 @@ import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * ViewModel for handling presentation logic of a Toot.
  */
 class TootViewModel @Inject constructor(
-        private val context: Context,
-        private val instanceDetailRepository: InstanceDetailRepository,
-        @Named("instance_name")
-        private val instanceName: String
+        private val context: Context
 ): ViewModel(), CoroutineScope by GlobalScope {
 
     val statusViewState: LiveData<TootViewState> = MutableLiveData()
@@ -35,7 +29,9 @@ class TootViewModel @Inject constructor(
 
     var currentStatus: Status? = null
 
-    private var emojis: Deferred<List<Emoji>> = async { instanceDetailRepository.loadEmojisForInstance(instanceName) }
+    // transient state used by the view
+    var isSensitiveScreenVisible = false
+    var isContentVisible = false
 
     private var countJob = Job()
 
@@ -64,7 +60,7 @@ class TootViewModel @Inject constructor(
             statusViewState.postSafely(TootViewState(name, username, content, status.mediaAttachments.firstOrNull()))
 
             // Post the HTML rendered content first such that it displays earlier.
-            val renderedContent = EmojiRenderer.render(context, content, emojis = emojis.await().map { it.toModel() })
+            val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() } ?: emptyList())
             statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments.firstOrNull()))
         }
     }

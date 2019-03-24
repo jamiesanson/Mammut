@@ -13,6 +13,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.bumptech.glide.RequestManager
@@ -49,8 +50,6 @@ class TootViewHolder(
 
     private var exoPlayer: SimpleExoPlayer? = null
 
-    private var isSensitiveScreenVisible = false
-    private var isContentVisible = false
 
     private var viewModel: TootViewModel = viewModelProvider.get(UUID.randomUUID().toString(), TootViewModel::class.java)
 
@@ -125,7 +124,7 @@ class TootViewHolder(
                 }
 
                 tootImageCardView.onClick {
-                    if (!isSensitiveScreenVisible) {
+                    if (!viewModel.isSensitiveScreenVisible) {
                         callbacks.onPhotoClicked(tootImageView, attachment.url)
                     }
                 }
@@ -218,7 +217,7 @@ class TootViewHolder(
         with(itemView) {
             // If not sensitive content, short circuit
             if (!isSensitive) {
-                isSensitiveScreenVisible = false
+                viewModel.isSensitiveScreenVisible = false
                 sensitiveContentFrameLayout.isVisible = false
                 sensitiveContentToggleButton.isVisible = false
                 return
@@ -227,12 +226,12 @@ class TootViewHolder(
             // Initial conditions
             sensitiveContentFrameLayout.isVisible = true
             sensitiveContentToggleButton.isVisible = true
-            isSensitiveScreenVisible = true
+            viewModel.isSensitiveScreenVisible = true
 
             fun View.largestDimension(): Float = sqrt(this.width.toFloat().pow(2F) + this.height.toFloat().pow(2F))
 
             fun toggleContentWarningVisibility() {
-                if (isSensitiveScreenVisible) {
+                if (viewModel.isSensitiveScreenVisible) {
                     ViewAnimationUtils.createCircularReveal(
                             sensitiveContentFrameLayout,
                             sensitiveContentFrameLayout.width - sensitiveContentToggleButton.width / 2,
@@ -246,9 +245,8 @@ class TootViewHolder(
                         duration = 250L
                     }.start()
 
-                    TransitionManager.beginDelayedTransition(tootImageCardView)
                     sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_black_24dp
-                    isSensitiveScreenVisible = false
+                    viewModel.isSensitiveScreenVisible = false
                 } else {
                     ViewAnimationUtils.createCircularReveal(
                             sensitiveContentFrameLayout,
@@ -263,9 +261,8 @@ class TootViewHolder(
                         duration = 250L
                     }.start()
 
-                    TransitionManager.beginDelayedTransition(tootImageCardView)
                     sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_off_black_24dp
-                    isSensitiveScreenVisible = true
+                    viewModel.isSensitiveScreenVisible = true
                 }
             }
 
@@ -278,26 +275,26 @@ class TootViewHolder(
         contentWarningTextView.text = spoilerText
         contentWarningTextView.isVisible = spoilerText.isNotEmpty()
         contentWarningVisibilityButton.isVisible = spoilerText.isNotEmpty()
-        isContentVisible = !spoilerText.isNotEmpty()
+        viewModel.isContentVisible = !spoilerText.isNotEmpty()
 
         fun renderContentVisibility(transition: Boolean) {
             if (transition) {
-                TransitionManager.beginDelayedTransition(itemView.parent as ViewGroup)
+                TransitionManager.beginDelayedTransition(itemView.parent as ViewGroup, AutoTransition().apply { duration = 200L })
             }
 
             // Change visibility
-            contentTextView.isVisible = isContentVisible
+            contentTextView.isVisible = viewModel.isContentVisible
             val hideImageView = viewModel.statusViewState.value?.displayAttachment != null
-            if (hideImageView) tootImageCardView.isVisible = isContentVisible
+            if (hideImageView) tootImageCardView.isVisible = viewModel.isContentVisible
 
             // Change button icon
             contentWarningVisibilityButton.imageResource =
-                    if (isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
+                    if (viewModel.isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
         }
 
         if (spoilerText.isNotEmpty()) {
             contentWarningVisibilityButton.onClick {
-                isContentVisible = !isContentVisible
+                viewModel.isContentVisible = !viewModel.isContentVisible
                 renderContentVisibility(transition = true)
             }
         }
