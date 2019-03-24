@@ -46,10 +46,7 @@ class FeedAdapter(
                 // This statement is a guard for that case.
                 if (position == currentList?.size ?: -1) return
 
-                val current = getItem(position) ?: run {
-                    holder.clear()
-                    return
-                }
+                val current = getItem(position) ?: return
 
                 holder.bind(current)
             }

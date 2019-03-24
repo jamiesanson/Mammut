@@ -35,15 +35,9 @@ class TootViewModel @Inject constructor(
 
     var currentStatus: Status? = null
 
-    private var emojis: List<Emoji> = emptyList()
+    private var emojis: Deferred<List<Emoji>> = async { instanceDetailRepository.loadEmojisForInstance(instanceName) }
 
     private var countJob = Job()
-
-    init {
-        launch(Dispatchers.IO) {
-            emojis = instanceDetailRepository.loadEmojisForInstance(instanceName)
-        }
-    }
 
     fun bind(status: Status) {
         if (status.id == currentStatus?.id) return
@@ -63,12 +57,14 @@ class TootViewModel @Inject constructor(
     private fun processViewState() {
         val status = currentStatus ?: return
         val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName) ?: ""
-        val username = "@${status.account?.userName}"
+        val username = "@${status.account?.acct ?: status.account?.userName}"
 
         launch(Dispatchers.IO) {
             val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-            val renderedContent = EmojiRenderer.render(context, content, emojis = emojis.map { it.toModel() })
+            statusViewState.postSafely(TootViewState(name, username, content, status.mediaAttachments.firstOrNull()))
 
+            // Post the HTML rendered content first such that it displays earlier.
+            val renderedContent = EmojiRenderer.render(context, content, emojis = emojis.await().map { it.toModel() })
             statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments.firstOrNull()))
         }
     }

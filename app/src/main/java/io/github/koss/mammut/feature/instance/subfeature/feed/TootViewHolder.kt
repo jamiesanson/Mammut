@@ -12,12 +12,9 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelProvider
+import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
-import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -33,11 +30,8 @@ import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import io.github.koss.mammut.R
-import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
-import io.github.koss.mammut.extension.observe
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
@@ -56,6 +50,7 @@ class TootViewHolder(
     private var exoPlayer: SimpleExoPlayer? = null
 
     private var isSensitiveScreenVisible = false
+    private var isContentVisible = false
 
     private var viewModel: TootViewModel = viewModelProvider.get(UUID.randomUUID().toString(), TootViewModel::class.java)
 
@@ -79,10 +74,10 @@ class TootViewHolder(
     }
 
     private fun onViewStateChanged(viewState: TootViewState?) {
-        with (itemView) {
-            displayNameTextView.text = viewState?.name
-            usernameTextView.text = viewState?.username
-            contentTextView.text = viewState?.content
+        with(itemView) {
+            viewState?.name?.let(displayNameTextView::setText)
+            viewState?.username?.let(usernameTextView::setText)
+            viewState?.content?.let(contentTextView::setText)
         }
 
         viewState?.displayAttachment.let(::processAttachment)
@@ -90,11 +85,7 @@ class TootViewHolder(
         // Setup sensitive content screen
         setupContentWarning(isSensitive = viewModel.currentStatus?.isSensitive ?: false)
 
-        // Resolve colors
-        val typedValue = TypedValue()
-        val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
-        @ColorInt val color = typedValue.data
+        @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
 
         requestManager
                 .load(viewModel.currentStatus?.account?.avatar)
@@ -113,7 +104,7 @@ class TootViewHolder(
     }
 
     private fun processAttachment(att: Attachment<*>?) {
-        with (itemView) {
+        with(itemView) {
             att?.let { attachment ->
                 requestManager
                         .clear(tootImageView)
@@ -283,41 +274,35 @@ class TootViewHolder(
         }
     }
 
-    private fun setupSpoiler(spoilerText: String) {
-        if (spoilerText.isNotEmpty()) {
-            itemView.doOnPreDraw {
-                itemView.blurParentLayout.isVisible = true
-                itemView.spoilerTextView.text = spoilerText
-            }
-            itemView.doOnNextLayout {
-                Glide.with(itemView)
-                        .load(Blurrer.blurView(itemView, 25F))
-                        .transition(withCrossFade())
-                        .into(itemView.blurLayout)
+    private fun setupSpoiler(spoilerText: String) = with(itemView) {
+        contentWarningTextView.text = spoilerText
+        contentWarningTextView.isVisible = spoilerText.isNotEmpty()
+        contentWarningVisibilityButton.isVisible = spoilerText.isNotEmpty()
+        isContentVisible = !spoilerText.isNotEmpty()
+
+        fun renderContentVisibility(transition: Boolean) {
+            if (transition) {
+                TransitionManager.beginDelayedTransition(itemView.parent as ViewGroup)
             }
 
-            itemView.blurParentLayout.onClick {
-                itemView.blurParentLayout.animate()
-                        .alpha(0F)
-                        .setDuration(300L)
-                        .setListener(object : Animator.AnimatorListener {
-                            override fun onAnimationRepeat(animation: Animator?) {}
-                            override fun onAnimationCancel(animation: Animator?) {}
-                            override fun onAnimationStart(animation: Animator?) {}
+            // Change visibility
+            contentTextView.isVisible = isContentVisible
+            val hideImageView = viewModel.statusViewState.value?.displayAttachment != null
+            if (hideImageView) tootImageCardView.isVisible = isContentVisible
 
-                            override fun onAnimationEnd(animation: Animator?) {
-                                itemView.blurParentLayout.isVisible = false
-                            }
-                        })
-
-                        .start()
-            }
-
-            itemView.blurParentLayout.alpha = 1F
-        } else {
-            itemView.spoilerTextView.text = spoilerText
-            itemView.blurParentLayout.isVisible = false
+            // Change button icon
+            contentWarningVisibilityButton.imageResource =
+                    if (isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
         }
+
+        if (spoilerText.isNotEmpty()) {
+            contentWarningVisibilityButton.onClick {
+                isContentVisible = !isContentVisible
+                renderContentVisibility(transition = true)
+            }
+        }
+
+        renderContentVisibility(false)
     }
 
     /**
@@ -342,23 +327,6 @@ class TootViewHolder(
             } ?: bestGuess
             else -> throw IllegalArgumentException("Unknown attachment type")
         }
-    }
-
-    fun clear() {
-        with(itemView) {
-            displayNameTextView.text = null
-            usernameTextView.text = null
-            contentTextView.text = null
-            timeTextView.text = null
-            profileImageView.setOnClickListener(null)
-            GlideApp.with(itemView)
-                    .clear(profileImageView)
-            GlideApp.with(itemView)
-                    .clear(tootImageView)
-            tootImageView.visibility = View.GONE
-        }
-
-        viewModel.onCleared()
     }
 
     fun recycle() {

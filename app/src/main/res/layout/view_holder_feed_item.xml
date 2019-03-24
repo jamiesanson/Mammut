@@ -19,8 +19,8 @@
 
     <ImageView
         android:id="@+id/profileImageView"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
@@ -41,8 +41,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barrier"
         app:layout_constraintHorizontal_bias="0.0"
@@ -57,16 +56,18 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textSize="16sp"
             tools:text="Jamie Sanson" />
 
         <TextView
             android:id="@+id/usernameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textSize="14sp"
             tools:text="\@jamiesanson" />
 
     </LinearLayout>
@@ -77,13 +78,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileImageView"
-        app:layout_constraintTop_toBottomOf="@+id/nameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contentWarningTextView"
         app:layout_constraintVertical_bias="0.0"
         tools:text="This is some sample content to show how the ViewHolder handles long content memes" />
 
@@ -99,16 +102,17 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/profileImageView"
         app:layout_constraintTop_toTopOf="@+id/nameLayout"
+        app:layout_constraintVertical_bias="0.0"
         tools:text="23 mins ago" />
 
     <View
         android:id="@+id/bottomDividerView"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:background="?attr/colorControlNormalTransparent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:alpha="0.5"
+        android:background="?attr/colorControlNormalTransparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,25 +125,21 @@
         android:layout_height="wrap_content"
         app:barrierDirection="start"
         app:constraint_referenced_ids="timeTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteX="384dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:id="@+id/tootImageCardView"
         android:layout_width="0dp"
         android:layout_height="0px"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
         android:foreground="@drawable/accent_ripple"
         android:stateListAnimator="@animator/cardview_click_animator"
-        app:cardBackgroundColor="?attr/colorPrimaryLight"
-        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toTopOf="@id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contentTextView">
 
         <ImageView
@@ -162,9 +162,9 @@
             android:layout_height="match_parent"
             android:background="?attr/colorPrimaryDark"
             android:gravity="center"
+            android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:orientation="vertical">
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -183,51 +183,59 @@
             android:layout_gravity="top|end"
             android:background="@drawable/circular_accent_ripple"
             android:clickable="true"
-            android:elevation="4dp"
             android:contentDescription="@null"
+            android:elevation="4dp"
             android:focusable="true"
             android:padding="8dp"
             android:tint="?attr/colorControlNormal"
             android:tintMode="src_in"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:srcCompat="@drawable/ic_visibility_off_black_24dp" />
+            app:srcCompat="@drawable/ic_visibility_off_black_24dp"
+            tools:visibility="visible" />
 
-    </com.google.android.material.card.MaterialCardView>
-
-    <FrameLayout
-        android:id="@+id/blurParentLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:translationZ="12dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/colorPrimary"
-        android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-        <ImageView
-            android:id="@+id/blurLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@null"
-            android:scaleType="center"/>
-
-        <TextView
-            android:id="@+id/spoilerTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:shadowColor="?attr/colorPrimaryDark"
-            android:shadowRadius="4"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            tools:text="Watch out you're getting spoiled"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"/>
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/contentWarningTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+        android:visibility="gone"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImageView"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="NSFW"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/contentWarningVisibilityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/circular_accent_ripple"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:elevation="4dp"
+        android:focusable="true"
+        android:padding="8dp"
+        android:tint="?attr/colorControlNormal"
+        android:tintMode="src_in"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/contentWarningTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/contentWarningTextView"
+        app:layout_constraintTop_toTopOf="@+id/contentWarningTextView"
+        app:srcCompat="@drawable/ic_visibility_off_black_24dp"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
