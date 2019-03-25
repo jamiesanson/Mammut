@@ -10,6 +10,9 @@
     android:focusable="true"
     android:background="?colorPrimaryTransparency"
     android:foreground="@drawable/accent_ripple"
+    app:strokeColor="?colorAccent"
+    tools:strokeColor="?colorAccent"
+    tools:strokeWidth="2dp"
     app:cardCornerRadius="4dp"
     app:cardElevation="0dp"
     android:stateListAnimator="@animator/cardview_click_animator">

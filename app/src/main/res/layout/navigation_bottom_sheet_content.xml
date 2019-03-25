@@ -82,7 +82,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:maxLines="1"
-        android:text="Other Accounts"
+        android:text="Your Accounts"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"

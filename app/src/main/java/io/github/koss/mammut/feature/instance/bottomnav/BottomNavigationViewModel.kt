@@ -28,8 +28,8 @@ class BottomNavigationViewModel @Inject constructor(
                     currentUser = registrations
                             .first { it.accessToken?.accessToken == instanceAccessToken }
                             .account!!,
-                    otherAccounts = registrations
-                            .filter { it.accessToken != null && it.accessToken?.accessToken != instanceAccessToken }
+                    allAccounts = registrations
+                            .filter { it.accessToken != null }
                             .mapNotNull { it.account?.copy(acct = it.account!!.fullAcct(it.instanceName)) }
                             .toSet())
 

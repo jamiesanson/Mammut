@@ -18,6 +18,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
@@ -32,6 +33,7 @@ import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.card.MaterialCardView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
@@ -59,15 +61,13 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
-import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.*
 import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.displayMetrics
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.sdk27.coroutines.onHover
-import org.jetbrains.anko.sdk27.coroutines.onTouch
 import javax.inject.Inject
 
 private const val ROUTER_STATES_KEY = "STATE"
@@ -500,8 +500,26 @@ class InstanceController(args: Bundle) : BaseController(args),
             instancesRecyclerView.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+            LinearSnapHelper().attachToRecyclerView(instancesRecyclerView)
+
+            // Find selected account and scroll to it
+            val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+            instancesRecyclerView.scrollToPosition(selectedIndex)
+
+            // Setup flex adapter
             instancesRecyclerView.adapter = FlexAdapter<Account>().apply {
-                register<Account>(layout = R.layout.card_account) { account, view, _ ->
+                register<Account>(layout = R.layout.card_account) { account, view, index ->
+                    (view as MaterialCardView).apply {
+                        if (account.accountCreatedAt == state.currentUser.accountCreatedAt) {
+                            strokeWidth = dip(2)
+                        } else {
+                            strokeWidth = 0
+                            onClick {
+                                notifyPageChangeRequested(index)
+                            }
+                        }
+                    }
+
                     view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
                     view.findViewById<TextView>(R.id.usernameTextView).apply {
                         text = account.acct
@@ -530,7 +548,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                             .into(view.findViewById(R.id.avatarImageView))
                 }
 
-                resetItems(state.otherAccounts)
+                resetItems(state.allAccounts)
             }
 
             addAccountButton.onClick {
@@ -548,6 +566,11 @@ class InstanceController(args: Bundle) : BaseController(args),
             }
         }
 
+    }
+
+    private fun notifyPageChangeRequested(newIndex: Int) {
+        collapseBottomSheet()
+        (parentController as MultiInstanceController).requestPageSelection(newIndex)
     }
 
     /**

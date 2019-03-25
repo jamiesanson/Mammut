@@ -4,5 +4,5 @@ import io.github.koss.mammut.data.models.Account
 
 data class BottomNavigationViewState(
         val currentUser: Account,
-        val otherAccounts: Set<Account>
+        val allAccounts: Set<Account>
 )

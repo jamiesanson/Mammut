@@ -56,6 +56,10 @@ class MultiInstanceController: BaseController() {
         viewPager.swipeLocked = false
     }
 
+    fun requestPageSelection(index: Int) {
+        viewPager.setCurrentItem(index, true)
+    }
+
     private fun setupPager(registrations: List<InstanceRegistration>) {
         val pagerAdapter = object : RouterPagerAdapter(this) {
 
