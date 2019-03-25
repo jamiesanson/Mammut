@@ -4,7 +4,7 @@ import io.github.koss.mammut.data.database.entities.InstanceRegistrationEntity
 import io.github.koss.mammut.data.models.InstanceRegistration
 
 fun InstanceRegistrationEntity.toModel(): InstanceRegistration
-        = InstanceRegistration(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account)
+        = InstanceRegistration(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account, orderIndex)
 
 fun InstanceRegistration.toEntity(): InstanceRegistrationEntity
-        = InstanceRegistrationEntity(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account)
+        = InstanceRegistrationEntity(id, clientId, clientSecret, redirectUri, instanceName, accessToken, account, orderIndex)

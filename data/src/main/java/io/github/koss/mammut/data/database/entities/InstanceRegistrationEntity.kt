@@ -24,5 +24,7 @@ data class InstanceRegistrationEntity(
         val accessToken: @RawValue InstanceAccessToken? = null,
 
         @Embedded
-        val account: @RawValue Account? = null
+        val account: @RawValue Account? = null,
+
+        val orderIndex: Int = -1
 )

@@ -10,5 +10,6 @@ data class InstanceRegistration(
         val redirectUri: String = "",
         val instanceName: String = "",
         val accessToken: InstanceAccessToken? = null,
-        val account: Account? = null
+        val account: Account? = null,
+        val orderIndex: Int = -1
 )

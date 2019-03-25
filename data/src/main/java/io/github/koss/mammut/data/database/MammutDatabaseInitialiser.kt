@@ -3,6 +3,7 @@ package io.github.koss.mammut.data.database
 import android.content.Context
 import androidx.room.Room
 import io.github.koss.mammut.data.database.migrations.Migration_1_2
+import io.github.koss.mammut.data.database.migrations.Migration_2_3
 
 private const val MAMMUT_DB_NAME = "mammut-db"
 
@@ -12,7 +13,8 @@ private const val MAMMUT_DB_NAME = "mammut-db"
 object MammutDatabaseInitialiser {
 
     private val migrations = listOf(
-            Migration_1_2
+            Migration_1_2,
+            Migration_2_3
     )
 
     /**

@@ -21,7 +21,7 @@ class BottomNavigationViewModel @Inject constructor(
 ) : ViewModel() {
 
     val viewState: LiveData<BottomNavigationViewState> = Transformations
-            .map(registrationRepository.getAllRegistrationsLive(), ::produceViewState)
+            .map(registrationRepository.getAllCompletedRegistrationsLive(), ::produceViewState)
 
     private fun produceViewState(registrations: List<InstanceRegistration>): BottomNavigationViewState =
             BottomNavigationViewState(
@@ -29,7 +29,6 @@ class BottomNavigationViewModel @Inject constructor(
                             .first { it.accessToken?.accessToken == instanceAccessToken }
                             .account!!,
                     allAccounts = registrations
-                            .filter { it.accessToken != null }
                             .mapNotNull { it.account?.copy(acct = it.account!!.fullAcct(it.instanceName)) }
                             .toSet())
 

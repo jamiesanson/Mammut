@@ -22,4 +22,24 @@ interface InstanceRegistrationDao {
     @Query("DELETE FROM instanceregistrationentity WHERE id = :id")
     fun deleteRegistration(id: Long)
 
+    @Transaction
+    fun swapOrderedItems(fromIndex: Int, toIndex: Int) {
+        var regos = getAllRegistrations().sortedBy { it.orderIndex }.filter { it.accessToken != null }
+
+        // Check for no ordering
+        if (regos.all { it.orderIndex == -1}) {
+            regos.forEachIndexed { index, instanceRegistrationEntity ->
+                insertRegistration(instanceRegistrationEntity.copy(orderIndex = index))
+            }
+
+            regos = getAllRegistrations().filter { it.accessToken != null }
+        }
+
+        val movingRego = regos[fromIndex]
+        val otherRepo = regos[toIndex]
+
+        insertRegistration(movingRego.copy(orderIndex = otherRepo.orderIndex))
+        insertRegistration(otherRepo.copy(orderIndex = movingRego.orderIndex))
+    }
+
 }

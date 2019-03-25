@@ -1,0 +1,235 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "81bf3c976f73402f0ce7cd92efd73d34",
+    "entities": [
+      {
+        "tableName": "InstanceRegistrationEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clientId` TEXT NOT NULL, `clientSecret` TEXT NOT NULL, `redirectUri` TEXT NOT NULL, `instanceName` TEXT NOT NULL, `orderIndex` INTEGER NOT NULL, `accessToken` TEXT, `tokenType` TEXT, `scope` TEXT, `createdAt` INTEGER, `accountId` INTEGER, `userName` TEXT, `acct` TEXT, `displayName` TEXT, `note` TEXT, `accountUrl` TEXT, `avatar` TEXT, `header` TEXT, `isLocked` INTEGER, `accountCreatedAt` TEXT, `followersCount` INTEGER, `followingCount` INTEGER, `statusesCount` INTEGER, `accountEmojis` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientId",
+            "columnName": "clientId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientSecret",
+            "columnName": "clientSecret",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "redirectUri",
+            "columnName": "redirectUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instanceName",
+            "columnName": "instanceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accessToken.accessToken",
+            "columnName": "accessToken",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accessToken.tokenType",
+            "columnName": "tokenType",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accessToken.scope",
+            "columnName": "scope",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accessToken.createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.accountId",
+            "columnName": "accountId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.userName",
+            "columnName": "userName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.acct",
+            "columnName": "acct",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.note",
+            "columnName": "note",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.accountUrl",
+            "columnName": "accountUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.avatar",
+            "columnName": "avatar",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.header",
+            "columnName": "header",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.isLocked",
+            "columnName": "isLocked",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.accountCreatedAt",
+            "columnName": "accountCreatedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.followersCount",
+            "columnName": "followersCount",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.followingCount",
+            "columnName": "followingCount",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.statusesCount",
+            "columnName": "statusesCount",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "account.accountEmojis",
+            "columnName": "accountEmojis",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "InstanceSearchResultEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `users` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "users",
+            "columnName": "users",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "EmojiListEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`instance` TEXT NOT NULL, `emojis` TEXT NOT NULL, `retrievalTimeMs` INTEGER NOT NULL, PRIMARY KEY(`instance`))",
+        "fields": [
+          {
+            "fieldPath": "instance",
+            "columnName": "instance",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "emojis",
+            "columnName": "emojis",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retrievalTimeMs",
+            "columnName": "retrievalTimeMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "instance"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"81bf3c976f73402f0ce7cd92efd73d34\")"
+    ]
+  }
+}

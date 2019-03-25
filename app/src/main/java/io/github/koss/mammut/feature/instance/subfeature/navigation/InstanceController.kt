@@ -17,8 +17,11 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import arrow.instance
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
@@ -43,7 +46,9 @@ import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileControll
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.component.helper.InstanceOrderingItemTouchHelper
 import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.extension.*
 import io.github.koss.mammut.feature.about.AboutController
@@ -55,10 +60,12 @@ import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.instance.dagger.InstanceScope
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.ComposeTootController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.activity_instance_browser.view.*
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
 import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.view.*
@@ -129,6 +136,10 @@ class InstanceController(args: Bundle) : BaseController(args),
     @Inject
     @InstanceScope
     lateinit var viewModelFactory: MammutViewModelFactory
+
+    @Inject
+    @ApplicationScope
+    lateinit var registrationRepository: RegistrationRepository
 
     private lateinit var bottomNavigationViewModel: BottomNavigationViewModel
 
@@ -428,6 +439,9 @@ class InstanceController(args: Bundle) : BaseController(args),
                             .pushChangeHandler(VerticalChangeHandler()))
         }
 
+        // Recyclerview setup
+        setupInstancesRecycler(view)
+
         // Setup Slide handling
         val dimBackgroundColor = view.colorAttr(R.attr.colorControlNormalTransparent)
 
@@ -478,6 +492,63 @@ class InstanceController(args: Bundle) : BaseController(args),
                 })
     }
 
+    private fun setupInstancesRecycler(view: View) {
+        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorPrimaryLight)
+
+        view.instancesRecyclerView.layoutManager =
+                LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
+
+        ItemTouchHelper(InstanceOrderingItemTouchHelper(registrationRepository))
+                .attachToRecyclerView(view.instancesRecyclerView)
+
+        LinearSnapHelper()
+                .attachToRecyclerView(view.instancesRecyclerView)
+
+        // Setup flex adapter
+        view.instancesRecyclerView.adapter = FlexAdapter<Pair<Account, Boolean>>().apply {
+            register<Pair<Account, Boolean>>(layout = R.layout.card_account) { (account, selected), view, index ->
+                (view as MaterialCardView).apply {
+                    if (selected) {
+                        strokeWidth = dip(2)
+                    } else {
+                        strokeWidth = 0
+                        onClick {
+                            notifyPageChangeRequested(index)
+                        }
+                    }
+                }
+
+                view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
+                view.findViewById<TextView>(R.id.usernameTextView).apply {
+                    text = account.acct
+                    isSelected = true
+                }
+
+                GlideApp.with(view)
+                        .load(account.header)
+                        .thumbnail(
+                                GlideApp.with(view)
+                                        .load(ColorDrawable(placeholderColor))
+                        )
+                        .apply(RequestOptions.centerCropTransform())
+                        .transition(withCrossFade())
+                        .into(view.findViewById(R.id.backgroundImageView))
+
+                GlideApp.with(view)
+                        .load(account.avatar)
+                        .thumbnail(
+                                GlideApp.with(view)
+                                        .load(ColorDrawable(placeholderColor))
+                                        .apply(RequestOptions.circleCropTransform())
+                        )
+                        .apply(RequestOptions.circleCropTransform())
+                        .transition(withCrossFade())
+                        .into(view.findViewById(R.id.avatarImageView))
+            }
+
+        }
+    }
+
     private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
         // Load Account
         @ColorInt val placeholderColor = container.colorAttr(R.attr.colorPrimaryLight)
@@ -493,63 +564,29 @@ class InstanceController(args: Bundle) : BaseController(args),
                 .apply(RequestOptions.circleCropTransform())
                 .into(bottomSheetContentLayout.profileImageView)
 
+        val selectedItemList = state.allAccounts.map { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+
+        @Suppress("UNCHECKED_CAST")
+        (bottomSheetContentLayout.instancesRecyclerView.adapter as FlexAdapter<Pair<Account, Boolean>>).let {
+            if (it.items.size == 0) {
+                it.resetItems(state.allAccounts.zip(selectedItemList))
+            } else {
+                val diff = DiffUtil.calculateDiff(getInstancesDiffCallback(it.items.map { it.first }, state.allAccounts.toList()), true)
+                diff.dispatchUpdatesTo(it)
+
+                // Find selected account and scroll to it
+                val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+                bottomSheetContentLayout.instancesRecyclerView.scrollToPosition(selectedIndex)
+            }
+        }
+
         with(bottomSheetContentLayout) {
             displayNameTextView.text = state.currentUser.displayName
             usernameTextView.text = state.currentUser.fullAcct(instanceModule.provideInstanceName())
 
-            instancesRecyclerView.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-
-            LinearSnapHelper().attachToRecyclerView(instancesRecyclerView)
-
             // Find selected account and scroll to it
             val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
             instancesRecyclerView.scrollToPosition(selectedIndex)
-
-            // Setup flex adapter
-            instancesRecyclerView.adapter = FlexAdapter<Account>().apply {
-                register<Account>(layout = R.layout.card_account) { account, view, index ->
-                    (view as MaterialCardView).apply {
-                        if (account.accountCreatedAt == state.currentUser.accountCreatedAt) {
-                            strokeWidth = dip(2)
-                        } else {
-                            strokeWidth = 0
-                            onClick {
-                                notifyPageChangeRequested(index)
-                            }
-                        }
-                    }
-
-                    view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
-                    view.findViewById<TextView>(R.id.usernameTextView).apply {
-                        text = account.acct
-                        isSelected = true
-                    }
-
-                    GlideApp.with(view)
-                            .load(account.header)
-                            .thumbnail(
-                                    GlideApp.with(view)
-                                            .load(ColorDrawable(placeholderColor))
-                            )
-                            .apply(RequestOptions.centerCropTransform())
-                            .transition(withCrossFade())
-                            .into(view.findViewById(R.id.backgroundImageView))
-
-                    GlideApp.with(view)
-                            .load(account.avatar)
-                            .thumbnail(
-                                    GlideApp.with(view)
-                                            .load(ColorDrawable(placeholderColor))
-                                            .apply(RequestOptions.circleCropTransform())
-                            )
-                            .apply(RequestOptions.circleCropTransform())
-                            .transition(withCrossFade())
-                            .into(view.findViewById(R.id.avatarImageView))
-                }
-
-                resetItems(state.allAccounts)
-            }
 
             addAccountButton.onClick {
                 collapseBottomSheet()
@@ -566,6 +603,18 @@ class InstanceController(args: Bundle) : BaseController(args),
             }
         }
 
+    }
+
+    private fun getInstancesDiffCallback(oldList: List<Account>, newList: List<Account>): DiffUtil.Callback = object: DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                oldList[oldItemPosition].accountId == newList[newItemPosition].accountId
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                oldList[oldItemPosition] == newList[newItemPosition]
     }
 
     private fun notifyPageChangeRequested(newIndex: Int) {

@@ -1,7 +1,6 @@
 package io.github.koss.mammut.feature.instance
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.extension.applicationComponent
+import io.github.koss.mammut.extension.awaitFirst
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
@@ -23,6 +23,8 @@ import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_multi_instance.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.support.v4.onPageChangeListener
 import javax.inject.Inject
@@ -43,7 +45,13 @@ class MultiInstanceController: BaseController() {
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        registrationRepository.getAllCompletedRegistrationsLive().observe(this, ::setupPager)
+        val liveData = registrationRepository.getAllCompletedRegistrationsLive()
+        launch(Dispatchers.Main) {
+            liveData.awaitFirst().let(::setupPager)
+            liveData.observe(this@MultiInstanceController) {
+                (viewPager.adapter as? InstancePagerAdapter)?.registrations = it
+            }
+        }
     }
 
     fun lockViewPager() {
@@ -61,23 +69,7 @@ class MultiInstanceController: BaseController() {
     }
 
     private fun setupPager(registrations: List<InstanceRegistration>) {
-        val pagerAdapter = object : RouterPagerAdapter(this) {
-
-            override fun configureRouter(router: Router, position: Int) {
-                if (!router.hasRootController()) {
-                    val controller = InstanceController(args = bundleOf(
-                            ARG_AUTH_CODE to registrations[position].accessToken?.accessToken,
-                            ARG_INSTANCE_NAME to registrations[position].instanceName))
-
-                    controller.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
-
-                    router.setRoot(RouterTransaction
-                            .with(controller))
-                }
-            }
-
-            override fun getCount(): Int = registrations.size
-        }
+        val pagerAdapter = InstancePagerAdapter(this).apply { this.registrations = registrations }
 
         viewPager.adapter = pagerAdapter
         viewPager.pageMargin = viewPager.context.dip(32)
@@ -93,5 +85,32 @@ class MultiInstanceController: BaseController() {
                 }
             }
         }
+    }
+
+    private class InstancePagerAdapter(hostController: Controller): RouterPagerAdapter(hostController) {
+
+        var registrations: List<InstanceRegistration> = emptyList()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
+        override fun configureRouter(router: Router, position: Int) {
+            if (!router.hasRootController()) {
+
+                val controller = InstanceController(args = bundleOf(
+                        ARG_AUTH_CODE to registrations[position].accessToken?.accessToken,
+                        ARG_INSTANCE_NAME to registrations[position].instanceName))
+
+                controller.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+
+                router.setRoot(RouterTransaction
+                        .with(controller))
+            }
+        }
+
+        override fun getCount(): Int = registrations.size
+
+        override fun getItemId(position: Int): Long = registrations[position].id
     }
 }

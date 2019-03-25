@@ -17,7 +17,7 @@ import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
             InstanceSearchResultEntity::class,
             EmojiListEntity::class
         ],
-        version = 2)
+        version = 3)
 @TypeConverters(RoomConverters::class)
 abstract class MammutDatabase: RoomDatabase() {
 

@@ -8,6 +8,9 @@ import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.extension.filterElements
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -17,6 +20,12 @@ import javax.inject.Inject
 class RegistrationRepository @Inject constructor(
         private val database: MammutDatabase
 ) {
+
+    fun moveRegistrationOrdering(fromIndex: Int, toIndex: Int) {
+        GlobalScope.launch(Dispatchers.IO) {
+            database.instanceRegistrationDao().swapOrderedItems(fromIndex, toIndex)
+        }
+    }
 
     suspend fun addOrUpdateRegistration(registration: InstanceRegistration) {
         database.instanceRegistrationDao().insertRegistration(registration = registration.toEntity())
@@ -30,10 +39,10 @@ class RegistrationRepository @Inject constructor(
 
     fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toModel() } }
 
-    fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = getAllRegistrationsLive()
+    fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(getAllRegistrationsLive()
             .filterElements {
                 it.account != null
-            }
+            }) { it.sortedBy { item -> item.orderIndex }}
 
     suspend fun logOut(id: Long) = database.instanceRegistrationDao().deleteRegistration(id)
 }
