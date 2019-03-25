@@ -1,7 +1,10 @@
 apply plugin: 'com.android.library'
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+
+apply from: '../keys.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -15,6 +18,8 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        buildConfigField "String", "INSTANCES_SECRET", INSTANCES_SECRET
     }
 }
 
@@ -32,6 +37,9 @@ dependencies {
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.retrofit
+    implementation rootProject.ext.retrofitGsonConverter
 
     implementation rootProject.ext.paging
 }

@@ -21,10 +21,9 @@ import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
-import io.github.koss.mammut.extension.instanceComponent
+import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.startActivity
-import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsScope
@@ -62,11 +61,11 @@ class SettingsController: BaseController() {
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        instanceComponent()
+        (context as AppCompatActivity).applicationComponent
                 .plus(settingsModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(SettingsViewModel::class.java)
+        viewModel = ViewModelProviders.of(context, viewModelFactory).get(SettingsViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
@@ -108,15 +107,7 @@ class SettingsController: BaseController() {
 
                 onClick {
                     // Perform action
-                    when (clickableItem.action) {
-                        is NavigationAction -> router.pushController(RouterTransaction.with(clickableItem.action.controllerToPush()))
-                        is ViewOssLicenses -> startActivity<OssLicensesMenuActivity>()
-                        is ChangeInstance -> startActivity<InstanceBrowserActivity>(finishCurrent = true)
-                        is LogOut -> viewModel.performAction(clickableItem.action).also {
-                            startActivity<InstanceBrowserActivity>(finishCurrent = true)
-                        }
-                        else -> viewModel.performAction(clickableItem.action)
-                    }
+                    viewModel.performAction(clickableItem.action)
                 }
             }
         }

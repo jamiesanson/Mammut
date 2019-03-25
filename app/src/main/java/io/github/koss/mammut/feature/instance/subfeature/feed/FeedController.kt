@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bumptech.glide.RequestManager
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
@@ -67,8 +68,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     private lateinit var viewModel: FeedViewModel
 
-    private lateinit var requestManager: RequestManager
-
     @Inject
     @FeedScope
     lateinit var factory: MammutViewModelFactory
@@ -102,19 +101,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
                 .inject(this)
 
         viewModel = ViewModelProviders.of(context as AppCompatActivity, factory).get(uniqueId, FeedViewModel::class.java)
-        requestManager = GlideApp.with(context)
-    }
-
-    override fun onContextUnavailable() {
-        super.onContextUnavailable()
-        // Clear the request manager
-        // NOTE - The following could throw an exception if nothing's used the manager,
-        // so try-catch it
-        try {
-            requestManager.onDestroy()
-        } catch (e: Exception) {
-            // no-op
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
@@ -175,9 +161,14 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     override fun onProfileClicked(account: Account) {
-        router.pushController(RouterTransaction.with(ProfileController.newInstance(account).apply {
-            targetController = this@FeedController.parentController
-        }))
+        router.pushController(
+                RouterTransaction
+                        .with(ProfileController.newInstance(account)
+                                .apply {
+                                    targetController = this@FeedController.parentController
+                                })
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler()))
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
@@ -194,7 +185,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         recyclerView.adapter = FeedAdapter(
                 viewModelProvider = ViewModelProviders.of(view!!.context as AppCompatActivity, factory),
                 tootCallbacks = this,
-                requestManager = requestManager,
                 onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)
 
         recyclerView.itemAnimator?.addDuration = 150L
@@ -374,7 +364,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     private fun RecyclerView.isNearBottom(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstVisibleItemPosition() >= (recyclerView.adapter?.itemCount ?: Int.MAX_VALUE) - 6
+                return@run findFirstVisibleItemPosition() >= (recyclerView.adapter?.itemCount
+                        ?: Int.MAX_VALUE) - 6
             } ?: false
 
     companion object {

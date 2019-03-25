@@ -13,7 +13,6 @@ import io.github.koss.mammut.data.database.entities.feed.Status
 class FeedAdapter(
         private val viewModelProvider: ViewModelProvider,
         private val tootCallbacks: TootCallbacks,
-        private val requestManager: RequestManager,
         private val onBrokenTimelineResolved: () -> Unit
 ): PagedListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
 
@@ -35,7 +34,7 @@ class FeedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
             when (viewType) {
                 R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
-                else -> TootViewHolder(parent, viewModelProvider, requestManager, tootCallbacks)
+                else -> TootViewHolder(parent, viewModelProvider, tootCallbacks)
             }
 
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {

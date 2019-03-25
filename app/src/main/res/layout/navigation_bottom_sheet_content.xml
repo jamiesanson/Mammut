@@ -1,39 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="?colorSecondary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/acctTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-        tools:text="\@jamiesanson@mastodon.social"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profileCell"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/profile_cell_height"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/accent_ripple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/profile_picture_content_descrption"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <LinearLayout
+            android:id="@+id/nameLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/profileImageView"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/profileImageView"
+            app:layout_constraintTop_toTopOf="@+id/profileImageView">
+
+            <TextView
+                android:id="@+id/displayNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textSize="16sp"
+                tools:text="Jamie Sanson" />
+
+            <TextView
+                android:id="@+id/usernameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textSize="14sp"
+                tools:text="\@jamiesanson" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/instancesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="4dp"
-        android:textIsSelectable="false"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:maxLines="1"
+        android:text="Other Accounts"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        android:text="@string/instances"/>
+        android:textIsSelectable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileCell"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/instancesRecyclerView"
         android:layout_width="match_parent"
-        android:padding="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:clipToPadding="false"
-        android:layout_height="120dp"/>
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instancesTextView"
+        app:layout_constraintVertical_bias="0.0" />
 
+    <FrameLayout
+        android:id="@+id/settingsCell"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/accent_ripple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instancesRecyclerView"
+        app:layout_constraintVertical_bias="0.0">
 
-</LinearLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="16dp"
+            android:tint="?colorControlNormal"
+            android:tintMode="src_in"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_settings_black_24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:layout_gravity="start|center_vertical"
+            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:text="@string/settings"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/aboutAppCell"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/accent_ripple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsCell"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="16dp"
+            android:tint="?colorControlNormal"
+            android:tintMode="src_in"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_info_outline_black_24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:layout_gravity="start|center_vertical"
+            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:text="@string/about_mammut"/>
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/addAccountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:background="@drawable/circular_accent_ripple"
+        android:tint="?colorControlNormal"
+        android:tintMode="src_in"
+        app:layout_constraintBottom_toBottomOf="@+id/instancesTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/instancesTextView"
+        app:layout_constraintTop_toTopOf="@+id/instancesTextView"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

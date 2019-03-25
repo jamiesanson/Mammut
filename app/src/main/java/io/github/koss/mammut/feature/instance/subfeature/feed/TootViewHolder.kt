@@ -31,6 +31,7 @@ import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import io.github.koss.mammut.R
+import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
@@ -44,7 +45,6 @@ import kotlin.math.sqrt
 class TootViewHolder(
         parent: ViewGroup,
         viewModelProvider: ViewModelProvider,
-        private val requestManager: RequestManager,
         private val callbacks: TootCallbacks
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
@@ -86,6 +86,8 @@ class TootViewHolder(
 
         @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
 
+        val requestManager = GlideApp.with(itemView)
+
         requestManager
                 .load(viewModel.currentStatus?.account?.avatar)
                 .thumbnail(
@@ -105,7 +107,7 @@ class TootViewHolder(
     private fun processAttachment(att: Attachment<*>?) {
         with(itemView) {
             att?.let { attachment ->
-                requestManager
+                GlideApp.with(itemView)
                         .clear(tootImageView)
 
                 val aspect = getThumbnailSpec(attachment)
@@ -143,7 +145,7 @@ class TootViewHolder(
 
     private fun loadAttachment(attachment: Attachment<*>) {
         when (attachment) {
-            is PhotoAttachment -> loadImage(attachment, requestManager)
+            is PhotoAttachment -> loadImage(attachment)
             is VideoAttachment -> loadVideo(attachment)
             is GifvAttachment -> loadGifv(attachment)
         }
@@ -186,7 +188,7 @@ class TootViewHolder(
         exoPlayer?.prepare(source)
     }
 
-    private fun loadImage(photoAttachment: PhotoAttachment, requestManager: RequestManager) {
+    private fun loadImage(photoAttachment: PhotoAttachment) {
         itemView.tootImageView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.GONE
 
@@ -195,6 +197,8 @@ class TootViewHolder(
         val theme = itemView.context.theme ?: return
         theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
         @ColorInt val color = typedValue.data
+
+        val requestManager = GlideApp.with(itemView)
 
         // Load attachment
         requestManager

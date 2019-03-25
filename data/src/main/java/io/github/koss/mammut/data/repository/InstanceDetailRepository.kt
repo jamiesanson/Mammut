@@ -8,6 +8,8 @@ import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.EmojiListEntity
 import io.github.koss.mammut.data.models.Emoji
+import io.github.koss.mammut.data.models.InstanceRegistration
+import io.github.koss.mammut.instances.response.InstanceDetail
 import java.util.*
 
 private const val EMOJI_TIMEOUT_MS = 7 /* days */ * 24 * 60 * 60 * 1000
@@ -17,6 +19,7 @@ private const val EMOJI_TIMEOUT_MS = 7 /* days */ * 24 * 60 * 60 * 1000
  */
 class InstanceDetailRepository(
         private val mammutDatabase: MammutDatabase,
+        private val instancesRepository: InstancesRepository,
         private val clientBuilder: (url: String) -> MastodonClient
 ) {
 
@@ -49,4 +52,17 @@ class InstanceDetailRepository(
                     }
         }
     }
+
+    suspend fun loadDetailForRegistrations(registrations: List<InstanceRegistration>): Map<InstanceRegistration, InstanceDetail?> {
+        // Collate instances to get details for
+        val details = registrations
+                .map { it.instanceName }
+                .distinct()
+                .map {
+                    instancesRepository.getInstanceInformation(it)
+                }
+
+        return registrations.associateWith { registration -> details.find { it?.name == registration.instanceName } }
+    }
+
 }

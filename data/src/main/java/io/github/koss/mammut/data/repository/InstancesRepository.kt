@@ -1,7 +1,6 @@
-package io.github.koss.mammut.repo
+package io.github.koss.mammut.data.repository
 
-import io.github.koss.mammut.BuildConfig
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
@@ -11,12 +10,10 @@ import io.github.koss.mammut.instances.response.InstanceDetail
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Inject
 
 private const val INSTANCES_URL = "https://instances.social/api/1.0/"
 
-@ApplicationScope
-class InstancesRepository @Inject constructor(
+class InstancesRepository constructor(
         private val database: MammutDatabase
 ) {
 

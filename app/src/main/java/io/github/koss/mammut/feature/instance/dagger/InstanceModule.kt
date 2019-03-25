@@ -7,7 +7,7 @@ import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.extension.ClientBuilder
 import javax.inject.Named
 
-@Module
+@Module(includes = [ InstanceViewModelModule::class ])
 class InstanceModule(private val instanceName: String, private val accessToken: String) {
 
     @Provides

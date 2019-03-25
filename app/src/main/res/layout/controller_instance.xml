@@ -16,12 +16,12 @@
     <LinearLayout
         android:id="@+id/bottomNavigationSheet"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:clickable="true"
         android:focusable="true"
-        android:background="?colorSecondary"
-        app:behavior_peekHeight="57dp"
+        android:elevation="8dp"
+        app:behavior_peekHeight="@dimen/default_navigation_peek_height"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <View
@@ -58,6 +58,16 @@
         android:tint="?attr/colorControlNormal"
         android:tintMode="src_in"
         app:useCompatPadding="true" />
+
+    <View
+        android:id="@+id/bottomNavigationDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorControlNormalTransparent"
+        android:alpha="0"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <View
         android:id="@+id/fullScreenPhotoLayout"

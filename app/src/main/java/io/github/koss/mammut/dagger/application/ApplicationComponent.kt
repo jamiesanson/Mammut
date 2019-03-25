@@ -12,6 +12,8 @@ import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceComponent
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
+import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
+import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 import io.github.koss.mammut.feature.splash.SplashActivity
 
 @ApplicationScope
@@ -35,4 +37,6 @@ interface ApplicationComponent {
     fun plus(joinInstanceModule: JoinInstanceModule): JoinInstanceComponent
 
     fun plus(instanceModule: InstanceModule): InstanceComponent
+
+    fun plus(settingsModule: SettingsModule): SettingsComponent
 }

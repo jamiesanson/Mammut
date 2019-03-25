@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -49,6 +50,10 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 fun Fragment.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     requireActivity().snackbar(message, length)
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <T: CoordinatorLayout.Behavior<View>> View.behaviour(): T? =
+        (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? T
 
 /**
  * Helper function for allowing simple ViewHolder view inflation

@@ -135,10 +135,6 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
                         onEditClicked()
                         true
                     }
-                    R.id.settings_item -> {
-                        onSettingsClicked()
-                        true
-                    }
                     else -> false
                 }
             }
@@ -147,10 +143,6 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     private fun onEditClicked() {
         parentController?.comingSoon()
-    }
-
-    private fun onSettingsClicked() {
-        router.pushController(RouterTransaction.with(SettingsController()))
     }
 
     private fun setupViewPager(account: Account) {

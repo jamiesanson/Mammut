@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.instances.response.InstanceDetail
-import io.github.koss.mammut.repo.InstancesRepository
+import io.github.koss.mammut.data.repository.InstancesRepository
 import io.github.koss.mammut.extension.postSafely
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope

@@ -3,28 +3,19 @@ package io.github.koss.mammut.feature.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.themes.StandardLightTheme
 import io.github.koss.mammut.base.themes.StandardTheme
 import io.github.koss.mammut.repo.PreferencesRepository
-import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
 import io.github.koss.mammut.feature.settings.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 class SettingsViewModel @Inject constructor(
-        private val preferencesRepository: PreferencesRepository,
-        private val registrationRepository: RegistrationRepository,
-        @InstanceScope
-        @Named("instance_access_token")
-        private val accessToken: String
+        private val preferencesRepository: PreferencesRepository
 ) : ViewModel(), CoroutineScope by GlobalScope {
 
     val settingsItems: LiveData<List<SettingsItem>> = MutableLiveData()
@@ -63,31 +54,6 @@ class SettingsViewModel @Inject constructor(
                                 subtitleRes = R.string.launch_chooser_description,
                                 isSet = preferencesRepository.takeMeStraightToInstanceBrowser,
                                 action = ToggleLaunchInstanceBrowser
-                        ),
-                        SectionHeader(
-                                titleRes = R.string.account_settings
-                        ),
-                        ClickableItem(
-                                titleRes = R.string.change_instance,
-                                action = ChangeInstance
-                        ),
-                        ClickableItem(
-                                titleRes = R.string.log_out,
-                                action = LogOut
-                        ),
-                        SectionHeader(
-                                titleRes = R.string.about_mammut
-                        ),
-                        ClickableItem(
-                                titleRes = R.string.contributors,
-                                action = NavigationAction.ViewContributors
-                        ),
-                        ClickableItem(
-                                titleRes = R.string.open_source_licenses,
-                                action = ViewOssLicenses
-                        ),
-                        SettingsFooter(
-                                appVersion = "${BuildConfig.VERSION_NAME}/${BuildConfig.BUILD_TYPE}"
                         )
                 )
         )
@@ -116,14 +82,6 @@ class SettingsViewModel @Inject constructor(
             ToggleLaunchInstanceBrowser -> {
                 preferencesRepository.takeMeStraightToInstanceBrowser = !preferencesRepository.takeMeStraightToInstanceBrowser
                 rebuildSettingsScreen()
-            }
-            LogOut -> {
-                launch {
-                    val registration = registrationRepository.getAllRegistrations()
-                            .first { it.accessToken?.accessToken == accessToken }
-
-                    registrationRepository.logOut(registration.id)
-                }
             }
         }
     }

@@ -13,7 +13,7 @@ import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
 import io.github.koss.mammut.data.models.*
-import io.github.koss.mammut.repo.InstancesRepository
+import io.github.koss.mammut.data.repository.InstancesRepository
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.ClientBuilder

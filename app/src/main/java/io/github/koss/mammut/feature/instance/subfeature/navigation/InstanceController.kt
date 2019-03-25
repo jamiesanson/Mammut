@@ -1,6 +1,7 @@
 package io.github.koss.mammut.feature.instance.subfeature.navigation
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -8,42 +9,66 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
+import com.github.ajalt.flexadapter.FlexAdapter
+import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.extension.comingSoon
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.base.BaseController
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.extension.applicationComponent
+import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.extension.*
+import io.github.koss.mammut.feature.about.AboutController
+import io.github.koss.mammut.feature.instance.MultiInstanceController
+import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewModel
+import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewState
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.feature.settings.SettingsController
 import io.github.koss.mammut.toot.ComposeTootController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
+import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.*
+import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.view.*
+import kotlinx.coroutines.*
+import org.jetbrains.anko.colorAttr
+import org.jetbrains.anko.dimen
+import org.jetbrains.anko.displayMetrics
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onHover
+import org.jetbrains.anko.sdk27.coroutines.onTouch
+import javax.inject.Inject
 
 private const val ROUTER_STATES_KEY = "STATE"
 
@@ -84,17 +109,28 @@ class InstanceController(args: Bundle) : BaseController(args),
      */
     private var routerStates = SparseArray<Bundle>()
 
+    /**
+     * Field containing the job with the coroutine responsible for peaking.
+     */
+    private var peekJob: Job? = null
+
     private lateinit var childRouter: Router
 
     lateinit var component: InstanceComponent
 
     private val instanceModule: InstanceModule by retained(key = { args.getString(ARG_AUTH_CODE)!! }) {
-       InstanceModule(
-               instanceName = args.getString(ARG_INSTANCE_NAME)!!,
-               accessToken = args.getString(ARG_AUTH_CODE)!!)
+        InstanceModule(
+                instanceName = args.getString(ARG_INSTANCE_NAME)!!,
+                accessToken = args.getString(ARG_AUTH_CODE)!!)
     }
 
     private var fullScreenImageAnimator: ViewsTransitionAnimator<*>? = null
+
+    @Inject
+    @InstanceScope
+    lateinit var viewModelFactory: MammutViewModelFactory
+
+    private lateinit var bottomNavigationViewModel: BottomNavigationViewModel
 
     /**
      * This is the current selected item id from the [BottomNavigationView]
@@ -106,6 +142,12 @@ class InstanceController(args: Bundle) : BaseController(args),
         super.onContextAvailable(context)
         component = (context as AppCompatActivity).applicationComponent
                 .plus(instanceModule)
+
+        component.inject(this)
+
+        bottomNavigationViewModel = ViewModelProviders
+                .of(activity as AppCompatActivity, viewModelFactory)
+                .get(component.accessToken(), BottomNavigationViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -123,7 +165,7 @@ class InstanceController(args: Bundle) : BaseController(args),
             performComposeTootOpen()
         }
 
-        view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
+        setupBottomNavigation(view)
 
         // We have not a single bundle/state saved.
         // Looks like this [HomeController] was created for the first time
@@ -221,7 +263,8 @@ class InstanceController(args: Bundle) : BaseController(args),
      */
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY) ?: SparseArray()
+        routerStates = savedInstanceState.getSparseParcelableArray(ROUTER_STATES_KEY)
+                ?: SparseArray()
     }
 
     override fun handleBack(): Boolean {
@@ -285,10 +328,233 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     /**
+     * Function called to peek the current user. Called when the page is selected.
+     */
+    fun peekCurrentUser() {
+        // Change the peekheight of the bottom navigation, then change it back
+        peekJob?.cancel()
+
+        peekJob = launch {
+            delay(200L)
+            val startingHeight = container.dimen(R.dimen.default_navigation_peek_height)
+            val additionalHeight = container.dimen(R.dimen.profile_cell_height)
+
+            withContext(Dispatchers.Main) {
+                // Disable interactions
+                bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                    (behavior as BottomSheetBehavior).apply {
+                        state = BottomSheetBehavior.STATE_EXPANDED
+                        peekHeight = startingHeight + additionalHeight
+                        state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                }
+            }
+
+            delay(1500L)
+
+            withContext(Dispatchers.Main) {
+                bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                    (behavior as BottomSheetBehavior).apply {
+                        if (state != BottomSheetBehavior.STATE_COLLAPSED) {
+                            peekHeight = startingHeight
+                        } else {
+                            state = BottomSheetBehavior.STATE_EXPANDED
+                            peekHeight = startingHeight
+                            state = BottomSheetBehavior.STATE_COLLAPSED
+                        }
+                    }
+                }
+
+                // The following delay is such that dimming is now re-enabled until the peek animation concludes
+                delay(100)
+            }
+        }
+
+        peekJob?.invokeOnCompletion {
+            when (it) {
+                is CancellationException -> {
+                    // Reset the peek height of the bottom sheet
+                    launch (Dispatchers.Main) {
+                        bottomNavigationSheet.behaviour<BottomSheetBehavior<View>>()?.peekHeight = container.dimen(R.dimen.default_navigation_peek_height)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun collapseBottomSheet() {
+        view?.bottomNavigationSheet
+                ?.behaviour<BottomSheetBehavior<View>>()
+                ?.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    private fun resetPeek() {
+        // Reset peak height and re-enable dimming
+        view?.let {
+            it.behaviour<BottomSheetBehavior<View>>()?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height)
+        }
+
+        peekJob?.cancel()
+        peekJob = null
+    }
+
+    private fun setupBottomNavigation(view: View) {
+        view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
+        bottomNavigationViewModel.viewState.observe(this, ::renderBottomNavigationContent)
+
+        val dimBackground = view.bottomNavigationDim
+        val statusBarColor = (view.context as AppCompatActivity).window.statusBarColor
+        dimBackground.isVisible = false
+        dimBackground.onClick {
+            collapseBottomSheet()
+        }
+
+        // Setup Button click handlers
+        view.settingsCell.onClick {
+            collapseBottomSheet()
+            parentController?.router?.pushController(
+                    RouterTransaction
+                            .with(SettingsController())
+                            .popChangeHandler(VerticalChangeHandler())
+                            .pushChangeHandler(VerticalChangeHandler()))
+        }
+
+        view.aboutAppCell.onClick {
+            collapseBottomSheet()
+            parentController?.router?.pushController(
+                    RouterTransaction
+                            .with(AboutController())
+                            .popChangeHandler(VerticalChangeHandler())
+                            .pushChangeHandler(VerticalChangeHandler()))
+        }
+
+        // Setup Slide handling
+        val dimBackgroundColor = view.colorAttr(R.attr.colorControlNormalTransparent)
+
+        view.bottomNavigationSheet
+                .behaviour<BottomSheetBehavior<View>>()
+                ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(view: View, proportion: Float) {
+                        if (peekJob?.isActive == true) {
+                            // Check to see that the user hasn't tried to swipe up the bottom sheet
+                            val peekHeight = view.behaviour<BottomSheetBehavior<View>>()?.peekHeight
+                            val screenHeight = view.context.displayMetrics.heightPixels
+                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight)) {
+                                // Reset peak height and re-enable dimming
+                                resetPeek()
+                            } else {
+                                return
+                            }
+                        }
+
+                        when (proportion) {
+                            0f -> {
+                                dimBackground.isVisible = false
+                                (view.context as AppCompatActivity).window.statusBarColor = statusBarColor
+                                (parentController as MultiInstanceController).unlockViewPager()
+                            }
+                            else -> dimBackground.apply {
+                                isVisible = true
+                                alpha = proportion
+                                (parentController as MultiInstanceController).lockViewPager()
+                            }
+                        }
+
+                        // Mask and modify alpha of background color and apply to statusbar
+                        val maxAlpha = ((dimBackgroundColor and "FF000000".toLong(radix = 16).toInt()) shr 24).run {
+                            this and "FF".toLong(radix = 16).toInt()
+                        }
+
+                        val newAlpha = (maxAlpha * proportion).toInt() shl 24
+
+                        val newStatusColor = (dimBackgroundColor and "00FFFFFF".toLong(radix = 16).toInt()) + newAlpha
+
+                        // Update status bar colour
+                        (view.context as AppCompatActivity).window.statusBarColor = newStatusColor
+                    }
+
+                    override fun onStateChanged(p0: View, p1: Int) {}
+
+                })
+    }
+
+    private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
+        // Load Account
+        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorPrimaryLight)
+
+        GlideApp.with(container)
+                .load(state.currentUser.avatar)
+                .thumbnail(
+                        GlideApp.with(container)
+                                .load(ColorDrawable(placeholderColor))
+                                .apply(RequestOptions.circleCropTransform())
+                )
+                .transition(withCrossFade())
+                .apply(RequestOptions.circleCropTransform())
+                .into(bottomSheetContentLayout.profileImageView)
+
+        with(bottomSheetContentLayout) {
+            displayNameTextView.text = state.currentUser.displayName
+            usernameTextView.text = state.currentUser.fullAcct(instanceModule.provideInstanceName())
+
+            instancesRecyclerView.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+            instancesRecyclerView.adapter = FlexAdapter<Account>().apply {
+                register<Account>(layout = R.layout.card_account) { account, view, _ ->
+                    view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
+                    view.findViewById<TextView>(R.id.usernameTextView).apply {
+                        text = account.acct
+                        isSelected = true
+                    }
+
+                    GlideApp.with(view)
+                            .load(account.header)
+                            .thumbnail(
+                                    GlideApp.with(view)
+                                            .load(ColorDrawable(placeholderColor))
+                            )
+                            .apply(RequestOptions.centerCropTransform())
+                            .transition(withCrossFade())
+                            .into(view.findViewById(R.id.backgroundImageView))
+
+                    GlideApp.with(view)
+                            .load(account.avatar)
+                            .thumbnail(
+                                    GlideApp.with(view)
+                                            .load(ColorDrawable(placeholderColor))
+                                            .apply(RequestOptions.circleCropTransform())
+                            )
+                            .apply(RequestOptions.circleCropTransform())
+                            .transition(withCrossFade())
+                            .into(view.findViewById(R.id.avatarImageView))
+                }
+
+                resetItems(state.otherAccounts)
+            }
+
+            addAccountButton.onClick {
+                collapseBottomSheet()
+                startActivity<JoinInstanceActivity>()
+            }
+
+            profileCell.onClick {
+                collapseBottomSheet()
+                childRouter.pushController(
+                        RouterTransaction
+                                .with(ProfileController.newInstance(account = state.currentUser, isMe = true))
+                                .pushChangeHandler(FadeChangeHandler())
+                                .popChangeHandler(FadeChangeHandler()))
+            }
+        }
+
+    }
+
+    /**
      * Function for coordinating the animations which lead to the reveal of the [ComposeTootController]
      */
     private fun performComposeTootOpen() {
-        // TODO - Improve this to incorporate circular reveals, arc motion etc.
+        resetPeek()
         router.pushController(RouterTransaction
                 .with(ComposeTootController().apply { targetController = this@InstanceController })
                 .popChangeHandler(VerticalChangeHandler())
