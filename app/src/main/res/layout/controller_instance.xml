@@ -2,8 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/container"
@@ -20,14 +19,23 @@
         android:orientation="vertical"
         android:clickable="true"
         android:focusable="true"
-        android:elevation="8dp"
+        android:elevation="24dp"
         app:behavior_peekHeight="@dimen/default_navigation_peek_height"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <View
+        <FrameLayout
+            android:id="@+id/bottomNavigationTopScrim"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/bottom_navigation_shadow" />
+            android:layout_height="24dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bottom_navigation_rounded_edge">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bottom_navigation_drag_pill_background"
+                android:layout_gravity="center"/>
+        </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -53,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:src="@drawable/ic_add_black_24dp"
-        app:layout_anchor="@id/bottomNavigationView"
+        app:layout_anchor="@id/bottomNavigationSheet"
         app:layout_anchorGravity="end|top"
         android:tint="?attr/colorControlNormal"
         android:tintMode="src_in"

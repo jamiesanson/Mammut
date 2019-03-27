@@ -399,6 +399,12 @@ class InstanceController(args: Bundle) : BaseController(args),
                 ?.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
+    private fun expandBottomSheet() {
+        view?.bottomNavigationSheet
+                ?.behaviour<BottomSheetBehavior<View>>()
+                ?.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
     private fun resetPeek() {
         // Reset peak height and re-enable dimming
         view?.let {
@@ -411,6 +417,18 @@ class InstanceController(args: Bundle) : BaseController(args),
 
     private fun setupBottomNavigation(view: View) {
         view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
+        view.bottomNavigationTopScrim.elevation = view.bottomNavigationView.elevation
+
+        view.bottomNavigationTopScrim.onClick {
+            val state = view.bottomNavigationSheet
+                    .behaviour<BottomSheetBehavior<View>>()?.state
+
+            when (state) {
+                BottomSheetBehavior.STATE_EXPANDED -> collapseBottomSheet()
+                BottomSheetBehavior.STATE_COLLAPSED -> expandBottomSheet()
+            }
+        }
+
         bottomNavigationViewModel.viewState.observe(this, ::renderBottomNavigationContent)
 
         val dimBackground = view.bottomNavigationDim
