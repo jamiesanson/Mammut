@@ -1,13 +1,11 @@
 package io.github.koss.mammut.feature.instance.subfeature.navigation
 
 import android.content.Context
+import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.SparseArray
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
@@ -419,6 +417,8 @@ class InstanceController(args: Bundle) : BaseController(args),
         view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
         view.bottomNavigationTopScrim.elevation = view.bottomNavigationView.elevation
 
+        view.bottomNavigationTopScrim.outlineProvider = BottomNavOutlineProvider()
+
         view.bottomNavigationTopScrim.onClick {
             val state = view.bottomNavigationSheet
                     .behaviour<BottomSheetBehavior<View>>()?.state
@@ -649,5 +649,15 @@ class InstanceController(args: Bundle) : BaseController(args),
                 .with(ComposeTootController().apply { targetController = this@InstanceController })
                 .popChangeHandler(VerticalChangeHandler())
                 .pushChangeHandler(VerticalChangeHandler()))
+    }
+
+    /**
+     * Simple outline provider for bottom navigation 
+     */
+    private class BottomNavOutlineProvider: ViewOutlineProvider() {
+
+        override fun getOutline(view: View?, outline: Outline?) {
+            outline?.setRoundRect(0,0, view!!.width, (view.height + view.context.dip(12)), view.context.dip(12).toFloat())
+        }
     }
 }

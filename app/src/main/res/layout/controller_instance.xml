@@ -19,6 +19,9 @@
         android:orientation="vertical"
         android:clickable="true"
         android:focusable="true"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:paddingTop="6dp"
         android:elevation="24dp"
         app:behavior_peekHeight="@dimen/default_navigation_peek_height"
         app:layout_behavior="@string/bottom_sheet_behavior">
