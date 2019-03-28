@@ -1,241 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/accent_ripple"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical">
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="74dp" />
-
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/profile_picture_content_descrption"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <LinearLayout
-        android:id="@+id/nameLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/barrier"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/profileImageView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/displayNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:textSize="16sp"
-            tools:text="Jamie Sanson" />
-
-        <TextView
-            android:id="@+id/usernameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            android:textSize="14sp"
-            tools:text="\@jamiesanson" />
-
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/contentTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contentWarningTextView"
-        app:layout_constraintVertical_bias="0.0"
-        tools:text="This is some sample content to show how the ViewHolder handles long content memes" />
-
-    <TextView
-        android:id="@+id/timeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        app:layout_constraintBottom_toBottomOf="@id/nameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/profileImageView"
-        app:layout_constraintTop_toTopOf="@+id/nameLayout"
-        app:layout_constraintVertical_bias="0.0"
-        tools:text="23 mins ago" />
+    android:layout_height="wrap_content">
 
     <View
-        android:id="@+id/bottomDividerView"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:alpha="0.5"
-        android:background="?attr/colorControlNormalTransparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_gravity="bottom"
+        android:background="?colorControlNormalTransparent"
+        android:alpha="0.1"/>
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:barrierDirection="start"
-        app:constraint_referenced_ids="timeTextView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="top"
+        android:backgroundTint="?colorPrimary"
+        android:paddingBottom="8dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardElevation="2dp">
 
-    <FrameLayout
-        android:id="@+id/tootImageCardView"
-        android:layout_width="0dp"
-        android:layout_height="0px"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="@drawable/accent_ripple"
-        android:stateListAnimator="@animator/cardview_click_animator"
-        app:layout_constraintBottom_toTopOf="@id/bottomDividerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contentTextView">
-
-        <ImageView
-            android:id="@+id/tootImageView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:contentDescription="@null"
-            tools:srcCompat="@color/standardPrimaryLightColor" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/accent_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
 
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/playerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/sensitiveContentFrameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorPrimaryDark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="4dp"
-                android:text="@string/sensitive_content_warning"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="74dp" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/profile_picture_content_descrption"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                tools:srcCompat="@tools:sample/avatars" />
 
-        <ImageView
-            android:id="@+id/sensitiveContentToggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:background="@drawable/circular_accent_ripple"
-            android:clickable="true"
-            android:contentDescription="@null"
-            android:elevation="4dp"
-            android:focusable="true"
-            android:padding="8dp"
-            android:tint="?attr/colorControlNormal"
-            android:tintMode="src_in"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_visibility_off_black_24dp"
-            tools:visibility="visible" />
+            <LinearLayout
+                android:id="@+id/nameLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/profileImageView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
 
-    </FrameLayout>
+                <TextView
+                    android:id="@+id/displayNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textSize="16sp"
+                    tools:text="Jamie Sanson" />
 
-    <TextView
-        android:id="@+id/contentWarningTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-        android:visibility="gone"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImageView"
-        app:layout_constraintVertical_bias="0.0"
-        tools:text="NSFW"
-        tools:visibility="visible" />
+                <TextView
+                    android:id="@+id/usernameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    android:textSize="14sp"
+                    tools:text="\@jamiesanson" />
 
-    <ImageView
-        android:id="@+id/contentWarningVisibilityButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/circular_accent_ripple"
-        android:clickable="true"
-        android:contentDescription="@null"
-        android:elevation="4dp"
-        android:focusable="true"
-        android:padding="8dp"
-        android:tint="?attr/colorControlNormal"
-        android:tintMode="src_in"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/contentWarningTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/contentWarningTextView"
-        app:layout_constraintTop_toTopOf="@+id/contentWarningTextView"
-        app:srcCompat="@drawable/ic_visibility_off_black_24dp"
-        tools:visibility="visible" />
+            </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/contentTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contentWarningTextView"
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="This is some sample content to show how the ViewHolder handles long content memes" />
+
+            <TextView
+                android:id="@+id/timeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constraintBottom_toBottomOf="@id/nameLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/profileImageView"
+                app:layout_constraintTop_toTopOf="@+id/nameLayout"
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="23 mins ago" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="timeTextView"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/tootImageCardView"
+                android:layout_width="0dp"
+                android:layout_height="0px"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/accent_ripple"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contentTextView">
+
+                <ImageView
+                    android:id="@+id/tootImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@null"
+                    tools:srcCompat="@color/standardPrimaryLightColor" />
+
+                <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/playerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/sensitiveContentFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/colorPrimaryDark"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="4dp"
+                        android:text="@string/sensitive_content_warning"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/sensitiveContentToggleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:background="@drawable/circular_accent_ripple"
+                    android:clickable="true"
+                    android:contentDescription="@null"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:tint="?attr/colorControlNormal"
+                    android:tintMode="src_in"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_visibility_off_black_24dp"
+                    tools:visibility="visible" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/contentWarningTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:textStyle="italic"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileImageView"
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="NSFW"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/contentWarningVisibilityButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/circular_accent_ripple"
+                android:clickable="true"
+                android:contentDescription="@null"
+                android:elevation="4dp"
+                android:focusable="true"
+                android:padding="8dp"
+                android:tint="?attr/colorControlNormal"
+                android:tintMode="src_in"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/contentWarningTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/contentWarningTextView"
+                app:layout_constraintTop_toTopOf="@+id/contentWarningTextView"
+                app:srcCompat="@drawable/ic_visibility_off_black_24dp"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>
