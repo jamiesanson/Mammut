@@ -1,6 +1,8 @@
 package io.github.koss.mammut.feature.instance
 
 import android.content.Context
+import android.os.Bundle
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +32,7 @@ import org.jetbrains.anko.support.v4.onPageChangeListener
 import javax.inject.Inject
 
 @ContainerOptions(CacheImplementation.NO_CACHE)
-class MultiInstanceController: BaseController() {
+class MultiInstanceController : BaseController() {
 
     @Inject
     lateinit var registrationRepository: RegistrationRepository
@@ -69,6 +71,8 @@ class MultiInstanceController: BaseController() {
     }
 
     private fun setupPager(registrations: List<InstanceRegistration>) {
+        if (childRouters.isNotEmpty() && (viewPager.adapter as InstancePagerAdapter?)?.registrations == registrations) return
+
         val pagerAdapter = InstancePagerAdapter(this).apply { this.registrations = registrations }
 
         viewPager.adapter = pagerAdapter
@@ -87,12 +91,14 @@ class MultiInstanceController: BaseController() {
         }
     }
 
-    private class InstancePagerAdapter(hostController: Controller): RouterPagerAdapter(hostController) {
+    private class InstancePagerAdapter(hostController: Controller) : RouterPagerAdapter(hostController) {
 
         var registrations: List<InstanceRegistration> = emptyList()
             set(value) {
-                field = value
-                notifyDataSetChanged()
+                if (field != value) {
+                    field = value
+                    notifyDataSetChanged()
+                }
             }
 
         override fun configureRouter(router: Router, position: Int) {

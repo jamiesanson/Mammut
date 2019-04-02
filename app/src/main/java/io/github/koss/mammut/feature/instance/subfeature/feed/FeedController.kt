@@ -11,6 +11,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.util.getOrDefault
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
@@ -107,6 +108,11 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
             inflater.inflate(R.layout.controller_feed, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
+        // Turns out, in some of Android's new launchers `onSaveInstanceState` can be called without ever
+        // being restored. As Conductor doesn't account for this, we need to check against the view to
+        // make sure we're not re-initialising things.
+        if (view?.recyclerView?.adapter?.itemCount ?: 0 > 0) return
+
         initialiseRecyclerView()
 
         // Only show the progress bar if we're displaying this controller the first time
@@ -154,6 +160,11 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         outState.putParcelable(STATE_LAYOUT_MANAGER, state)
         outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, !tootButtonHidden)
         viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
+    }
+
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        super.onRestoreViewState(view, savedViewState)
+
     }
 
     override fun onTabReselected() {

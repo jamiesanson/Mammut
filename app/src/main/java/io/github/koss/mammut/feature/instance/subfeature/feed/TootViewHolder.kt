@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feature.instance.subfeature.feed
 
-import android.animation.Animator
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.util.TypedValue
@@ -12,11 +11,10 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.AutoTransition
-import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
-import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
@@ -34,6 +32,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
+import io.github.koss.mammut.extension.observe
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
@@ -55,8 +54,8 @@ class TootViewHolder(
 
     init {
         // Set up viewModel observations
-        viewModel.statusViewState.observeForever(::onViewStateChanged)
-        viewModel.timeSince.observeForever(itemView.timeTextView::setText)
+        viewModel.statusViewState.observe(itemView.context as LifecycleOwner, ::onViewStateChanged)
+        viewModel.timeSince.observe(itemView.context as LifecycleOwner, itemView.timeTextView::setText)
 
         // Set up click listeners
         itemView.onClick {

@@ -31,33 +31,17 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
             return
         }
 
-        startActivity<MultiInstanceActivity>()
-        finish()
-        return
-
         launch {
             val registrations = registrationRepository
                     .getAllRegistrations()
 
             withContext(Dispatchers.Main) {
-                registrations.forEach {
-                    it.run {
-                        when {
-                            accessToken?.accessToken == preferencesRepository.lastAccessedInstanceToken -> {
-                                InstanceActivity.launch(this@SplashActivity,
-                                        instanceName = instanceName,
-                                        authCode = accessToken!!.accessToken)
-                                finish()
-                                return@withContext
-                            }
-                            else -> {
-                                // no-op
-                            }
-                        }
-                    }
+                if (registrations.isNotEmpty()) {
+                    startActivity<MultiInstanceActivity>()
+                } else {
+                    startActivity<JoinInstanceActivity>()
                 }
 
-                startActivity<JoinInstanceActivity>()
                 finish()
             }
         }

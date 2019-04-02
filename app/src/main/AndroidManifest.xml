@@ -53,7 +53,10 @@
 
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
-        <activity android:name=".feature.instance.MultiInstanceActivity" />
+
+        <activity
+            android:name=".feature.instance.MultiInstanceActivity"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

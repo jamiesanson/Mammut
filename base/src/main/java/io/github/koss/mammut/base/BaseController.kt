@@ -33,7 +33,14 @@ abstract class BaseController: LifecycleController, LayoutContainer, CoroutineSc
         super.onAttach(view)
         if (!restoreCalled) {
             initialise(null)
+            restoreCalled = true
         }
+    }
+
+    @CallSuper
+    override fun onDetach(view: View) {
+        super.onDetach(view)
+        restoreCalled = false
     }
 
     @CallSuper

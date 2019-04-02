@@ -18,6 +18,10 @@ class FeedAdapter(
 
     private var brokenFeed: Boolean = false
 
+    init {
+        setHasStableIds(true)
+    }
+
     fun setFeedBroken(isFeedBroken: Boolean) {
         if (brokenFeed != isFeedBroken) {
             brokenFeed = isFeedBroken

@@ -2,7 +2,6 @@ package io.github.koss.mammut.feature.instance
 
 import android.os.Bundle
 import com.bluelinelabs.conductor.Conductor
-import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.github.koss.mammut.R
