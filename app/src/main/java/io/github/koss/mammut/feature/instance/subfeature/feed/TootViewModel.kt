@@ -23,7 +23,7 @@ class TootViewModel @Inject constructor(
         private val context: Context
 ): ViewModel(), CoroutineScope by GlobalScope {
 
-    val statusViewState: LiveData<TootViewState> = MutableLiveData()
+    val statusViewState: MutableLiveData<TootViewState> = MutableLiveData()
 
     val timeSince: LiveData<String> = MutableLiveData()
 
@@ -46,7 +46,7 @@ class TootViewModel @Inject constructor(
     public override fun onCleared() {
         super.onCleared()
         countJob.cancel()
-        (statusViewState as MutableLiveData).value = null
+        statusViewState.value = null
         (timeSince as MutableLiveData).value = null
     }
 
@@ -54,11 +54,10 @@ class TootViewModel @Inject constructor(
         val status = currentStatus ?: return
         val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName) ?: ""
         val username = "@${status.account?.acct ?: status.account?.userName}"
+        val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
+        statusViewState.value = TootViewState(name, username, content, status.mediaAttachments.firstOrNull())
 
         launch(Dispatchers.IO) {
-            val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-            statusViewState.postSafely(TootViewState(name, username, content, status.mediaAttachments.firstOrNull()))
-
             // Post the HTML rendered content first such that it displays earlier.
             val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() } ?: emptyList())
             statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments.firstOrNull()))

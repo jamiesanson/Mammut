@@ -78,7 +78,13 @@ class TootViewHolder(
             viewState?.content?.let(contentTextView::setText)
         }
 
-        viewState?.displayAttachment.let(::processAttachment)
+        viewState?.displayAttachment?.let(::processAttachment) ?: with(ConstraintSet()) {
+            clone(itemView.constraintLayout)
+            setDimensionRatio(itemView.tootImageCardView.id, "0")
+            applyTo(itemView.constraintLayout)
+
+            itemView.tootImageCardView.visibility = View.INVISIBLE
+        }
 
         // Setup sensitive content screen
         setupContentWarning(isSensitive = viewModel.currentStatus?.isSensitive ?: false)
@@ -103,43 +109,30 @@ class TootViewHolder(
         setupSpoiler(viewModel.currentStatus?.spoilerText ?: "")
     }
 
-    private fun processAttachment(att: Attachment<*>?) {
+    private fun processAttachment(attachment: Attachment<*>) {
         with(itemView) {
-            att?.let { attachment ->
-                GlideApp.with(itemView)
-                        .clear(tootImageView)
+            val aspect = getThumbnailSpec(attachment)
 
-                val aspect = getThumbnailSpec(attachment)
+            with(ConstraintSet()) {
+                clone(constraintLayout)
+                setDimensionRatio(tootImageCardView.id, aspect.toString())
+                applyTo(constraintLayout)
+            }
 
-                with(ConstraintSet()) {
-                    clone(constraintLayout)
-                    setDimensionRatio(tootImageCardView.id, aspect.toString())
-                    applyTo(constraintLayout)
+            tootImageCardView.visibility = View.VISIBLE
+
+            tootImageCardView.doOnLayout {
+                // Wait until the next layout pass to ensure the parent is sized correctly
+                loadAttachment(attachment)
+            }
+
+            tootImageCardView.onClick {
+                if (!viewModel.isSensitiveScreenVisible) {
+                    callbacks.onPhotoClicked(tootImageView, attachment.url)
                 }
-
-                tootImageCardView.visibility = View.VISIBLE
-
-                tootImageCardView.doOnLayout {
-                    // Wait until the next layout pass to ensure the parent is sized correctly
-                    loadAttachment(attachment)
-                }
-
-                tootImageCardView.onClick {
-                    if (!viewModel.isSensitiveScreenVisible) {
-                        callbacks.onPhotoClicked(tootImageView, attachment.url)
-                    }
-                }
-            } ?: run {
-                with(ConstraintSet()) {
-                    clone(constraintLayout)
-                    setDimensionRatio(tootImageCardView.id, "0")
-                    applyTo(constraintLayout)
-                }
-
-                tootImageView.image = null
-                tootImageCardView.visibility = View.INVISIBLE
             }
         }
+
     }
 
     private fun loadAttachment(attachment: Attachment<*>) {

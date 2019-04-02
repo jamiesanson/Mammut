@@ -56,7 +56,7 @@ class FeedPager(
     )
 
     private fun refreshState() {
-        feedStateData.store.send(if (feedType.supportsStreaming) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
+        feedStateData.store.send(if (feedType.supportsStreaming) FeedStateEvent.OnFreshFeed(feedType.supportsStreaming) else FeedStateEvent.OnBrokenTimelineResolved)
     }
 
     /**

@@ -2,12 +2,9 @@ package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import com.bumptech.glide.RequestManager
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.database.entities.feed.Status
 
 class FeedAdapter(
@@ -17,10 +14,6 @@ class FeedAdapter(
 ): PagedListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
 
     private var brokenFeed: Boolean = false
-
-    init {
-        setHasStableIds(true)
-    }
 
     fun setFeedBroken(isFeedBroken: Boolean) {
         if (brokenFeed != isFeedBroken) {

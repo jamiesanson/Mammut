@@ -11,7 +11,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.core.util.getOrDefault
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
@@ -21,10 +20,8 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bumptech.glide.RequestManager
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
@@ -35,13 +32,10 @@ import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
-import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
 import io.github.koss.mammut.feature.feedpaging.NetworkState
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
-import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
@@ -49,7 +43,6 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
-import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,7 +50,6 @@ import me.saket.inboxrecyclerview.executeOnMeasure
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onScrollChange
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.run
 
 /**
@@ -134,8 +126,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
             }
         }
 
-        savedInstanceState?.let(::restoreAdapterState)
-
         networkIndicator.attach(view as ViewGroup, this)
 
         viewModel.feedData.let {
@@ -164,7 +154,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
         super.onRestoreViewState(view, savedViewState)
-
+        savedViewState.let(::restoreAdapterState)
     }
 
     override fun onTabReselected() {
@@ -363,9 +353,11 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     private fun restoreAdapterState(savedInstanceState: Bundle) {
-        savedInstanceState.getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)?.let { state ->
-            (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
-        }
+        savedInstanceState
+                .getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)
+                ?.let { state ->
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
+                }
     }
 
     private fun RecyclerView.isNearTop(): Boolean =
