@@ -38,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import javax.inject.Inject
@@ -78,6 +79,14 @@ class SettingsController: BaseController() {
         val adapter = FlexAdapter<SettingsItem>()
         settingsRecyclerView.adapter = adapter
         settingsRecyclerView.layoutManager = LinearLayoutManager(view!!.context, RecyclerView.VERTICAL, false)
+
+        // Setup close button
+        toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
+        toolbar.navigationIcon?.setTint(view!!.colorAttr(R.attr.colorControlNormal))
+        
+        toolbar.setNavigationOnClickListener {
+            router.popCurrentController()
+        }
 
         registerSettingsItems(adapter)
 
