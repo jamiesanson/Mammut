@@ -5,7 +5,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.extension.fullAcct
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.repo.RegistrationRepository
 import javax.inject.Inject
 import javax.inject.Named

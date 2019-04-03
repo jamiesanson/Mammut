@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
@@ -19,7 +20,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
-import arrow.instance
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.bluelinelabs.conductor.Controller
@@ -55,7 +55,7 @@ import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewMode
 import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewState
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
+import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -63,7 +63,6 @@ import io.github.koss.mammut.toot.ComposeTootController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.activity_instance_browser.view.*
 import kotlinx.android.synthetic.main.controller_instance.*
 import kotlinx.android.synthetic.main.controller_instance.view.*
 import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.view.*
@@ -646,7 +645,9 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun performComposeTootOpen() {
         resetPeek()
         router.pushController(RouterTransaction
-                .with(ComposeTootController().apply { targetController = this@InstanceController })
+                .with(ComposeTootController(bundleOf(ComposeTootController.ARG_ACCESS_TOKEN to component.accessToken())).apply {
+                    targetController = this@InstanceController
+                })
                 .popChangeHandler(VerticalChangeHandler())
                 .pushChangeHandler(VerticalChangeHandler()))
     }

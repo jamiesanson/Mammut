@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.ViewModelKey
+import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedViewModel
 import io.github.koss.mammut.feature.instance.subfeature.feed.TootViewModel
 

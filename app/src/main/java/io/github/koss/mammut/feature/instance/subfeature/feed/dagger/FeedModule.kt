@@ -8,6 +8,7 @@ import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.Shutdownable
 import dagger.Module
 import dagger.Provides
+import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao

@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.ViewModelKey
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileViewModel
 
 @Module

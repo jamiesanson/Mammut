@@ -36,14 +36,11 @@ import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.comingSoon
 import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
-import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
-import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation

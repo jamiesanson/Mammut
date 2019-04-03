@@ -2,6 +2,7 @@ package io.github.koss.mammut.feature.instance.subfeature.profile.dagger
 
 import dagger.Module
 import dagger.Provides
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.data.models.Account
 
 @Module(includes = [ProfileViewModelModule::class])

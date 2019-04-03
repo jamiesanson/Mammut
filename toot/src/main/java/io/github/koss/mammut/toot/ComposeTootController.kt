@@ -49,7 +49,11 @@ const val MAX_TOOT_LENGTH = 500
  * can be found in the Toot module.
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class ComposeTootController: BaseController() {
+class ComposeTootController: BaseController {
+
+    constructor(): super()
+
+    constructor(args: Bundle): super(args)
 
     private lateinit var viewModel: ComposeTootViewModel
 
@@ -75,7 +79,7 @@ class ComposeTootController: BaseController() {
                 ?.inject(this) ?: throw IllegalStateException("ParentController must be subcomponent factory")
 
         viewModel = ViewModelProviders
-                .of(context as FragmentActivity, factory)[ComposeTootViewModel::class.java]
+                .of(context as FragmentActivity, factory).get(args.getString(ARG_ACCESS_TOKEN)!!, ComposeTootViewModel::class.java)
     }
 
     override fun onDetach(view: View) {
@@ -292,5 +296,9 @@ class ComposeTootController: BaseController() {
 
     private fun close() {
         router.popCurrentController()
+    }
+
+    companion object {
+        const val ARG_ACCESS_TOKEN = "access_token"
     }
 }

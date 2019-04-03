@@ -34,7 +34,7 @@ import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
-import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
+import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.feature.feedpaging.NetworkState
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
