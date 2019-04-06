@@ -32,4 +32,7 @@ interface InstanceComponent {
 
     @Named("instance_access_token")
     fun accessToken(): String
+
+    @Named("instance_name")
+    fun instanceName(): String
 }

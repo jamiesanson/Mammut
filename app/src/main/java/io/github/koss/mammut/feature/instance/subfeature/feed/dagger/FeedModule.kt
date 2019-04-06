@@ -13,7 +13,7 @@ import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
 import io.github.koss.mammut.repo.PreferencesRepository
-import io.github.koss.mammut.base.extensions.run
+import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.feedpaging.FeedPager
 import io.github.koss.mammut.feature.feedpaging.FeedStateData
 import io.github.koss.mammut.feature.feedpaging.initialiseFeedState

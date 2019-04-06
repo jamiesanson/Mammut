@@ -18,7 +18,7 @@ import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.ClientBuilder
 import io.github.koss.mammut.extension.postSafely
-import io.github.koss.mammut.base.extensions.run
+import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.base.InputError
 import kotlinx.coroutines.CoroutineScope

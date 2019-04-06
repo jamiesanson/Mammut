@@ -9,7 +9,7 @@ import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.awaitFirst
-import io.github.koss.mammut.base.extensions.run
+import io.github.koss.mammut.data.extensions.run
 import kotlinx.coroutines.*
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext

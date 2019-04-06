@@ -3,10 +3,10 @@ package io.github.koss.mammut.data.repository
 import arrow.core.getOrElse
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Public
-import io.github.koss.mammut.base.extensions.run
 import io.github.koss.mammut.data.converters.toEntity
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.EmojiListEntity
+import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.data.models.Emoji
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.instances.response.InstanceDetail

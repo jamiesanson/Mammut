@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.data.models.InstanceRegistration
-import io.github.koss.mammut.extension.fullAcct
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.repo.RegistrationRepository
 import javax.inject.Inject
 import javax.inject.Named
@@ -14,7 +14,7 @@ import javax.inject.Named
  * Simple ViewModel for presenting bottom navigation content
  */
 class BottomNavigationViewModel @Inject constructor(
-        private val registrationRepository: RegistrationRepository,
+        registrationRepository: RegistrationRepository,
         @InstanceScope
         @Named("instance_access_token")
         private val instanceAccessToken: String

@@ -4,7 +4,7 @@ import arrow.core.Either
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.method.Statuses
-import io.github.koss.mammut.base.extensions.run
+import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.repository.InstanceDetailRepository
 import io.github.koss.mammut.toot.model.SubmissionState

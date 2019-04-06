@@ -2,7 +2,6 @@ package io.github.koss.mammut.extension
 
 import com.google.gson.GsonBuilder
 import com.sys1yagi.mastodon4j.MastodonClient
-import io.github.koss.mammut.data.models.Account
 import okhttp3.OkHttpClient
 
 class ClientBuilder(
@@ -13,5 +12,3 @@ class ClientBuilder(
     fun getInstanceBuilder(instanceName: String): MastodonClient.Builder =
             MastodonClient.Builder(instanceName, okHttpClient, gson)
 }
-
-fun Account.fullAcct(instanceName: String): String = "@$userName@$instanceName"

@@ -28,7 +28,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(":instances")
-    implementation project(":base")
 
     implementation rootProject.ext.room
     kapt rootProject.ext.roomCompiler
@@ -42,6 +41,8 @@ dependencies {
     implementation rootProject.ext.retrofitGsonConverter
 
     implementation rootProject.ext.paging
+
+    implementation rootProject.ext.arrowCore
 }
 
 androidExtensions {

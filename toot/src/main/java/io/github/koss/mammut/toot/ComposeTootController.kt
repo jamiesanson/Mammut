@@ -2,6 +2,7 @@ package io.github.koss.mammut.toot
 
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Spannable
 import android.transition.AutoTransition
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import androidx.core.view.*
@@ -21,11 +23,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.data.extensions.fullAcct
+import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.toot.dagger.*
 import io.github.koss.mammut.toot.emoji.EmojiAdapter
 import io.github.koss.mammut.toot.model.SubmissionState
@@ -103,6 +110,7 @@ class ComposeTootController: BaseController {
         setupBottomMenu()
         setupPrivacySelector()
         setupContentWarnings()
+        setupProfileCell(args.getParcelable(ARG_PROFILE) ?: throw IllegalArgumentException("The current account is required"))
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 
@@ -169,12 +177,13 @@ class ComposeTootController: BaseController {
     }
 
     private fun setupInputEditText() {
-        remainingCharactersTextView.text = (MAX_TOOT_LENGTH - inputEditText.length()).toString()
-
         inputEditText.textChangedListener {
             afterTextChanged { text ->
                 val length = text?.length ?: 0
-                remainingCharactersTextView.text = "${MAX_TOOT_LENGTH - length}"
+
+                // Ensure counter is displayed at 90% of the MAX_TOOT_LENGTH
+                inputTextInputLayout.isCounterEnabled = length.toFloat() / MAX_TOOT_LENGTH.toFloat() >= 0.9
+
                 updateTootButton()
                 viewModel.onStatusChanged(text?.toString() ?: "")
             }
@@ -258,6 +267,26 @@ class ComposeTootController: BaseController {
         }
     }
 
+    private fun setupProfileCell(account: Account) {
+        val view = view ?: return
+
+        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorPrimaryLight)
+
+        Glide.with(view)
+                .load(account.avatar)
+                .thumbnail(
+                        Glide.with(view)
+                                .load(ColorDrawable(placeholderColor))
+                                .apply(RequestOptions.circleCropTransform())
+                )
+                .apply(RequestOptions.circleCropTransform())
+                .transition(withCrossFade())
+                .into(view.findViewById(R.id.profileImageView))
+
+        displayNameTextView.text = account.displayName
+        usernameTextView.text = account.fullAcct(args.getString(ARG_INSTANCE_NAME)!!)
+    }
+
     private fun displayContentForImageView(imageViewClicked: ImageView, contentView: View) {
         TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
             duration = 200L
@@ -299,6 +328,8 @@ class ComposeTootController: BaseController {
     }
 
     companion object {
+        const val ARG_INSTANCE_NAME = "instance_name"
         const val ARG_ACCESS_TOKEN = "access_token"
+        const val ARG_PROFILE = "profile"
     }
 }

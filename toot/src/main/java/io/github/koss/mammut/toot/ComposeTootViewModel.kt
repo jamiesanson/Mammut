@@ -101,8 +101,7 @@ class ComposeTootViewModel @Inject constructor(
     }
 
     /**
-     * Updates status with emoji text when clicked. Only updates the status text if
-     * the resulting text is shorter than [MAX_TOOT_LENGTH]
+     * Updates status with emoji text when clicked
      */
     fun onEmojiAdded(emoji: Emoji, index: Int, isContentWarningFocussed: Boolean) {
         val emojiText = ":${emoji.shortcode}:"
@@ -110,19 +109,15 @@ class ComposeTootViewModel @Inject constructor(
         updateModel {
             if (isContentWarningFocussed) {
                 it?.copy(
-                        spoilerText = StringBuilder(it.spoilerText ?: "").insert(index, emojiText).toString()
+                        spoilerText = StringBuilder(it.spoilerText
+                                ?: "").insert(index, emojiText).toString()
                 )
             } else {
                 val status = it?.status ?: ""
 
-                when {
-                    ("$status$emojiText").length <= MAX_TOOT_LENGTH -> {
-                        it?.copy(
-                                status = StringBuilder(status).insert(index, emojiText).toString()
-                        )
-                    }
-                    else -> it
-                }
+                it?.copy(
+                        status = StringBuilder(status).insert(index, emojiText).toString()
+                )
             }
         }
     }
@@ -208,7 +203,8 @@ class ComposeTootViewModel @Inject constructor(
         val liveData = MutableLiveData<SpannableStringBuilder>()
 
         launch {
-            liveData.postValue(EmojiRenderer.render(context, string, availableEmojis.value ?: emptyList(), textHeight))
+            liveData.postValue(EmojiRenderer.render(context, string, availableEmojis.value
+                    ?: emptyList(), textHeight))
         }
 
         return liveData

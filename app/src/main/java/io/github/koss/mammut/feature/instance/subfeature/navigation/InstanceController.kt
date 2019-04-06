@@ -56,6 +56,7 @@ import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewStat
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -644,8 +645,14 @@ class InstanceController(args: Bundle) : BaseController(args),
      */
     private fun performComposeTootOpen() {
         resetPeek()
+        val composeArgs = bundleOf(
+                ComposeTootController.ARG_ACCESS_TOKEN to component.accessToken(),
+                ComposeTootController.ARG_PROFILE to bottomNavigationViewModel.viewState.value?.currentUser,
+                ComposeTootController.ARG_INSTANCE_NAME to component.instanceName()
+        )
+
         router.pushController(RouterTransaction
-                .with(ComposeTootController(bundleOf(ComposeTootController.ARG_ACCESS_TOKEN to component.accessToken())).apply {
+                .with(ComposeTootController(composeArgs).apply {
                     targetController = this@InstanceController
                 })
                 .popChangeHandler(VerticalChangeHandler())

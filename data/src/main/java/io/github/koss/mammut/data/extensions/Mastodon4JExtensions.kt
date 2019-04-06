@@ -1,4 +1,4 @@
-package io.github.koss.mammut.base.extensions
+package io.github.koss.mammut.data.extensions
 
 import android.util.Log
 import arrow.core.Either
@@ -9,7 +9,8 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
-import io.github.koss.mammut.base.BuildConfig
+import io.github.koss.mammut.data.BuildConfig
+import io.github.koss.mammut.data.models.Account
 
 
 typealias MastodonResult<T> = Either<Error, T>
@@ -56,3 +57,5 @@ data class Error(
         @SerializedName("error_description")
         val description: String
 )
+
+fun Account.fullAcct(instanceName: String): String = "@$userName@$instanceName"
