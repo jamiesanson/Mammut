@@ -40,8 +40,8 @@
         android:id="@+id/profileCell"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,12 +55,12 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
+            android:contentDescription="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            tools:srcCompat="@tools:sample/avatars"
-            android:contentDescription="@null" />
+            tools:srcCompat="@tools:sample/avatars" />
 
         <LinearLayout
             android:id="@+id/nameLayout"
@@ -99,20 +99,24 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/contentWarningLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:orientation="vertical"
         android:visibility="gone"
+        app:boxCornerRadiusBottomEnd="4dp"
+        app:boxCornerRadiusBottomStart="4dp"
+        app:boxCornerRadiusTopEnd="4dp"
+        app:boxCornerRadiusTopStart="4dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomCardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileCell"
         app:layout_constraintVertical_bias="0.0">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/contentWarningEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,15 +128,8 @@
             android:textSize="18sp"
             tools:ignore="Autofill,LabelFor" />
 
-        <View
-            android:id="@+id/bottomDividerView"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:alpha="0.5"
-            android:background="?attr/colorControlNormalTransparent" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/inputTextInputLayout"
@@ -140,10 +137,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="top"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="24dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
         android:scrollbars="vertical"
         app:boxCornerRadiusBottomEnd="4dp"
         app:boxCornerRadiusBottomStart="4dp"
@@ -159,11 +156,11 @@
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="120dp"
             android:background="@android:color/transparent"
             android:gravity="top"
             android:hint="@string/what_s_on_your_mind"
             android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="120dp"
             android:scrollbars="vertical"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textSize="18sp"
