@@ -12,15 +12,12 @@
         android:background="?colorControlNormalTransparent"
         android:alpha="0.1"/>
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_gravity="top"
         android:backgroundTint="?colorPrimary"
-        android:paddingBottom="8dp"
-        app:cardPreventCornerOverlap="true"
-        app:cardElevation="2dp">
+        android:paddingBottom="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -42,13 +39,14 @@
                 android:id="@+id/profileImageView"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="16dp"
                 android:contentDescription="@string/profile_picture_content_descrption"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
@@ -99,13 +97,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="12dp"
+                android:lineSpacingMultiplier="1.075"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/profileImageView"
                 app:layout_constraintTop_toBottomOf="@+id/contentWarningTextView"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="This is some sample content to show how the ViewHolder handles long content memes" />
@@ -133,17 +132,22 @@
                 app:constraint_referenced_ids="timeTextView"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <FrameLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/tootImageCardView"
                 android:layout_width="0dp"
                 android:layout_height="0px"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="12dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="10dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="@drawable/accent_ripple"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/profileImageView"
                 app:layout_constraintTop_toBottomOf="@+id/contentTextView">
 
                 <ImageView
@@ -197,7 +201,7 @@
                     app:srcCompat="@drawable/ic_visibility_off_black_24dp"
                     tools:visibility="visible" />
 
-            </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/contentWarningTextView"
@@ -213,7 +217,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/profileImageView"
                 app:layout_constraintTop_toBottomOf="@+id/profileImageView"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="NSFW"
@@ -243,5 +247,5 @@
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 </FrameLayout>
