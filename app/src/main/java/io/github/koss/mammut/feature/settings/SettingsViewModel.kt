@@ -54,6 +54,11 @@ class SettingsViewModel @Inject constructor(
                                 subtitleRes = R.string.launch_chooser_description,
                                 isSet = preferencesRepository.takeMeStraightToInstanceBrowser,
                                 action = ToggleLaunchInstanceBrowser
+                        ),
+                        ToggleableItem(
+                                titleRes = R.string.swipe_between_instances,
+                                isSet = preferencesRepository.swipingBetweenInstancesEnabled,
+                                action = ToggleSwipingBetweenInstance
                         )
                 )
         )
@@ -81,6 +86,10 @@ class SettingsViewModel @Inject constructor(
             }
             ToggleLaunchInstanceBrowser -> {
                 preferencesRepository.takeMeStraightToInstanceBrowser = !preferencesRepository.takeMeStraightToInstanceBrowser
+                rebuildSettingsScreen()
+            }
+            ToggleSwipingBetweenInstance -> {
+                preferencesRepository.swipingBetweenInstancesEnabled = !preferencesRepository.swipingBetweenInstancesEnabled
                 rebuildSettingsScreen()
             }
         }

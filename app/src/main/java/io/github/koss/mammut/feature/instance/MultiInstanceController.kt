@@ -21,6 +21,7 @@ import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
 import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
+import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
@@ -37,6 +38,9 @@ class MultiInstanceController : BaseController() {
     @Inject
     lateinit var registrationRepository: RegistrationRepository
 
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         (context as AppCompatActivity).applicationComponent.inject(this)
@@ -47,6 +51,9 @@ class MultiInstanceController : BaseController() {
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+
+        viewPager.swipeLocked = !preferencesRepository.swipingBetweenInstancesEnabled
+
         val liveData = registrationRepository.getAllCompletedRegistrationsLive()
         launch(Dispatchers.Main) {
             liveData.awaitFirst().let(::setupPager)
@@ -63,7 +70,11 @@ class MultiInstanceController : BaseController() {
 
     fun unlockViewPager() {
         containerView ?: return
-        viewPager.swipeLocked = false
+
+        // Only properly unlock the ViewPager if enabled.
+        if (preferencesRepository.swipingBetweenInstancesEnabled) {
+            viewPager.swipeLocked = false
+        }
     }
 
     fun requestPageSelection(index: Int) {

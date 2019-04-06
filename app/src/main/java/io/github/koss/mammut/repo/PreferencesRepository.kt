@@ -29,6 +29,8 @@ class PreferencesRepository(appContext: Context) {
     var lastAccessedInstanceToken by preferences.string("none")
 
     var takeMeStraightToInstanceBrowser by preferences.boolean(false)
+
+    var swipingBetweenInstancesEnabled by preferences.boolean(defaultReturn = false)
 }
 
 

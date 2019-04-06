@@ -13,3 +13,5 @@ object ToggleStreaming: SettingsAction()
 object TogglePlaceKeeping: SettingsAction()
 
 object ToggleLaunchInstanceBrowser: SettingsAction()
+
+object ToggleSwipingBetweenInstance: SettingsAction()
