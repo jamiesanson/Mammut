@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pastelGreenPrimaryColor">#263238</color>
+    <color name="pastelGreenPrimaryLightColor">#4f5b62</color>
+    <color name="pastelGreenPrimaryDarkColor">#000a12</color>
+    <color name="pastelGreenPrimaryTransparentColor">#CC263238</color>
+    <color name="pastelGreenSecondaryColor">#69f0ae</color>
+    <color name="pastelGreenSecondaryLightColor">#9fffe0</color>
+    <color name="pastelGreenSecondaryDarkColor">#2bbd7e</color>
+    <color name="pastelGreenPrimaryTextColor">#ffffff</color>
+    <color name="pastelGreenSecondaryTextColor">#000000</color>
+    <color name="pastelGreenColorControlTransparent">#8AFFFFFF</color>
+
+    <style name="Mammut.Pastel.Green" parent="Mammut.Base">
+        <item name="colorPrimary">@color/pastelGreenPrimaryColor</item>
+        <item name="colorPrimaryLight">@color/pastelGreenPrimaryLightColor</item>
+        <item name="colorPrimaryDark">@color/pastelGreenPrimaryColor</item>
+        <item name="colorAccent">@color/pastelGreenSecondaryColor</item>
+        <item name="colorAccentLight">@color/pastelGreenSecondaryLightColor</item>
+        <item name="colorAccentDark">@color/pastelGreenSecondaryDarkColor</item>
+        <item name="colorPrimaryTransparency">@color/pastelGreenPrimaryTransparentColor</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlNormalTransparent">@color/pastelGreenColorControlTransparent</item>
+    </style>
+</resources>

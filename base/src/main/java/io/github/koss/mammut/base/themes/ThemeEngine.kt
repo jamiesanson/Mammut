@@ -1,7 +1,6 @@
 package io.github.koss.mammut.base.themes
 
 import android.graphics.Typeface
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import io.github.koss.mammut.base.R
@@ -11,19 +10,21 @@ class ThemeEngine(
         private val config: ThemeConfig
 ) {
 
-    private val currentTheme: Theme
-        get() = when (config.currentThemeId) {
-            StandardTheme.themeId -> StandardTheme
-            StandardLightTheme.themeId -> StandardLightTheme
-            else -> {
-                config.currentThemeId = StandardTheme.themeId
-                Log.w("ThemeEngine", "Invalid theme ID. Resetting to standard")
-                StandardTheme
+    val allThemes = setOf(
+            Standard,
+            StandardLight,
+            PastelGreen,
+            PastelGreenLight
+    )
+
+    val currentTheme: Theme
+        get() = allThemes.find { it.themeName == config.currentThemeId } ?: run {
+                config.currentThemeId = Standard.themeName
+                Standard
             }
-        }
 
     val isLightTheme: Boolean
-        get() = currentTheme.themeId.contains("light")
+        get() = currentTheme.lightTheme
 
     fun apply(activity: AppCompatActivity) {
         activity.setTheme(currentTheme.styleRes)

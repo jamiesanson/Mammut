@@ -6,12 +6,8 @@ package io.github.koss.mammut.feature.settings.model
  */
 sealed class SettingsAction
 
-object ToggleLightDarkMode: SettingsAction()
-
 object ToggleStreaming: SettingsAction()
 
 object TogglePlaceKeeping: SettingsAction()
-
-object ToggleLaunchInstanceBrowser: SettingsAction()
 
 object ToggleSwipingBetweenInstance: SettingsAction()

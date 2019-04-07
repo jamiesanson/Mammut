@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.themes.StandardLightTheme
-import io.github.koss.mammut.base.themes.StandardTheme
+import io.github.koss.mammut.base.themes.Theme
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
@@ -33,11 +32,6 @@ class SettingsViewModel @Inject constructor(
                                 titleRes = R.string.app_settings
                         ),
                         ToggleableItem(
-                                titleRes = R.string.enable_light_mode,
-                                isSet = preferencesRepository.themeId == StandardLightTheme.themeId,
-                                action = ToggleLightDarkMode
-                        ),
-                        ToggleableItem(
                                 titleRes = R.string.disable_streaming,
                                 subtitleRes = R.string.disable_streaming_subtitle,
                                 isSet = !preferencesRepository.isStreamingEnabled,
@@ -50,12 +44,6 @@ class SettingsViewModel @Inject constructor(
                                 action = TogglePlaceKeeping
                         ),
                         ToggleableItem(
-                                titleRes = R.string.launch_chooser_title,
-                                subtitleRes = R.string.launch_chooser_description,
-                                isSet = preferencesRepository.takeMeStraightToInstanceBrowser,
-                                action = ToggleLaunchInstanceBrowser
-                        ),
-                        ToggleableItem(
                                 titleRes = R.string.swipe_between_instances,
                                 isSet = preferencesRepository.swipingBetweenInstancesEnabled,
                                 action = ToggleSwipingBetweenInstance
@@ -66,16 +54,6 @@ class SettingsViewModel @Inject constructor(
 
     fun performAction(settingsAction: SettingsAction) {
         when (settingsAction) {
-            ToggleLightDarkMode -> {
-                preferencesRepository.themeId = when (preferencesRepository.themeId) {
-                    StandardTheme.themeId -> StandardLightTheme.themeId
-                    StandardLightTheme.themeId -> StandardTheme.themeId
-                    else -> StandardTheme.themeId
-                }
-
-                restartApp.postSafely(Event(Unit))
-                rebuildSettingsScreen()
-            }
             ToggleStreaming -> {
                 preferencesRepository.isStreamingEnabled = !preferencesRepository.isStreamingEnabled
                 rebuildSettingsScreen()
@@ -84,15 +62,20 @@ class SettingsViewModel @Inject constructor(
                 preferencesRepository.shouldKeepFeedPlace = !preferencesRepository.shouldKeepFeedPlace
                 rebuildSettingsScreen()
             }
-            ToggleLaunchInstanceBrowser -> {
-                preferencesRepository.takeMeStraightToInstanceBrowser = !preferencesRepository.takeMeStraightToInstanceBrowser
-                rebuildSettingsScreen()
-            }
             ToggleSwipingBetweenInstance -> {
                 preferencesRepository.swipingBetweenInstancesEnabled = !preferencesRepository.swipingBetweenInstancesEnabled
                 rebuildSettingsScreen()
             }
         }
+    }
+
+    fun onThemeChanged(theme: Theme) {
+        if (theme.themeName == preferencesRepository.themeId) return
+
+        preferencesRepository.themeId = theme.themeName
+
+        restartApp.postSafely(Event(Unit))
+        rebuildSettingsScreen()
     }
 
 }

@@ -10,13 +10,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="4dp"
-        android:textIsSelectable="false"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:maxLines="1"
-        android:layout_gravity="center"
+        tools:text="App Settings"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        tools:text="App settings"/>
+        android:textIsSelectable="false"/>
 
 </LinearLayout>

@@ -7,29 +7,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bluelinelabs.conductor.RouterTransaction
 import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.card.MaterialCardView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.themes.Theme
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.extension.startActivity
-import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsScope
 import io.github.koss.mammut.feature.settings.model.*
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.main.card_theme.view.*
 import kotlinx.android.synthetic.main.controller_settings.*
 import kotlinx.android.synthetic.main.section_settings_footer.view.*
 import kotlinx.android.synthetic.main.section_settings_header.view.*
@@ -38,13 +38,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.colorAttr
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import javax.inject.Inject
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class SettingsController: BaseController() {
+class SettingsController : BaseController() {
 
     private lateinit var viewModel: SettingsViewModel
 
@@ -76,6 +76,7 @@ class SettingsController: BaseController() {
         super.initialise(savedInstanceState)
         themeEngine.applyFontToCollapsingLayout(collapsingLayout)
 
+        // Setup settings
         val adapter = FlexAdapter<SettingsItem>()
         settingsRecyclerView.adapter = adapter
         settingsRecyclerView.layoutManager = LinearLayoutManager(view!!.context, RecyclerView.VERTICAL, false)
@@ -83,12 +84,22 @@ class SettingsController: BaseController() {
         // Setup close button
         toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.navigationIcon?.setTint(view!!.colorAttr(R.attr.colorControlNormal))
-        
+
         toolbar.setNavigationOnClickListener {
             router.popCurrentController()
         }
 
         registerSettingsItems(adapter)
+
+        // Setup themes
+        val themeAdapter = FlexAdapter<Theme>()
+        themeRecyclerView.adapter = themeAdapter
+        themeRecyclerView.layoutManager = LinearLayoutManager(view!!.context, RecyclerView.HORIZONTAL, false)
+
+        setupThemesAdapter(themeAdapter)
+
+        // Scroll to selected theme
+        themeRecyclerView.scrollToPosition(themeEngine.allThemes.indexOf(themeEngine.currentTheme))
 
         viewModel.settingsItems.observe(this) {
             adapter.resetItems(it)
@@ -104,14 +115,14 @@ class SettingsController: BaseController() {
     private fun registerSettingsItems(adapter: FlexAdapter<SettingsItem>) {
         // Headers
         adapter.register<SectionHeader>(layout = R.layout.section_settings_header) { sectionHeader, view, _ ->
-            with (view) {
+            with(view) {
                 titleTextView.setText(sectionHeader.titleRes)
             }
         }
 
         // Clickable items
         adapter.register<ClickableItem>(layout = R.layout.section_clickable_item) { clickableItem, view, _ ->
-            with (view) {
+            with(view) {
                 titleTextView.setText(clickableItem.titleRes)
 
                 onClick {
@@ -123,7 +134,7 @@ class SettingsController: BaseController() {
 
         // Toggleable items
         adapter.register<ToggleableItem>(layout = R.layout.section_toggleable_item) { toggleableItem, view, _ ->
-            with (view) {
+            with(view) {
                 toggleableTitleTextView.setText(toggleableItem.titleRes)
                 if (toggleableItem.subtitleRes == 0) {
                     toggleableSubtitleTextView.isVisible = false
@@ -157,10 +168,33 @@ class SettingsController: BaseController() {
 
         // Footer
         adapter.register<SettingsFooter>(layout = R.layout.section_settings_footer) { settingsFooter, view, _ ->
-            with (view) {
+            with(view) {
                 @SuppressLint("SetTextI18n")
                 buildVersionTextView.text = "Mammut build ${settingsFooter.appVersion}"
             }
         }
     }
+
+    private fun setupThemesAdapter(adapter: FlexAdapter<Theme>) {
+        adapter.register<Theme>(layout = R.layout.card_theme) { theme, view, _ ->
+            val resolvedTheme = view.context.theme.apply { applyStyle(theme.styleRes, true) }
+
+            view.cardView.accentColorView.setBackgroundColor(resolvedTheme.color(R.attr.colorAccent))
+            view.cardView.setCardBackgroundColor(resolvedTheme.color(R.attr.colorPrimary))
+
+            view.themeNameTextView.text = theme.themeName
+
+            (view as MaterialCardView).apply {
+                strokeColor = if (theme == themeEngine.currentTheme) colorAttr(R.attr.colorAccent) else ContextCompat.getColor(context, android.R.color.transparent)
+                onClick {
+                    viewModel.onThemeChanged(theme)
+                }
+            }
+
+            view.context.theme.apply { applyStyle(themeEngine.currentTheme.styleRes, true) }
+        }
+
+        adapter.resetItems(themeEngine.allThemes)
+    }
+
 }

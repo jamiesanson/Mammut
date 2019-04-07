@@ -59,4 +59,7 @@
     <string name="k_oss_development">K-OSS Development</string>
     <string name="swipe_between_instances">Swipe between Instances</string>
     <string name="notifications">Notifications</string>
+    <string name="your_accounts">Your Accounts</string>
+    <string name="app_theme">App Theme</string>
+    <string name="select">Select</string>
 </resources>

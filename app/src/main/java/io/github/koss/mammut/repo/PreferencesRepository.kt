@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import io.github.koss.mammut.base.themes.StandardTheme
+import io.github.koss.mammut.base.themes.Standard
 import kotlin.reflect.KProperty
 
 /**
@@ -14,7 +14,7 @@ class PreferencesRepository(appContext: Context) {
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
 
-    var themeId by preferences.string(defaultReturn = StandardTheme.themeId, useCommit = true)
+    var themeId by preferences.string(defaultReturn = Standard.themeName, useCommit = true)
 
     var loginDomain by preferences.string(defaultReturn = "")
 
@@ -27,8 +27,6 @@ class PreferencesRepository(appContext: Context) {
     var homeFeedLastPageSeen by preferences.int(defaultReturn = -99999)
 
     var lastAccessedInstanceToken by preferences.string("none")
-
-    var takeMeStraightToInstanceBrowser by preferences.boolean(false)
 
     var swipingBetweenInstancesEnabled by preferences.boolean(defaultReturn = false)
 }
