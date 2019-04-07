@@ -14,6 +14,7 @@ import androidx.core.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
@@ -113,17 +114,16 @@ class TootViewHolder(
     private fun renderAttachments(attachments: List<Attachment<*>>) {
         with (itemView) {
             with(ConstraintSet()) {
-                clone(constraintLayout)
+                clone(recyclerViewConstraintLayout)
                 setDimensionRatio(attachmentsRecyclerView.id, (attachments.first().getThumbnailSpec() * 1.2F).toString())
-                applyTo(constraintLayout)
-
-                attachmentsRecyclerView.visibility = View.INVISIBLE
+                applyTo(recyclerViewConstraintLayout)
             }
 
             when {
                 attachmentsRecyclerView.adapter == null -> {
                     attachmentsRecyclerView.adapter = MediaAdapter(callbacks)
                     attachmentsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                    LinearSnapHelper().attachToRecyclerView(attachmentsRecyclerView)
                 }
             }
 

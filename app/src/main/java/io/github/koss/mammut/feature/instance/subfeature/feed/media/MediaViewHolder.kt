@@ -10,7 +10,6 @@ import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -62,12 +61,9 @@ class MediaViewHolder(
                 applyTo(constraintLayout)
             }
 
-            tootImageCardView.visibility = View.VISIBLE
+            loadAttachment(attachment)
 
-            tootImageCardView.doOnLayout {
-                // Wait until the next layout pass to ensure the parent is sized correctly
-                loadAttachment(attachment)
-            }
+            tootImageCardView.visibility = View.VISIBLE
 
             tootImageCardView.onClick {
                 if (!sensitiveContentFrameLayout.isVisible) {
@@ -75,7 +71,6 @@ class MediaViewHolder(
                 }
             }
         }
-
     }
 
     private fun loadAttachment(attachment: Attachment<*>) {

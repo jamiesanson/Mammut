@@ -13,20 +13,20 @@ fun Attachment<*>.getThumbnailSpec(): Float {
     val bestGuess = 400F / 300F
 
     @Suppress("USELESS_ELVIS")
-    this ?: return bestGuess
+    val tempReceiver: Attachment<*> = this ?: return bestGuess
 
-    return when (this) {
-        is PhotoAttachment -> this.metadata?.original?.run {
+    return when (tempReceiver) {
+        is PhotoAttachment -> tempReceiver.metadata?.original?.run {
             when {
                 aspect != 0F -> aspect
                 width != 0 && height != 0 -> width.toFloat() / height.toFloat()
                 else -> bestGuess
             }
         } ?: bestGuess
-        is VideoAttachment -> this.metadata?.original?.run {
+        is VideoAttachment -> tempReceiver.metadata?.original?.run {
             if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
         } ?: bestGuess
-        is GifvAttachment -> this.metadata?.original?.run {
+        is GifvAttachment -> tempReceiver.metadata?.original?.run {
             if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
         } ?: bestGuess
         else -> throw IllegalArgumentException("Unknown attachment type")

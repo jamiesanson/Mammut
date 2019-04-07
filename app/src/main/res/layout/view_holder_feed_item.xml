@@ -132,14 +132,11 @@
                 app:constraint_referenced_ids="timeTextView"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/attachmentsRecyclerView"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/recyclerViewConstraintLayout"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:maxHeight="300dp"
-                android:paddingEnd="32dp"
-                android:paddingStart="62dp"
-                android:clipToPadding="false"
+                android:layout_height="wrap_content"
+                android:maxHeight="400dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -147,7 +144,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/contentTextView">
 
-            </androidx.recyclerview.widget.RecyclerView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/attachmentsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="62dp"
+                    android:paddingEnd="32dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/contentWarningTextView"
