@@ -34,8 +34,8 @@
             android:background="@drawable/bottom_navigation_rounded_edge">
 
             <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
+                android:layout_width="24dp"
+                android:layout_height="4dp"
                 android:background="@drawable/bottom_navigation_drag_pill_background"
                 android:layout_gravity="center"/>
         </FrameLayout>
