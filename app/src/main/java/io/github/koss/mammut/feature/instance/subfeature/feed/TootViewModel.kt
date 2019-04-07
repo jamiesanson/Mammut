@@ -55,12 +55,12 @@ class TootViewModel @Inject constructor(
         val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName) ?: ""
         val username = "@${status.account?.acct ?: status.account?.userName}"
         val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-        statusViewState.value = TootViewState(name, username, content, status.mediaAttachments.firstOrNull())
+        statusViewState.value = TootViewState(name, username, content, status.mediaAttachments)
 
         launch(Dispatchers.IO) {
             // Post the HTML rendered content first such that it displays earlier.
             val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() } ?: emptyList())
-            statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments.firstOrNull()))
+            statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments))
         }
     }
 
@@ -96,5 +96,5 @@ data class TootViewState(
         val name: String,
         val username: String,
         val content: CharSequence,
-        val displayAttachment: Attachment<*>?
+        val displayAttachments: List<Attachment<*>>
 )

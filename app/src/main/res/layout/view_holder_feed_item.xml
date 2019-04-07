@@ -132,76 +132,22 @@
                 app:constraint_referenced_ids="timeTextView"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tootImageCardView"
-                android:layout_width="0dp"
-                android:layout_height="0px"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/attachmentsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:maxHeight="300dp"
+                android:paddingEnd="32dp"
+                android:paddingStart="62dp"
+                android:clipToPadding="false"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="12dp"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="@drawable/accent_ripple"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/profileImageView"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/contentTextView">
 
-                <ImageView
-                    android:id="@+id/tootImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@null"
-                    tools:srcCompat="@color/standardPrimaryLightColor" />
-
-                <com.google.android.exoplayer2.ui.PlayerView
-                    android:id="@+id/playerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone" />
-
-                <LinearLayout
-                    android:id="@+id/sensitiveContentFrameLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/colorPrimaryDark"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="4dp"
-                        android:text="@string/sensitive_content_warning"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/sensitiveContentToggleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:background="@drawable/circular_accent_ripple"
-                    android:clickable="true"
-                    android:contentDescription="@null"
-                    android:elevation="4dp"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    android:tint="?attr/colorControlNormal"
-                    android:tintMode="src_in"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/ic_visibility_off_black_24dp"
-                    tools:visibility="visible" />
-
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.recyclerview.widget.RecyclerView>
 
             <TextView
                 android:id="@+id/contentWarningTextView"
