@@ -10,6 +10,8 @@ import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceCont
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
+import io.github.koss.mammut.notifications.dagger.NotificationsComponent
+import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.toot.dagger.ComposeTootComponent
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import javax.inject.Named
@@ -29,6 +31,8 @@ interface InstanceComponent {
     fun plus(settingsModule: SettingsModule): SettingsComponent
 
     fun plus(composeTootModule: ComposeTootModule): ComposeTootComponent
+
+    fun plus(notificationsModule: NotificationsModule): NotificationsComponent
 
     @Named("instance_access_token")
     fun accessToken(): String

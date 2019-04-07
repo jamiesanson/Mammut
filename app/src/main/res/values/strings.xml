@@ -58,4 +58,5 @@
     <string name="full_app_name">Mammut for Mastodon</string>
     <string name="k_oss_development">K-OSS Development</string>
     <string name="swipe_between_instances">Swipe between Instances</string>
+    <string name="notifications">Notifications</string>
 </resources>

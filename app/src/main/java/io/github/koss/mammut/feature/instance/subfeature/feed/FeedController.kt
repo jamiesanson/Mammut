@@ -35,6 +35,7 @@ import io.github.koss.mammut.feature.feedpaging.FeedState
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.base.dagger.scope.FeedScope
+import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.feature.feedpaging.NetworkState
 import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
@@ -72,9 +73,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     private val tootButtonHidden: Boolean
         get() = newTootButton?.translationY != 0f
 
-    private val type: FeedType
-        get() = args.getParcelable(FeedController.ARG_TYPE)
-                ?: throw IllegalArgumentException("Missing feed attachmentType for feed fragment")
+    private val type: FeedType by arg(FeedController.ARG_TYPE)
 
     private val instanceAccessToken: String
         get() = instanceComponent().accessToken()

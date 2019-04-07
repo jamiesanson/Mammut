@@ -13,5 +13,5 @@ sealed class Tab(@IdRes val menuItemId: Int): Parcelable {
     @Parcelize
     object Federated: Tab(menuItemId = R.id.federatedTimelineDestination)
     @Parcelize
-    object Profile: Tab(menuItemId = R.id.profileDestination)
+    object Notification: Tab(menuItemId = R.id.notificationDestination)
 }

@@ -23,6 +23,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import arrow.instance
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
@@ -31,6 +32,7 @@ import com.sys1yagi.mastodon4j.api.entity.Emoji
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.toot.dagger.*
@@ -68,6 +70,10 @@ class ComposeTootController: BaseController {
     @ComposeTootScope
     lateinit var factory: MammutViewModelFactory
 
+    private val instanceName: String by arg(ARG_INSTANCE_NAME)
+    private val accessToken: String by arg(ARG_ACCESS_TOKEN)
+    private val account: Account by arg(ARG_PROFILE)
+
     /**
      * List of bottom menu items and their content views
      */
@@ -86,7 +92,7 @@ class ComposeTootController: BaseController {
                 ?.inject(this) ?: throw IllegalStateException("ParentController must be subcomponent factory")
 
         viewModel = ViewModelProviders
-                .of(context as FragmentActivity, factory).get(args.getString(ARG_ACCESS_TOKEN)!!, ComposeTootViewModel::class.java)
+                .of(context as FragmentActivity, factory).get(accessToken, ComposeTootViewModel::class.java)
     }
 
     override fun onDetach(view: View) {
@@ -110,7 +116,7 @@ class ComposeTootController: BaseController {
         setupBottomMenu()
         setupPrivacySelector()
         setupContentWarnings()
-        setupProfileCell(args.getParcelable(ARG_PROFILE) ?: throw IllegalArgumentException("The current account is required"))
+        setupProfileCell(account)
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 
@@ -284,7 +290,7 @@ class ComposeTootController: BaseController {
                 .into(view.findViewById(R.id.profileImageView))
 
         displayNameTextView.text = account.displayName
-        usernameTextView.text = account.fullAcct(args.getString(ARG_INSTANCE_NAME)!!)
+        usernameTextView.text = account.fullAcct(instanceName)
     }
 
     private fun displayContentForImageView(imageViewClicked: ImageView, contentView: View) {

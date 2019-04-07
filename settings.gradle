@@ -1,1 +1,1 @@
-include ':app', ':instances', ':toot', ':data', ':base'
+include ':app', ':instances', ':toot', ':data', ':base', ':notifications'

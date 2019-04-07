@@ -68,6 +68,7 @@ dependencies {
     api project(":instances")
     api project(":toot")
     api project(":data")
+    api project(":notifications")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore

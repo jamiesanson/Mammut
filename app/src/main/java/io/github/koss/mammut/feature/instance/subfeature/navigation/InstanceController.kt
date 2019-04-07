@@ -59,6 +59,8 @@ import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.notifications.NotificationsController
+import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.ComposeTootController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
@@ -220,7 +222,7 @@ class InstanceController(args: Bundle) : BaseController(args),
             Tab.Home.menuItemId -> FeedController.newInstance(FeedType.Home)
             Tab.Local.menuItemId -> FeedController.newInstance(FeedType.Local)
             Tab.Federated.menuItemId -> FeedController.newInstance(FeedType.Federated)
-            Tab.Profile.menuItemId -> ProfileController.newInstance(isMe = true)
+            Tab.Notification.menuItemId -> NotificationsController.newInstance(accessToken = component.accessToken()).apply { targetController = this@InstanceController }
             else -> return false
         }
 
@@ -286,9 +288,10 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
-        @Suppress("UNCHECKED_CAST")
+        @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
         return when (module) {
             is ComposeTootModule -> component.plus(module)
+            is NotificationsModule -> component.plus(module)
             else -> throw IllegalArgumentException("Unknown module type")
         } as Subcomponent
     }

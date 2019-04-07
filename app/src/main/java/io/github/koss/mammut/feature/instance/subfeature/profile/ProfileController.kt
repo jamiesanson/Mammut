@@ -213,7 +213,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
         theme.resolveAttribute(R.attr.colorPrimaryTransparency, typedValue, true)
         @ColorInt val color = typedValue.data
 
-        // Profile image
+        // Notification image
         GlideApp.with(profileImageView)
                 .load(account.avatar)
                 .thumbnail(
