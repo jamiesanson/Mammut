@@ -1,5 +1,6 @@
 package io.github.koss.mammut.data.repository
 
+import android.util.Log
 import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.MammutDatabase

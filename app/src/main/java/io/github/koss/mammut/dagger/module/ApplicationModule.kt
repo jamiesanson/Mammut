@@ -11,7 +11,7 @@ import io.github.koss.mammut.data.database.MammutDatabaseInitialiser
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feature.network.NetworkIndicator
 
-@Module(includes = [ ApplicationViewModelModule::class ])
+@Module
 class ApplicationModule(private val appContext: Context) {
 
 

@@ -19,5 +19,6 @@ class InstanceSuggestionPopupWindow(context: Context, onInstanceSelected: (Insta
 
     fun onNewResults(results: List<InstanceSearchResult>) {
         instanceSuggestionAdapter.submitList(results)
+        contentView?.suggestionsRecyclerView?.scrollToPosition(0)
     }
 }

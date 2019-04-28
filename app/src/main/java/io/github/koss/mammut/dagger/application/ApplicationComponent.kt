@@ -9,7 +9,6 @@ import io.github.koss.mammut.feature.instance.MultiInstanceActivity
 import io.github.koss.mammut.feature.instance.MultiInstanceController
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
-import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceComponent
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
@@ -27,8 +26,6 @@ interface ApplicationComponent {
     fun inject(application: MammutApplication)
 
     fun inject(activity: SplashActivity)
-
-    fun inject(activity: InstanceBrowserActivity)
 
     fun inject(activity: MultiInstanceActivity)
 

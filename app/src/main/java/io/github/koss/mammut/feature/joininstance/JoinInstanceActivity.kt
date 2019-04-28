@@ -18,7 +18,6 @@ import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.provideViewModel
 import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.base.InputError
-import io.github.koss.mammut.feature.instancebrowser.InstanceBrowserActivity
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
 import io.github.koss.mammut.feature.joininstance.suggestion.InstanceSuggestionPopupWindow
 import kotlinx.android.synthetic.main.activity_join_instance.*
@@ -29,6 +28,7 @@ import javax.inject.Inject
 import androidx.browser.customtabs.CustomTabsIntent
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseActivity
+import io.github.koss.mammut.feature.instance.MultiInstanceActivity
 import org.jetbrains.anko.colorAttr
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback
@@ -104,7 +104,7 @@ class JoinInstanceActivity: BaseActivity() {
             registrationCompleteEvent.observe(this@JoinInstanceActivity) {
                 if (!it.hasBeenHandled) {
                     it.getContentIfNotHandled()
-                    startActivity<InstanceBrowserActivity>()
+                    startActivity<MultiInstanceActivity>()
                     finish()
                 }
             }
