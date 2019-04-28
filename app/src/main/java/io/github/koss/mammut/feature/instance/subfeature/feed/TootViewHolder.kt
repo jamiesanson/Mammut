@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feature.instance.subfeature.feed
 
-import android.animation.Animator
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.util.TypedValue
@@ -12,12 +11,18 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
+import arrow.optics.typeclasses.At
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
+import com.github.ajalt.flexadapter.FlexAdapter
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -30,33 +35,33 @@ import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.component.util.Blurrer
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.inflate
+import io.github.koss.mammut.extension.observe
+import io.github.koss.mammut.feature.instance.subfeature.feed.media.MediaAdapter
+import io.github.koss.mammut.feature.instance.subfeature.feed.media.getThumbnailSpec
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
 class TootViewHolder(
         parent: ViewGroup,
-        private val requestManager: RequestManager,
+        viewModelProvider: ViewModelProvider,
         private val callbacks: TootCallbacks
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var exoPlayer: SimpleExoPlayer? = null
 
-    private var isSensitiveScreenVisible = false
-
-    private var viewModel: TootViewModel = TootViewModel()
+    private var viewModel: TootViewModel = viewModelProvider.get(UUID.randomUUID().toString(), TootViewModel::class.java)
 
     init {
         // Set up viewModel observations
-        viewModel.statusViewState.observeForever(::onViewStateChanged)
-        viewModel.timeSince.observeForever(itemView.timeTextView::setText)
+        viewModel.statusViewState.observe(itemView.context as LifecycleOwner, ::onViewStateChanged)
+        viewModel.timeSince.observe(itemView.context as LifecycleOwner, itemView.timeTextView::setText)
 
         // Set up click listeners
         itemView.onClick {
@@ -73,22 +78,22 @@ class TootViewHolder(
     }
 
     private fun onViewStateChanged(viewState: TootViewState?) {
-        with (itemView) {
-            displayNameTextView.text = viewState?.name
-            usernameTextView.text = viewState?.username
-            contentTextView.text = viewState?.content
+        with(itemView) {
+            viewState?.name?.let(displayNameTextView::setText)
+            viewState?.username?.let(usernameTextView::setText)
+            viewState?.content?.let(contentTextView::setText)
         }
 
-        viewState?.displayAttachment.let(::processAttachment)
+        when {
+            viewState?.displayAttachments?.isEmpty() == true ->
+                itemView.attachmentsRecyclerView.isVisible = false
+            viewState?.displayAttachments?.isNotEmpty() == true ->
+                renderAttachments(viewState.displayAttachments)
+        }
 
-        // Setup sensitive content screen
-        setupContentWarning(isSensitive = viewModel.currentStatus?.isSensitive ?: false)
+        @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
 
-        // Resolve colors
-        val typedValue = TypedValue()
-        val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
-        @ColorInt val color = typedValue.data
+        val requestManager = GlideApp.with(itemView)
 
         requestManager
                 .load(viewModel.currentStatus?.account?.avatar)
@@ -106,256 +111,62 @@ class TootViewHolder(
         setupSpoiler(viewModel.currentStatus?.spoilerText ?: "")
     }
 
-    private fun processAttachment(att: Attachment<*>?) {
+    private fun renderAttachments(attachments: List<Attachment<*>>) {
         with (itemView) {
-            att?.let { attachment ->
-                requestManager
-                        .clear(tootImageView)
+            with(ConstraintSet()) {
+                clone(recyclerViewConstraintLayout)
+                setDimensionRatio(attachmentsRecyclerView.id, (attachments.first().getThumbnailSpec() * 1.2F).toString())
+                applyTo(recyclerViewConstraintLayout)
+            }
 
-                val aspect = getThumbnailSpec(attachment)
-
-                with(ConstraintSet()) {
-                    clone(constraintLayout)
-                    setDimensionRatio(tootImageCardView.id, aspect.toString())
-                    applyTo(constraintLayout)
+            when {
+                attachmentsRecyclerView.adapter == null -> {
+                    attachmentsRecyclerView.adapter = MediaAdapter(callbacks)
+                    attachmentsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                    LinearSnapHelper().attachToRecyclerView(attachmentsRecyclerView)
                 }
+            }
 
-                tootImageCardView.visibility = View.VISIBLE
-
-                tootImageCardView.doOnLayout {
-                    // Wait until the next layout pass to ensure the parent is sized correctly
-                    loadAttachment(attachment)
-                }
-
-                tootImageCardView.onClick {
-                    if (!isSensitiveScreenVisible) {
-                        callbacks.onPhotoClicked(tootImageView, attachment.url)
-                    }
-                }
-            } ?: run {
-                with(ConstraintSet()) {
-                    clone(constraintLayout)
-                    setDimensionRatio(tootImageCardView.id, "0")
-                    applyTo(constraintLayout)
-                }
-
-                tootImageView.image = null
-                tootImageCardView.visibility = View.INVISIBLE
+            (attachmentsRecyclerView.adapter as MediaAdapter).apply {
+                contentIsSensitive = viewModel.currentStatus?.isSensitive ?: false
+                submitList(attachments)
             }
         }
     }
 
-    private fun loadAttachment(attachment: Attachment<*>) {
-        when (attachment) {
-            is PhotoAttachment -> loadImage(attachment, requestManager)
-            is VideoAttachment -> loadVideo(attachment)
-            is GifvAttachment -> loadGifv(attachment)
-        }
-    }
+    private fun setupSpoiler(spoilerText: String) = with(itemView) {
+        contentWarningTextView.text = spoilerText
+        contentWarningTextView.isVisible = spoilerText.isNotEmpty()
+        contentWarningVisibilityButton.isVisible = spoilerText.isNotEmpty()
+        viewModel.isContentVisible = !spoilerText.isNotEmpty()
 
-    private fun loadGifv(gifvAttachment: Attachment<*>) {
-        itemView.tootImageView.visibility = View.GONE
-        itemView.playerView.visibility = View.VISIBLE
-        itemView.playerView.useController = false
-
-        val factory = DefaultDataSourceFactory(itemView.context,
-                Util.getUserAgent(itemView.context, "Mammut"))
-
-        val source = ExtractorMediaSource.Factory(factory)
-                .createMediaSource(Uri.parse(gifvAttachment.url))
-
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context).apply {
-            repeatMode = Player.REPEAT_MODE_ALL
-            playWhenReady = true
-        }
-
-        itemView.playerView.player = exoPlayer
-        exoPlayer?.prepare(source)
-    }
-
-    private fun loadVideo(videoAttachment: Attachment<*>) {
-        itemView.tootImageView.visibility = View.GONE
-        itemView.playerView.visibility = View.VISIBLE
-        itemView.playerView.useController = true
-
-        val factory = DefaultDataSourceFactory(itemView.context,
-                Util.getUserAgent(itemView.context, "Mammut"))
-
-        val source = ExtractorMediaSource.Factory(factory)
-                .createMediaSource(Uri.parse(videoAttachment.url))
-
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context)
-
-        itemView.playerView.player = exoPlayer
-        exoPlayer?.prepare(source)
-    }
-
-    private fun loadImage(photoAttachment: PhotoAttachment, requestManager: RequestManager) {
-        itemView.tootImageView.visibility = View.VISIBLE
-        itemView.playerView.visibility = View.GONE
-
-        // Resolve colors
-        val typedValue = TypedValue()
-        val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
-        @ColorInt val color = typedValue.data
-
-        // Load attachment
-        requestManager
-                .load(photoAttachment.url)
-                .thumbnail(
-                        requestManager
-                                .load(photoAttachment.previewUrl)
-                                .thumbnail(
-                                        requestManager
-                                                .load(ColorDrawable(color))
-                                )
-                                .transition(withCrossFade())
-                )
-                .transition(withCrossFade())
-                .apply(RequestOptions.bitmapTransform(FitCenter()))
-                .into(itemView.tootImageView)
-    }
-
-    private fun setupContentWarning(isSensitive: Boolean) {
-        with(itemView) {
-            // If not sensitive content, short circuit
-            if (!isSensitive) {
-                isSensitiveScreenVisible = false
-                sensitiveContentFrameLayout.isVisible = false
-                sensitiveContentToggleButton.isVisible = false
-                return
+        fun renderContentVisibility(transition: Boolean) {
+            if (transition) {
+                TransitionManager.beginDelayedTransition(itemView.parent as ViewGroup, AutoTransition().apply { duration = 200L })
             }
 
-            // Initial conditions
-            sensitiveContentFrameLayout.isVisible = true
-            sensitiveContentToggleButton.isVisible = true
-            isSensitiveScreenVisible = true
+            // Change visibility
+            contentTextView.isVisible = viewModel.isContentVisible
+            val hideImageView = viewModel.statusViewState.value?.displayAttachments?.isNotEmpty() == true
+            if (hideImageView) attachmentsRecyclerView.isVisible = viewModel.isContentVisible
 
-            fun View.largestDimension(): Float = sqrt(this.width.toFloat().pow(2F) + this.height.toFloat().pow(2F))
-
-            fun toggleContentWarningVisibility() {
-                if (isSensitiveScreenVisible) {
-                    ViewAnimationUtils.createCircularReveal(
-                            sensitiveContentFrameLayout,
-                            sensitiveContentFrameLayout.width - sensitiveContentToggleButton.width / 2,
-                            sensitiveContentToggleButton.height / 2,
-                            sensitiveContentFrameLayout.largestDimension(),
-                            0F
-                    ).apply {
-                        doOnEnd {
-                            sensitiveContentFrameLayout.isVisible = false
-                        }
-                        duration = 250L
-                    }.start()
-
-                    TransitionManager.beginDelayedTransition(tootImageCardView)
-                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_black_24dp
-                    isSensitiveScreenVisible = false
-                } else {
-                    ViewAnimationUtils.createCircularReveal(
-                            sensitiveContentFrameLayout,
-                            sensitiveContentFrameLayout.width - sensitiveContentToggleButton.width / 2,
-                            sensitiveContentToggleButton.height / 2,
-                            0F,
-                            sensitiveContentFrameLayout.largestDimension()
-                    ).apply {
-                        doOnStart {
-                            sensitiveContentFrameLayout.isVisible = true
-                        }
-                        duration = 250L
-                    }.start()
-
-                    TransitionManager.beginDelayedTransition(tootImageCardView)
-                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_off_black_24dp
-                    isSensitiveScreenVisible = true
-                }
-            }
-
-            sensitiveContentToggleButton.onClick { toggleContentWarningVisibility() }
-            sensitiveContentFrameLayout.onClick { toggleContentWarningVisibility() }
+            // Change button icon
+            contentWarningVisibilityButton.imageResource =
+                    if (viewModel.isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
         }
-    }
 
-    private fun setupSpoiler(spoilerText: String) {
         if (spoilerText.isNotEmpty()) {
-            itemView.doOnPreDraw {
-                itemView.blurParentLayout.isVisible = true
-                itemView.spoilerTextView.text = spoilerText
+            contentWarningVisibilityButton.onClick {
+                viewModel.isContentVisible = !viewModel.isContentVisible
+                renderContentVisibility(transition = true)
             }
-            itemView.doOnNextLayout {
-                Glide.with(itemView)
-                        .load(Blurrer.blurView(itemView, 25F))
-                        .transition(withCrossFade())
-                        .into(itemView.blurLayout)
-            }
-
-            itemView.blurParentLayout.onClick {
-                itemView.blurParentLayout.animate()
-                        .alpha(0F)
-                        .setDuration(300L)
-                        .setListener(object : Animator.AnimatorListener {
-                            override fun onAnimationRepeat(animation: Animator?) {}
-                            override fun onAnimationCancel(animation: Animator?) {}
-                            override fun onAnimationStart(animation: Animator?) {}
-
-                            override fun onAnimationEnd(animation: Animator?) {
-                                itemView.blurParentLayout.isVisible = false
-                            }
-                        })
-
-                        .start()
-            }
-
-            itemView.blurParentLayout.alpha = 1F
-        } else {
-            itemView.spoilerTextView.text = spoilerText
-            itemView.blurParentLayout.isVisible = false
-        }
-    }
-
-    /**
-     * Function for inspecting an attachment for metadata and retrieving an approximate
-     * width and height. Will assume 4:3 width:height ratio if nothing found
-     */
-    private fun getThumbnailSpec(attachment: Attachment<*>): Float {
-        val bestGuess = 400F / 300F
-        return when (attachment) {
-            is PhotoAttachment -> attachment.metadata?.original?.run {
-                when {
-                    aspect != 0F -> aspect
-                    width != 0 && height != 0 -> width.toFloat() / height.toFloat()
-                    else -> bestGuess
-                }
-            } ?: bestGuess
-            is VideoAttachment -> attachment.metadata?.original?.run {
-                if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
-            } ?: bestGuess
-            is GifvAttachment -> attachment.metadata?.original?.run {
-                if (width != 0 && height != 0) width.toFloat() / height.toFloat() else bestGuess
-            } ?: bestGuess
-            else -> throw IllegalArgumentException("Unknown attachment type")
-        }
-    }
-
-    fun clear() {
-        with(itemView) {
-            displayNameTextView.text = null
-            usernameTextView.text = null
-            contentTextView.text = null
-            timeTextView.text = null
-            profileImageView.setOnClickListener(null)
-            GlideApp.with(itemView)
-                    .clear(profileImageView)
-            GlideApp.with(itemView)
-                    .clear(tootImageView)
-            tootImageView.visibility = View.GONE
         }
 
-        viewModel.onCleared()
+        renderContentVisibility(false)
     }
 
     fun recycle() {
         exoPlayer?.release()
+        viewModel.onCleared()
     }
 }

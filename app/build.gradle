@@ -17,7 +17,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
-apply from: '../keys.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -29,8 +28,6 @@ android {
         versionName rootProject.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField "String", "INSTANCES_SECRET", INSTANCES_SECRET
     }
 
     buildTypes {
@@ -67,8 +64,11 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    api project(":base")
     api project(":instances")
     api project(":toot")
+    api project(":data")
+    api project(":notifications")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore

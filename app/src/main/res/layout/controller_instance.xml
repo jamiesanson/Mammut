@@ -13,26 +13,49 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <LinearLayout
+        android:id="@+id/bottomNavigationSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:paddingTop="6dp"
+        android:elevation="24dp"
+        app:behavior_peekHeight="@dimen/default_navigation_peek_height"
+        app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <View
+        <FrameLayout
+            android:id="@+id/bottomNavigationTopScrim"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/bottom_navigation_shadow" />
+            android:layout_height="24dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bottom_navigation_rounded_edge">
+
+            <View
+                android:layout_width="24dp"
+                android:layout_height="4dp"
+                android:background="@drawable/bottom_navigation_drag_pill_background"
+                android:layout_gravity="center"/>
+        </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:elevation="16dp"
             app:itemHorizontalTranslationEnabled="false"
             app:labelVisibilityMode="labeled"
             app:itemIconTint="@drawable/bottom_navigation_color_state"
             app:itemTextColor="@drawable/bottom_navigation_color_state"
             app:menu="@menu/instance_bottom_navigation" />
+
+        <include
+            android:id="@+id/bottomSheetContentLayout"
+            layout="@layout/navigation_bottom_sheet_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,11 +64,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:src="@drawable/ic_add_black_24dp"
-        app:layout_anchor="@id/bottomNavigationView"
+        app:layout_anchor="@id/bottomNavigationSheet"
         app:layout_anchorGravity="end|top"
         android:tint="?attr/colorControlNormal"
         android:tintMode="src_in"
         app:useCompatPadding="true" />
+
+    <View
+        android:id="@+id/bottomNavigationDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorControlNormalTransparent"
+        android:alpha="0"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <View
         android:id="@+id/fullScreenPhotoLayout"

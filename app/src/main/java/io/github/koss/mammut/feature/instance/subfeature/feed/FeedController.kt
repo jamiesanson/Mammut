@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
@@ -18,25 +19,25 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bumptech.glide.RequestManager
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.github.koss.mammut.R
-import io.github.koss.mammut.component.GlideApp
+import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
-import io.github.koss.mammut.feature.instance.InstanceActivity
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
-import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
+import io.github.koss.mammut.base.dagger.scope.FeedScope
+import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.feature.feedpaging.NetworkState
-import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
+import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
 import kotlinx.android.extensions.CacheImplementation
@@ -57,11 +58,9 @@ import kotlin.run
  * *any* pageable status endpoint. So far, I think it is, but I can't be sure.
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
+class FeedController(args: Bundle) : BaseController(args), ReselectListener, TootCallbacks {
 
     private lateinit var viewModel: FeedViewModel
-
-    private lateinit var requestManager: RequestManager
 
     @Inject
     @FeedScope
@@ -74,43 +73,37 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     private val tootButtonHidden: Boolean
         get() = newTootButton?.translationY != 0f
 
-    private val type: FeedType
-        get() = args.getParcelable(FeedController.ARG_TYPE)
-                ?: throw IllegalArgumentException("Missing feed attachmentType for feed fragment")
+    private val type: FeedType by arg(FeedController.ARG_TYPE)
 
-    private val feedModule: FeedModule by retained(key = {
-        type.toString()
-    }) {
+    private val instanceAccessToken: String
+        get() = instanceComponent().accessToken()
+
+    private val uniqueId: String by lazy {
+        "$instanceAccessToken$type"
+    }
+
+    private val feedModule: FeedModule by retained(key = ::uniqueId) {
         FeedModule(type)
     }
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as InstanceActivity)
-                .component
+        instanceComponent()
                 .plus(feedModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, factory).get(type.toString(), FeedViewModel::class.java)
-        requestManager = GlideApp.with(context)
-    }
-
-    override fun onContextUnavailable() {
-        super.onContextUnavailable()
-        // Clear the request manager
-        // NOTE - The following could throw an exception if nothing's used the manager,
-        // so try-catch it
-        try {
-            requestManager.onDestroy()
-        } catch (e: Exception) {
-            // no-op
-        }
+        viewModel = ViewModelProviders.of(context as AppCompatActivity, factory).get(uniqueId, FeedViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
             inflater.inflate(R.layout.controller_feed, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
+        // Turns out, in some of Android's new launchers `onSaveInstanceState` can be called without ever
+        // being restored. As Conductor doesn't account for this, we need to check against the view to
+        // make sure we're not re-initialising things.
+        if (view?.recyclerView?.adapter?.itemCount ?: 0 > 0) return
+
         initialiseRecyclerView()
 
         // Only show the progress bar if we're displaying this controller the first time
@@ -131,8 +124,6 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
                 hideNewTootsIndicator(animate = false)
             }
         }
-
-        savedInstanceState?.let(::restoreAdapterState)
 
         networkIndicator.attach(view as ViewGroup, this)
 
@@ -160,12 +151,24 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
         viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
     }
 
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        super.onRestoreViewState(view, savedViewState)
+        savedViewState.let(::restoreAdapterState)
+    }
+
     override fun onTabReselected() {
         recyclerView?.smoothScrollToPosition(0)
     }
 
     override fun onProfileClicked(account: Account) {
-        router.pushController(RouterTransaction.with(ProfileController.newInstance(account)))
+        router.pushController(
+                RouterTransaction
+                        .with(ProfileController.newInstance(account)
+                                .apply {
+                                    targetController = this@FeedController.parentController
+                                })
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler()))
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
@@ -178,7 +181,12 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
 
     private fun initialiseRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
-        recyclerView.adapter = FeedAdapter(this, requestManager, viewModel::onBrokenTimelineResolved)
+
+        recyclerView.adapter = FeedAdapter(
+                viewModelProvider = ViewModelProviders.of(view!!.context as AppCompatActivity, factory),
+                tootCallbacks = this,
+                onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)
+
         recyclerView.itemAnimator?.addDuration = 150L
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
@@ -330,6 +338,8 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     }
 
     private fun hideNewTootsIndicator(animate: Boolean = true) {
+        containerView ?: return
+
         if (animate) {
             newTootButton.animate()
                     .translationY(-(newTootButton.y + newTootButton.height))
@@ -342,19 +352,22 @@ class FeedController(args: Bundle) : BaseController(args), TootCallbacks {
     }
 
     private fun restoreAdapterState(savedInstanceState: Bundle) {
-        savedInstanceState.getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)?.let { state ->
-            (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
-        }
+        savedInstanceState
+                .getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)
+                ?.let { state ->
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
+                }
     }
 
     private fun RecyclerView.isNearTop(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstCompletelyVisibleItemPosition() < 2
+                return@run findFirstVisibleItemPosition() < 3
             } ?: false
 
     private fun RecyclerView.isNearBottom(): Boolean =
             (layoutManager as LinearLayoutManager?)?.run {
-                return@run findFirstVisibleItemPosition() >= (recyclerView.adapter?.itemCount ?: Int.MAX_VALUE) - 6
+                return@run findFirstVisibleItemPosition() >= (recyclerView.adapter?.itemCount
+                        ?: Int.MAX_VALUE) - 6
             } ?: false
 
     companion object {

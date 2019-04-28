@@ -1,5 +1,7 @@
 package io.github.koss.mammut.instances
 
+import io.github.koss.mammut.instances.response.AllInstancesResponse
+import io.github.koss.mammut.instances.response.InstanceDetail
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

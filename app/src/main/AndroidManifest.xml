@@ -39,7 +39,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".feature.instancebrowser.InstanceBrowserActivity" />
-        <activity android:name=".feature.instance.InstanceActivity" />
+
+        <activity
+            android:name=".feature.instance.InstanceActivity"
+            android:windowSoftInputMode="adjustResize"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -50,6 +53,10 @@
 
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+
+        <activity
+            android:name=".feature.instance.MultiInstanceActivity"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

@@ -7,10 +7,4 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_edit_black_24dp"/>
 
-    <item
-        android:id="@+id/settings_item"
-        android:title="@string/settings"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_settings_black_24dp"/>
-
 </menu>

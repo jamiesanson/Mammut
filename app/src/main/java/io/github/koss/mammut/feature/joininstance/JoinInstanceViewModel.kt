@@ -13,12 +13,12 @@ import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
 import io.github.koss.mammut.data.models.*
-import io.github.koss.mammut.data.repo.InstancesRepository
-import io.github.koss.mammut.data.repo.PreferencesRepository
-import io.github.koss.mammut.data.repo.RegistrationRepository
+import io.github.koss.mammut.data.repository.InstancesRepository
+import io.github.koss.mammut.repo.PreferencesRepository
+import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.ClientBuilder
 import io.github.koss.mammut.extension.postSafely
-import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.base.InputError
 import kotlinx.coroutines.CoroutineScope

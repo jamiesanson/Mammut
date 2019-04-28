@@ -9,7 +9,7 @@ import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.awaitFirst
-import io.github.koss.mammut.extension.run
+import io.github.koss.mammut.data.extensions.run
 import kotlinx.coroutines.*
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
@@ -40,7 +40,7 @@ class FeedPagingBoundaryCallback(
     override fun onItemAtFrontLoaded(itemAtFront: Status) {
         super.onItemAtFrontLoaded(itemAtFront)
         // If timeline broken, or we're streaming, we shouldn't go ahead with this.
-        launch {
+        launch(Dispatchers.IO) {
             // The following only applies if in upwards paging state
             if (feedState.awaitFirst() !is FeedState.PagingUpwards) return@launch
 
@@ -60,7 +60,7 @@ class FeedPagingBoundaryCallback(
     }
 
     private fun executeStatusRequest(request: MastodonRequest<Pageable<com.sys1yagi.mastodon4j.api.entity.Status>>, callback: PagingRequestHelper.Request.Callback, isLoadingInfront: Boolean = false) {
-        launch {
+        launch(Dispatchers.IO) {
             val result = request.run(retryCount = 3)
 
             when (result) {

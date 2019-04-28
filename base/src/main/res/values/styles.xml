@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Mammut.Base" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Mammut.Base.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">?attr/colorPrimary</item>
+    </style>
+
+</resources>

@@ -21,7 +21,7 @@ sealed class FeedState: Reducible<FeedStateEvent, FeedState> {
                 this is Undefined && event is FeedStateEvent.OnTimelineBroken ->
                     BrokenTimeline
                 this is Undefined && event is FeedStateEvent.OnFreshFeed ->
-                    StreamingFromTop
+                    if (event.streamingEnabled) StreamingFromTop else PagingUpwards
                 this is Undefined && event is FeedStateEvent.OnBrokenTimelineResolved ->
                     PagingUpwards
 
@@ -50,7 +50,7 @@ sealed class FeedStateEvent {
 
     object OnTimelineBroken: FeedStateEvent()
 
-    object OnFreshFeed: FeedStateEvent()
+    data class OnFreshFeed(val streamingEnabled: Boolean): FeedStateEvent()
 
     object OnBrokenTimelineResolved: FeedStateEvent()
 }
@@ -80,7 +80,7 @@ fun initialiseFeedState(
 
     // If this is a fresh instance, we should return a fresh state
     if (!keepPlaceEnabled) {
-        store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
+        store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed(streamingEnabled) else FeedStateEvent.OnBrokenTimelineResolved)
         return FeedStateData(
                 store,
                 stateLiveData
@@ -109,14 +109,14 @@ fun initialiseFeedState(
         val localPage = loadLocalPage()
 
         if (localPage.isEmpty()) {
-            store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed else FeedStateEvent.OnBrokenTimelineResolved)
+            store.send(if (streamingEnabled) FeedStateEvent.OnFreshFeed(streamingEnabled) else FeedStateEvent.OnBrokenTimelineResolved)
             return@launch
         }
 
         if (remotePage.first().id == localPage.first().id) {
             // Begin streaming if applicable
             if (streamingEnabled) {
-                store.send(FeedStateEvent.OnFreshFeed)
+                store.send(FeedStateEvent.OnFreshFeed(streamingEnabled))
                 return@launch
             }
         }
@@ -156,7 +156,7 @@ fun initialiseFeedState(
             store.send(FeedStateEvent.OnTimelineBroken)
         } else {
             if (scrolledToTop) {
-                store.send(FeedStateEvent.OnFreshFeed)
+                store.send(FeedStateEvent.OnFreshFeed(streamingEnabled))
             } else {
                 store.send(FeedStateEvent.OnBrokenTimelineResolved)
             }

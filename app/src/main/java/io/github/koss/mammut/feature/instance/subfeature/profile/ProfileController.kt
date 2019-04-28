@@ -10,8 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
+import androidx.core.view.children
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
@@ -23,28 +27,25 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.comingSoon
+import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
-import io.github.koss.mammut.feature.instance.subfeature.navigation.BaseController
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
-import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
-import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.fragment_profile.*
-import org.jetbrains.anko.bundleOf
-import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -73,12 +74,12 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (context as InstanceActivity)
-                .component
+        router.getControllerWithTag("")
+        instanceComponent()
                 .plus(profileModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, viewModelFactory).get(key, ProfileViewModel::class.java)
+        viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(key, ProfileViewModel::class.java)
     }
 
     override fun onAttach(view: View) {
@@ -117,9 +118,10 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
             }
         } else {
             // Inflate edit and settings items
+            if (toolbar.menu.isNotEmpty()) return
+
             toolbar.inflateMenu(R.menu.user_profile_menu)
-            toolbar.menu
-                    .itemsSequence()
+            toolbar.menu.children
                     .forEach {
                         it.icon.setTint(colorControlNormal)
                         it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
@@ -130,10 +132,6 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
                         onEditClicked()
                         true
                     }
-                    R.id.settings_item -> {
-                        onSettingsClicked()
-                        true
-                    }
                     else -> false
                 }
             }
@@ -142,10 +140,6 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     private fun onEditClicked() {
         parentController?.comingSoon()
-    }
-
-    private fun onSettingsClicked() {
-        router.pushController(RouterTransaction.with(SettingsController()))
     }
 
     private fun setupViewPager(account: Account) {
@@ -219,7 +213,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
         theme.resolveAttribute(R.attr.colorPrimaryTransparency, typedValue, true)
         @ColorInt val color = typedValue.data
 
-        // Profile image
+        // Notification image
         GlideApp.with(profileImageView)
                 .load(account.avatar)
                 .thumbnail(

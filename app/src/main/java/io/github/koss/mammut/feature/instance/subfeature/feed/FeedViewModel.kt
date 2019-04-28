@@ -6,7 +6,7 @@ import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.extension.awaitFirst
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.feedpaging.*
-import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedScope
+import io.github.koss.mammut.base.dagger.scope.FeedScope
 import kotlinx.coroutines.*
 import javax.inject.Inject
 

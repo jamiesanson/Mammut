@@ -17,7 +17,6 @@ import io.github.koss.mammut.extension.inflate
 import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.extension.postSafely
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
-import kotlinx.coroutines.*
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
@@ -27,6 +26,7 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 class NetworkIndicator(context: Context) {
 
     init {
+        @Suppress("DEPRECATION") // Deprecation suppressed here as this is the most simple solution for now.
         context.registerReceiver(NetworkIndicatorReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
@@ -40,7 +40,7 @@ class NetworkIndicator(context: Context) {
         // Observe network state
         view.offlineModeButton.doOnLayout {
             view.offlineModeButton.apply {
-                translationY = if (isConnectedLiveData.value == true) {
+                translationY = if (isConnectedLiveData.value != false) {
                     -(y + height + 50)
                 } else {
                     0f.also {

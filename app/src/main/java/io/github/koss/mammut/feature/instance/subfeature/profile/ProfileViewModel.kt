@@ -14,9 +14,9 @@ import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.extension.postSafely
-import io.github.koss.mammut.extension.run
-import io.github.koss.mammut.feature.instance.dagger.InstanceScope
-import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileScope
+import io.github.koss.mammut.data.extensions.run
+import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
