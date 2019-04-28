@@ -3,8 +3,8 @@
  */
 ext {
     // App Versions
-    versionName = "0.4-beta"
-    versionCode = 4
+    versionName = "0.5-beta"
+    versionCode = 5
 
     // SDK Versions
     minSdkVersion = 21
