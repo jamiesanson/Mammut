@@ -37,4 +37,4 @@ ext.INSTANCES_SECRET = "\"GRERU43534J..324\""
 That's it! Look through your installed apps for Mammut, with a white icon.
 
 ## Disclaimer
-This project is under heavy development. Things will probably change substantially between updates - apologies in advance. You can find it in beta on the Play Store [here](https://play.google.com/store/apps/details?id=io.github.jamiesanson.mammut).
+This project is under heavy development. Things will probably change substantially between updates - apologies in advance. You can find it in beta on the Play Store [here](https://play.google.com/store/apps/details?id=io.github.koss.mammut).
