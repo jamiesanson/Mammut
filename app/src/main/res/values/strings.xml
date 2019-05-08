@@ -62,4 +62,7 @@
     <string name="your_accounts">Your Accounts</string>
     <string name="app_theme">App Theme</string>
     <string name="select">Select</string>
+    <string name="retoot">Retoot</string>
+    <string name="reply">Reply</string>
+    <string name="boost">Boost</string>
 </resources>

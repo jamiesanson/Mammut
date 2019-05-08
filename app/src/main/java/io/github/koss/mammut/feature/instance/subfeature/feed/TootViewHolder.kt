@@ -64,12 +64,13 @@ class TootViewHolder(
         viewModel.timeSince.observe(itemView.context as LifecycleOwner, itemView.timeTextView::setText)
 
         // Set up click listeners
-        itemView.onClick {
-            viewModel.currentStatus?.let(callbacks::onTootClicked)
-        }
-
-        itemView.profileImageView.onClick {
-            viewModel.currentStatus?.account?.let(callbacks::onProfileClicked)
+        with (itemView) {
+            onClick {
+                viewModel.currentStatus?.let(callbacks::onTootClicked)
+            }
+            profileImageView.onClick {
+                viewModel.currentStatus?.account?.let(callbacks::onProfileClicked)
+            }
         }
     }
 
@@ -138,7 +139,7 @@ class TootViewHolder(
         contentWarningTextView.text = spoilerText
         contentWarningTextView.isVisible = spoilerText.isNotEmpty()
         contentWarningVisibilityButton.isVisible = spoilerText.isNotEmpty()
-        viewModel.isContentVisible = !spoilerText.isNotEmpty()
+        viewModel.isContentVisible = spoilerText.isEmpty()
 
         fun renderContentVisibility(transition: Boolean) {
             if (transition) {

@@ -144,6 +144,7 @@ dependencies {
     api rootProject.ext.lottie
 
     api rootProject.ext.customTabsHelper
+    api rootProject.ext.customTabs
 }
 
 androidExtensions {

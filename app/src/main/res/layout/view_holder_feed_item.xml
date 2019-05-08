@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_gravity="bottom"
-        android:background="?colorControlNormalTransparent"
-        android:alpha="0.1"/>
+        android:alpha="0.1"
+        android:background="?colorControlNormalTransparent" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -26,6 +26,7 @@
             android:background="@drawable/accent_ripple"
             android:clickable="true"
             android:focusable="true"
+            android:layout_marginBottom="4dp"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.Guideline
@@ -130,19 +131,20 @@
                 android:layout_height="wrap_content"
                 app:barrierDirection="start"
                 app:constraint_referenced_ids="timeTextView"
-                app:layout_constraintEnd_toEndOf="parent" />
+                tools:layout_editor_absoluteX="330dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/recyclerViewConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxHeight="400dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"
+                android:maxHeight="400dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contentTextView">
+                app:layout_constraintTop_toBottomOf="@+id/contentTextView"
+                app:layout_constraintVertical_bias="0.0">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/attachmentsRecyclerView"
@@ -201,6 +203,70 @@
                 app:layout_constraintTop_toTopOf="@+id/contentWarningTextView"
                 app:srcCompat="@drawable/ic_visibility_off_black_24dp"
                 tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boostButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="@string/boost"
+                android:textColor="?attr/colorControlNormalTransparent"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_star_border_black_24dp"
+                app:iconGravity="start"
+                app:iconTint="?attr/colorControlNormalTransparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/retootButton"
+                app:rippleColor="?attr/colorAccent"
+                app:strokeColor="?attr/colorControlNormalTransparent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retootButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="@string/retoot"
+                android:textSize="14sp"
+                android:textColor="?attr/colorControlNormalTransparent"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_cached_black_24dp"
+                app:iconGravity="start"
+                app:iconTint="?attr/colorControlNormalTransparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/boostButton"
+                app:layout_constraintStart_toEndOf="@+id/replyButton"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
+                app:layout_constraintVertical_bias="0.0"
+                app:rippleColor="?attr/colorAccent"
+                app:strokeColor="?attr/colorControlNormalTransparent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/replyButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/reply"
+                android:textColor="?attr/colorControlNormalTransparent"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_round_reply_24dp"
+                app:iconGravity="start"
+                app:iconTint="?attr/colorControlNormalTransparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/retootButton"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
+                app:layout_constraintVertical_bias="0.0"
+                app:rippleColor="?attr/colorAccent"
+                app:strokeColor="?attr/colorControlNormalTransparent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

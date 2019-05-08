@@ -73,7 +73,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     private val tootButtonHidden: Boolean
         get() = newTootButton?.translationY != 0f
 
-    private val type: FeedType by arg(FeedController.ARG_TYPE)
+    private val type: FeedType by arg(ARG_TYPE)
 
     private val instanceAccessToken: String
         get() = instanceComponent().accessToken()
