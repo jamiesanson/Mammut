@@ -7,10 +7,12 @@ import arrow.core.Right
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
 import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.models.Account
+import okhttp3.OkHttpClient
 
 
 typealias MastodonResult<T> = Either<Error, T>
@@ -59,3 +61,13 @@ data class Error(
 )
 
 fun Account.fullAcct(instanceName: String): String = "@$userName@$instanceName"
+
+
+class ClientBuilder(
+        private val okHttpClient: OkHttpClient.Builder,
+        private val gson: GsonBuilder
+) {
+
+    fun getInstanceBuilder(instanceName: String): MastodonClient.Builder =
+            MastodonClient.Builder(instanceName, okHttpClient, gson)
+}

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import io.github.koss.mammut.MammutApplication
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationComponent
 import org.jetbrains.anko.contentView
 import androidx.annotation.ColorInt

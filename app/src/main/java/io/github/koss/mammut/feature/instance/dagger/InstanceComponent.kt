@@ -2,7 +2,6 @@ package io.github.koss.mammut.feature.instance.dagger
 
 import dagger.Subcomponent
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
-import io.github.koss.mammut.feature.instance.InstanceActivity
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedComponent
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileComponent
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
@@ -19,8 +18,6 @@ import javax.inject.Named
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])
 interface InstanceComponent {
-
-    fun inject(instanceActivity: InstanceActivity)
 
     fun inject(instanceController: InstanceController)
 

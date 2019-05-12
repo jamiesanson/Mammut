@@ -29,6 +29,8 @@ dependencies {
 
     implementation project(":instances")
 
+    implementation rootProject.ext.workManager
+
     implementation rootProject.ext.room
     kapt rootProject.ext.roomCompiler
 

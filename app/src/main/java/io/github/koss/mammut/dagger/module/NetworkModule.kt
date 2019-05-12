@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.dagger.application.ApplicationScope
-import io.github.koss.mammut.extension.ClientBuilder
+import io.github.koss.mammut.data.extensions.ClientBuilder
 import okhttp3.OkHttpClient
 
 @Module

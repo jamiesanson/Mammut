@@ -30,7 +30,6 @@ class TootViewModel @Inject constructor(
     var currentStatus: Status? = null
 
     // transient state used by the view
-    var isSensitiveScreenVisible = false
     var isContentVisible = false
 
     private var countJob = Job()
@@ -57,7 +56,7 @@ class TootViewModel @Inject constructor(
         val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
         statusViewState.value = TootViewState(name, username, content, status.mediaAttachments)
 
-        launch(Dispatchers.IO) {
+        launch {
             // Post the HTML rendered content first such that it displays earlier.
             val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() } ?: emptyList())
             statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments))

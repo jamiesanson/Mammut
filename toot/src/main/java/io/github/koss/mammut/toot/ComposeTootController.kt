@@ -23,14 +23,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import arrow.instance
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.data.extensions.fullAcct

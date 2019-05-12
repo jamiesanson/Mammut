@@ -145,6 +145,8 @@ dependencies {
 
     api rootProject.ext.customTabsHelper
     api rootProject.ext.customTabs
+
+    api rootProject.ext.workManager
 }
 
 androidExtensions {

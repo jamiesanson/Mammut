@@ -5,6 +5,7 @@ import io.github.koss.mammut.MammutApplication
 import io.github.koss.mammut.dagger.module.ApplicationModule
 import io.github.koss.mammut.dagger.module.NetworkModule
 import io.github.koss.mammut.dagger.module.RepositoryModule
+import io.github.koss.mammut.dagger.module.WorkerModule
 import io.github.koss.mammut.feature.instance.MultiInstanceActivity
 import io.github.koss.mammut.feature.instance.MultiInstanceController
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
@@ -19,7 +20,8 @@ import io.github.koss.mammut.feature.splash.SplashActivity
 @Component(modules = [
     ApplicationModule::class,
     NetworkModule::class,
-    RepositoryModule::class
+    RepositoryModule::class,
+    WorkerModule::class
 ])
 interface ApplicationComponent {
 

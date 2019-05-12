@@ -1,6 +1,9 @@
 package io.github.koss.mammut
 
 import android.app.Application
+import androidx.work.Configuration
+import androidx.work.WorkManager
+import androidx.work.WorkerFactory
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.fabric.sdk.android.Fabric
@@ -18,6 +21,9 @@ class MammutApplication: Application() {
     @Inject
     lateinit var themeEngine: ThemeEngine
 
+    @Inject
+    lateinit var workerFactory: WorkerFactory
+
     override fun onCreate() {
         super.onCreate()
         component = DaggerApplicationComponent.builder()
@@ -33,5 +39,8 @@ class MammutApplication: Application() {
 
         // Preload custom tabs
         registerActivityLifecycleCallbacks(CustomTabsActivityLifecycleCallbacks())
+
+        // Initialise WorkManager
+        WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(workerFactory).build())
     }
 }

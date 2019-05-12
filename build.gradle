@@ -21,6 +21,7 @@ ext {
     constraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     ktx = 'androidx.core:core-ktx:1.0.1'
     customTabs = 'androidx.browser:browser:1.0.0'
+    workManager = 'androidx.work:work-runtime-ktx:2.0.1'
 
     // Dagger
     def dagger_version = '2.17'
