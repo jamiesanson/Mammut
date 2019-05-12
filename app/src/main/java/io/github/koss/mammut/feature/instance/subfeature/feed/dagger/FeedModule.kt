@@ -14,6 +14,8 @@ import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.data.extensions.run
+import io.github.koss.mammut.data.models.InstanceRegistration
+import io.github.koss.mammut.data.repository.TootRepository
 import io.github.koss.mammut.feature.feedpaging.FeedPager
 import io.github.koss.mammut.feature.feedpaging.FeedStateData
 import io.github.koss.mammut.feature.feedpaging.initialiseFeedState
@@ -25,17 +27,23 @@ class FeedModule(private val feedType: FeedType) {
 
     @Provides
     @FeedScope
+    @Named("database_name")
+    fun provideDatabaseName(@Named("instance_name") instanceName: String): String =
+            "status_${feedType.key}_$instanceName"
+
+    @Provides
+    @FeedScope
     fun provideStatusDatabase(
             context: Context,
-            @Named("instance_name")
-            instanceName: String
+            @Named("database_name")
+            databaseName: String
     ): StatusDatabase =
             when (feedType) {
                 is FeedType.AccountToots, FeedType.Federated ->
                     Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
                             .build()
                 else -> {
-                    Room.databaseBuilder(context, StatusDatabase::class.java, "status_${feedType.key}_$instanceName")
+                    Room.databaseBuilder(context, StatusDatabase::class.java, databaseName)
                             .build()
                 }
             }
@@ -119,6 +127,14 @@ class FeedModule(private val feedType: FeedType) {
                 statusDatabase.statusDao().getMostRecent(count = 5, source = feedType.key)
             }
     )
+
+    @Provides
+    @FeedScope
+    fun provideTootRepository(@Named("instance_access_token") accessToken: String,
+                              @Named("instance_name") instanceName: String,
+                              @Named("database_name") databaseName: String): TootRepository {
+        return TootRepository(instanceName = instanceName, instanceAccessToken = accessToken, databaseName = databaseName)
+    }
 }
 
 interface StreamingBuilder {

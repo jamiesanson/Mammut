@@ -66,10 +66,16 @@ class TootViewHolder(
         // Set up click listeners
         with (itemView) {
             onClick {
-                viewModel.currentStatus?.let(callbacks::onTootClicked)
+                viewModel.statusLiveData.value?.let(callbacks::onTootClicked)
             }
             profileImageView.onClick {
-                viewModel.currentStatus?.account?.let(callbacks::onProfileClicked)
+                viewModel.statusLiveData.value?.account?.let(callbacks::onProfileClicked)
+            }
+            boostButton.onClick {
+                viewModel.onBoostClicked()
+            }
+            retootButton.onClick {
+                viewModel.onRetootClicked()
             }
         }
     }
@@ -79,17 +85,51 @@ class TootViewHolder(
     }
 
     private fun onViewStateChanged(viewState: TootViewState?) {
+        viewState ?: return
+
         with(itemView) {
-            viewState?.name?.let(displayNameTextView::setText)
-            viewState?.username?.let(usernameTextView::setText)
-            viewState?.content?.let(contentTextView::setText)
+            viewState.name.let(displayNameTextView::setText)
+            viewState.username.let(usernameTextView::setText)
+            viewState.content.let(contentTextView::setText)
         }
 
         when {
-            viewState?.displayAttachments?.isEmpty() == true ->
+            viewState.displayAttachments.isEmpty() ->
                 itemView.attachmentsRecyclerView.isVisible = false
-            viewState?.displayAttachments?.isNotEmpty() == true ->
-                renderAttachments(viewState.displayAttachments)
+            viewState.displayAttachments.isNotEmpty() ->
+                renderAttachments(viewState.displayAttachments, viewState.isSensitive)
+        }
+
+        with (itemView.boostButton) {
+            when (viewState.isBoosted) {
+                true -> {
+                    isEnabled = true
+                    textColor = colorAttr(R.attr.colorAccent)
+                }
+                false -> {
+                    isEnabled = true
+                    textColor = colorAttr(R.attr.colorControlNormalTransparent)
+                }
+                null -> isEnabled = false
+            }
+
+            text = if (viewState.boostCount > 0) viewState.boostCount.toString() else ""
+        }
+
+        with (itemView.retootButton) {
+            when (viewState.isRetooted) {
+                true -> {
+                    isEnabled = true
+                    textColor = colorAttr(R.attr.colorAccent)
+                }
+                false -> {
+                    isEnabled = true
+                    textColor = colorAttr(R.attr.colorControlNormalTransparent)
+                }
+                null -> isEnabled = false
+            }
+
+            text = if (viewState.retootCount > 0) viewState.retootCount.toString() else ""
         }
 
         @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
@@ -97,7 +137,7 @@ class TootViewHolder(
         val requestManager = GlideApp.with(itemView)
 
         requestManager
-                .load(viewModel.currentStatus?.account?.avatar)
+                .load(viewState.avatar)
                 .thumbnail(
                         requestManager
                                 .load(ColorDrawable(color))
@@ -107,12 +147,11 @@ class TootViewHolder(
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profileImageView)
 
-
         // Setup spoilers
-        setupSpoiler(viewModel.currentStatus?.spoilerText ?: "")
+        setupSpoiler(viewState.spoilerText)
     }
 
-    private fun renderAttachments(attachments: List<Attachment<*>>) {
+    private fun renderAttachments(attachments: List<Attachment<*>>, isSensitive: Boolean) {
         with (itemView) {
             with(ConstraintSet()) {
                 clone(recyclerViewConstraintLayout)
@@ -129,7 +168,7 @@ class TootViewHolder(
             }
 
             (attachmentsRecyclerView.adapter as MediaAdapter).apply {
-                contentIsSensitive = viewModel.currentStatus?.isSensitive ?: false
+                contentIsSensitive = isSensitive
                 submitList(attachments)
             }
         }

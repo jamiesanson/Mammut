@@ -4,11 +4,16 @@ import android.content.Context
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import arrow.data.invalid
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.data.converters.toModel
 import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.StatusState
+import io.github.koss.mammut.data.repository.TootRepository
 import io.github.koss.mammut.extension.postSafely
+import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.toot.emoji.EmojiRenderer
 import kotlinx.coroutines.*
 import org.threeten.bp.Duration
@@ -20,14 +25,22 @@ import javax.inject.Inject
  * ViewModel for handling presentation logic of a Toot.
  */
 class TootViewModel @Inject constructor(
-        private val context: Context
-): ViewModel(), CoroutineScope by GlobalScope {
+        private val context: Context,
+        private val tootRepository: TootRepository
+) : ViewModel(), CoroutineScope by GlobalScope {
 
-    val statusViewState: MutableLiveData<TootViewState> = MutableLiveData()
+    val statusLiveData: LiveData<Status> = MutableLiveData()
+
+    private val statusStateLiveData = Transformations
+            .switchMap(statusLiveData) {
+                tootRepository.loadStatusStateLive(it)
+            }
+
+    val statusViewState: LiveData<TootViewState> = Transformations.switchMap(statusStateLiveData) { (status, state) ->
+        processViewState(status, state)
+    }
 
     val timeSince: LiveData<String> = MutableLiveData()
-
-    var currentStatus: Status? = null
 
     // transient state used by the view
     var isContentVisible = false
@@ -35,36 +48,73 @@ class TootViewModel @Inject constructor(
     private var countJob = Job()
 
     fun bind(status: Status) {
-        if (status.id == currentStatus?.id) return
+        if (status == statusLiveData.value) return
 
-        currentStatus = status
-        processViewState()
+        statusLiveData.postSafely(status)
         processSubmissionTime()
+    }
+
+    fun onBoostClicked() {
+        launch {
+            tootRepository.toggleBoostForStatus(statusLiveData.value!!)
+        }
+    }
+
+    fun onRetootClicked() {
+        launch {
+            tootRepository.toggleRetootForStatus(statusLiveData.value!!)
+        }
     }
 
     public override fun onCleared() {
         super.onCleared()
         countJob.cancel()
-        statusViewState.value = null
         (timeSince as MutableLiveData).value = null
     }
 
-    private fun processViewState() {
-        val status = currentStatus ?: return
-        val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName) ?: ""
+    private fun processViewState(status: Status, state: StatusState): LiveData<TootViewState> {
+        val liveDataState = MutableLiveData<TootViewState>()
+
+        val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName)
+                ?: ""
         val username = "@${status.account?.acct ?: status.account?.userName}"
         val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-        statusViewState.value = TootViewState(name, username, content, status.mediaAttachments)
+
+        liveDataState.postValue(TootViewState(name, username, content, status.mediaAttachments,
+                avatar = status.account?.avatar!!,
+                spoilerText = status.spoilerText,
+                isSensitive = status.isSensitive,
+                isRetooted = status.isReblogged.takeUnless { state.isRetootPending },
+                isBoosted = status.isFavourited.takeUnless { state.isBoostPending },
+                retootCount = status.reblogsCount,
+                boostCount = status.favouritesCount))
 
         launch {
             // Post the HTML rendered content first such that it displays earlier.
-            val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() } ?: emptyList())
-            statusViewState.postSafely(TootViewState(name, username, renderedContent, status.mediaAttachments))
+            val renderedContent = async {
+                EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() }
+                        ?: emptyList())
+            }
+
+            liveDataState.postValue(TootViewState(
+                    name,
+                    username,
+                    renderedContent.await(),
+                    status.mediaAttachments,
+                    avatar = status.account?.avatar!!,
+                    spoilerText = status.spoilerText,
+                    isSensitive = status.isSensitive,
+                    isRetooted = status.isReblogged.takeUnless { state.isRetootPending },
+                    isBoosted = status.isFavourited.takeUnless { state.isBoostPending },
+                    retootCount = status.reblogsCount,
+                    boostCount = status.favouritesCount))
         }
+
+        return liveDataState
     }
 
     private fun processSubmissionTime() {
-        val status = currentStatus ?: return
+        val status = statusLiveData.value ?: return
         val submissionTime = ZonedDateTime.parse(status.createdAt)
 
         // Configure counting
@@ -95,5 +145,12 @@ data class TootViewState(
         val name: String,
         val username: String,
         val content: CharSequence,
-        val displayAttachments: List<Attachment<*>>
+        val displayAttachments: List<Attachment<*>>,
+        val isRetooted: Boolean?,
+        val isBoosted: Boolean?,
+        val avatar: String,
+        val spoilerText: String,
+        val isSensitive: Boolean,
+        val boostCount: Int,
+        val retootCount: Int
 )

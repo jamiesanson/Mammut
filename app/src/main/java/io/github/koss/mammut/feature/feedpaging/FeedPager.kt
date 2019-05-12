@@ -1,6 +1,7 @@
 package io.github.koss.mammut.feature.feedpaging
 
 import androidx.annotation.MainThread
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -103,7 +104,7 @@ class FeedPager(
     /**
      * Function for handling a set of results returned by the API.
      */
-    private suspend fun insertStatuses(statuses: List<com.sys1yagi.mastodon4j.api.entity.Status>, addToFront: Boolean) = coroutineScope {
+    private suspend fun insertStatuses(statuses: List<Status>, addToFront: Boolean) = coroutineScope {
         statusDatabase.runInTransaction {
             when {
                 addToFront -> {
