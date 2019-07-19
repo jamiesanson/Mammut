@@ -14,14 +14,10 @@ import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.models.Account
 import okhttp3.OkHttpClient
 
-
-typealias MastodonResult<T> = Either<Error, T>
-
 tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Error, T> {
     val result = try {
         Right(execute())
     } catch (e: Mastodon4jRequestException) {
-        Log.e("MastodonRunner", "An error occurred", e)
         if (e.isErrorResponse()) {
             e.response?.body()?.string()?.run {
                 when {
@@ -29,7 +25,7 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Erro
                         Left(GsonBuilder()
                                 .excludeFieldsWithoutExposeAnnotation()
                                 .create()
-                                .fromJson<Error>(e.response?.body()?.charStream(), Error::class.java))
+                                .fromJson(e.response?.body()?.charStream(), Error::class.java))
                     } catch (e: Exception) {
                         null
                     }
@@ -44,6 +40,10 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Erro
 
     if (result is Either.Left && retryCount > 0) {
         return run(retryCount - 1)
+    }
+
+    if (result is Either.Left) {
+        Log.e("MastodonRunner", "An error occurred: ${result.a}")
     }
 
     return result

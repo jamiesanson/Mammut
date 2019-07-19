@@ -131,9 +131,8 @@ class FeedModule(private val feedType: FeedType) {
     @Provides
     @FeedScope
     fun provideTootRepository(@Named("instance_access_token") accessToken: String,
-                              @Named("instance_name") instanceName: String,
-                              @Named("database_name") databaseName: String): TootRepository {
-        return TootRepository(instanceName = instanceName, instanceAccessToken = accessToken, databaseName = databaseName)
+                              @Named("instance_name") instanceName: String): TootRepository {
+        return TootRepository(instanceName = instanceName, instanceAccessToken = accessToken)
     }
 }
 

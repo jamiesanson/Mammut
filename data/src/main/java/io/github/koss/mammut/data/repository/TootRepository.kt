@@ -14,8 +14,7 @@ import kotlinx.coroutines.withContext
 
 class TootRepository(
         private val instanceName: String,
-        private val instanceAccessToken: String,
-        private val databaseName: String
+        private val instanceAccessToken: String
 ) {
 
     /**
@@ -116,8 +115,7 @@ class TootRepository(
                     statusId = status.id,
                     action = action,
                     accessToken = instanceAccessToken,
-                    instanceName = instanceName,
-                    databaseName = databaseName
+                    instanceName = instanceName
             )
 
     companion object {

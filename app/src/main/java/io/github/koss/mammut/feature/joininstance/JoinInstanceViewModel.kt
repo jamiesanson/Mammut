@@ -155,13 +155,12 @@ class JoinInstanceViewModel @Inject constructor(
 
             // Get the users account and save it with the registration
             val authenticatedClient = getClientForUrl(instanceName, accessToken.accessToken)
-            val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()
 
-            val account = when (accountResult) {
+            val account = when (val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()) {
                 is Either.Right -> accountResult.b
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> accountResult.a.description }))
+                    errorMessage.postSafely(Event { _ -> accountResult.a.description })
 
                     return@launch
                 }
