@@ -20,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
 class FeedPagingBoundaryCallback(
         ioExecutor: Executor,
         private val getCallForRange: (Range) -> MastodonRequest<Pageable<com.sys1yagi.mastodon4j.api.entity.Status>>,
-        private val handleStatuses: suspend (List<com.sys1yagi.mastodon4j.api.entity.Status>, isInFront: Boolean) -> Unit,
+        private val handleStatuses: suspend (List<com.sys1yagi.mastodon4j.api.entity.Status>) -> Unit,
         private val feedState: LiveData<FeedState>
 ) : PagedList.BoundaryCallback<Status>(), CoroutineScope {
 
@@ -46,7 +46,7 @@ class FeedPagingBoundaryCallback(
 
             withContext(Dispatchers.Main) {
                 helper.runIfNotRunning(PagingRequestHelper.RequestType.BEFORE) {
-                    executeStatusRequest(getCallForRange(Range(minId = itemAtFront.id)), it, isLoadingInfront = true)
+                    executeStatusRequest(getCallForRange(Range(minId = itemAtFront.id)), it)
                 }
             }
         }
@@ -59,16 +59,14 @@ class FeedPagingBoundaryCallback(
         }
     }
 
-    private fun executeStatusRequest(request: MastodonRequest<Pageable<com.sys1yagi.mastodon4j.api.entity.Status>>, callback: PagingRequestHelper.Request.Callback, isLoadingInfront: Boolean = false) {
+    private fun executeStatusRequest(request: MastodonRequest<Pageable<com.sys1yagi.mastodon4j.api.entity.Status>>, callback: PagingRequestHelper.Request.Callback) {
         launch(Dispatchers.IO) {
-            val result = request.run(retryCount = 3)
-
-            when (result) {
+            when (val result = request.run(retryCount = 3)) {
                 is Either.Left -> {
                     callback.recordFailure(Exception(result.a.description))
                 }
                 is Either.Right -> {
-                    handleStatuses(result.b.part, isLoadingInfront)
+                    handleStatuses(result.b.part)
 
                     callback.recordSuccess()
                 }

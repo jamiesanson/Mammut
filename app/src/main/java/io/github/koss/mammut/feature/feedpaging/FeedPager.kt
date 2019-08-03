@@ -104,25 +104,12 @@ class FeedPager(
     /**
      * Function for handling a set of results returned by the API.
      */
-    private suspend fun insertStatuses(statuses: List<Status>, addToFront: Boolean) = coroutineScope {
-        statusDatabase.runInTransaction {
-            when {
-                addToFront -> {
-                    statusDao.insertNewPage(statuses.map { status ->
-                        status.toEntity().copy(
-                                source = feedType.key
-                        )
-                    })
-                }
-                else -> {
-                    statusDao.insertNewPage(statuses.map { status ->
-                        status.toEntity().copy(
-                                source = feedType.key
-                        )
-                    })
-                }
-            }
-        }
+    private suspend fun insertStatuses(statuses: List<Status>) = coroutineScope {
+        statusDao.insertNewPage(statuses.map { status ->
+            status.toEntity().copy(
+                    source = feedType.key
+            )
+        })
     }
 
     /**

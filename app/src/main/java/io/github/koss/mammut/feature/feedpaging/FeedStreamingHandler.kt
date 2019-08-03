@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 class FeedStreamingHandler(
         private val onItemDeleted: suspend (Long) -> Unit,
-        private val handleStatuses: suspend (List<com.sys1yagi.mastodon4j.api.entity.Status>, isInFront: Boolean) -> Unit,
+        private val handleStatuses: suspend (List<Status>) -> Unit,
         private val streamingBuilder: StreamingBuilder?,
         private val feedState: LiveData<FeedState>
 ): Handler, CoroutineScope {
@@ -33,7 +33,7 @@ class FeedStreamingHandler(
 
     private var bufferedItemDisposable: Disposable? = null
 
-    private val itemStreamedPublishSubject = PublishSubject.create<com.sys1yagi.mastodon4j.api.entity.Status>()
+    private val itemStreamedPublishSubject = PublishSubject.create<Status>()
 
     private val bufferedItemFlowable: Flowable<Event<List<Status>>> = Flowable
             .fromPublisher(itemStreamedPublishSubject.toFlowable(BackpressureStrategy.BUFFER))
@@ -65,7 +65,7 @@ class FeedStreamingHandler(
                 .subscribeOn(Schedulers.io())
                 .subscribe{
                     launch {
-                        handleStatuses(it.peekContent(), true)
+                        handleStatuses(it.peekContent())
                     }
                 }
     }

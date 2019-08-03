@@ -8,23 +8,45 @@ import io.github.koss.mammut.data.extensions.getUniqueWorkTag
 import io.github.koss.mammut.data.extensions.workTag
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.work.WorkConstants
+import io.github.koss.mammut.data.work.containsSuccessfulBoost
+import io.github.koss.mammut.data.work.containsSuccessfulUnboost
+import io.github.koss.mammut.data.work.hasPendingBoostFor
 import io.github.koss.mammut.data.work.tootinteraction.TootInteractionWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class TootRepository(
         private val instanceName: String,
-        private val instanceAccessToken: String
+        private val instanceAccessToken: String,
+        private val databaseName: String
 ) {
+
+    /**
+     * Function for hiding all the underlying offline hackery which goes in to maintaining the state
+     * of the status.
+     */
+    fun getStatusStateLive(status: Status): LiveData<Pair<Status, StatusState>> =
+            Transformations.map(WorkManager.getInstance().getWorkInfosByTagLiveData(status.workTag)) {
+                status.copy(
+                        isFavourited = when {
+                            it.containsSuccessfulBoost(status) -> true
+                            it.containsSuccessfulUnboost(status) -> false
+                            else -> status.isFavourited
+                        }
+                ) to it.toStatusState(status)
+            }
 
     /**
      * Function for toggling the boost state of a status. If there is a pending boost, it will cancel this
      * and not do anything.
      */
     suspend fun toggleBoostForStatus(status: Status): Operation.State.SUCCESS = withContext(Dispatchers.Default) {
-        val state = loadStatusState(status)
+        val hasPendingBoost = WorkManager.getInstance()
+                .getWorkInfosByTag(status.workTag)
+                .await()
+                .hasPendingBoostFor(status)
 
-        if (state.isBoostPending) {
+        if (hasPendingBoost) {
             // Cancel boost
             WorkManager.getInstance().cancelUniqueWork(status.getUniqueWorkTag(TOGGLE_BOOST_ACTION)).await()
         } else {
@@ -32,7 +54,8 @@ class TootRepository(
             val toggleAction = if (status.isFavourited) TootInteractionWorker.Action.UNBOOST else TootInteractionWorker.Action.BOOST
 
             val workRequest = newTootInteractionRequest(status, toggleAction)
-                    .addTag(toggleAction.toString())
+                    .addTag(toggleAction.workTag)
+                    .addTag(status.workTag)
                     .build()
 
             WorkManager.getInstance().enqueueUniqueWork(
@@ -58,7 +81,8 @@ class TootRepository(
             val toggleAction = if (status.isReblogged) TootInteractionWorker.Action.UNRETOOT else TootInteractionWorker.Action.RETOOT
 
             val workRequest = newTootInteractionRequest(status, toggleAction)
-                    .addTag(toggleAction.toString())
+                    .addTag(toggleAction.workTag)
+                    .addTag(status.workTag)
                     .build()
 
             WorkManager.getInstance().enqueueUniqueWork(
@@ -73,49 +97,31 @@ class TootRepository(
      * Function for loading auxiliary state of a status. Currently this function loads whether or not there's a boost
      * or retoot pending.
      */
-    suspend fun loadStatusState(status: Status): StatusState = withContext(Dispatchers.Default) {
+    private suspend fun loadStatusState(status: Status): StatusState = withContext(Dispatchers.Default) {
         val workInfo = WorkManager.getInstance().getWorkInfosByTag(status.workTag).get()
 
-        return@withContext StatusState(
-                isBoostPending = workInfo
-                        .filter { !it.state.isFinished }
-                        .map { it.tags }
-                        .any { it.contains(WorkConstants.TootInteraction.TAG_BOOST) || it.contains(WorkConstants.TootInteraction.TAG_UNBOOST) },
-                isRetootPending = workInfo
-                        .filter { !it.state.isFinished }
-                        .map { it.tags }
-                        .any { it.contains(WorkConstants.TootInteraction.TAG_RETOOT) || it.contains(WorkConstants.TootInteraction.TAG_UNRETOOT) }
-        )
+        return@withContext workInfo.toStatusState(status)
     }
 
-    /**
-     * Function for loading auxiliary state of a status. Currently this function loads whether or not there's a boost
-     * or retoot pending.
-     */
-    fun loadStatusStateLive(status: Status): LiveData<Pair<Status, StatusState>> {
-        val workInfoLive = WorkManager.getInstance().getWorkInfosByTagLiveData(status.workTag)
-
-        return Transformations.map(workInfoLive) { workInfo ->
-            status to StatusState(
-                    isBoostPending = workInfo
-                            .filter { !it.state.isFinished }
-                            .map { it.tags }
-                            .any { it.contains(WorkConstants.TootInteraction.TAG_BOOST) || it.contains(WorkConstants.TootInteraction.TAG_UNBOOST) },
-                    isRetootPending = workInfo
-                            .filter { !it.state.isFinished }
-                            .map { it.tags }
-                            .any { it.contains(WorkConstants.TootInteraction.TAG_RETOOT) || it.contains(WorkConstants.TootInteraction.TAG_UNRETOOT) }
-            )
-        }
-    }
-
+    private fun List<WorkInfo>.toStatusState(status: Status) = StatusState(
+            isBoostPending = this
+                    .filter { !it.state.isFinished }
+                    .map { it.tags }
+                    .filter { it.contains(status.workTag) }
+                    .any { it.contains(WorkConstants.TootInteraction.TAG_BOOST) || it.contains(WorkConstants.TootInteraction.TAG_UNBOOST) },
+            isRetootPending = this
+                    .filter { !it.state.isFinished }
+                    .map { it.tags }
+                    .filter { it.contains(status.workTag) }
+                    .any { it.contains(WorkConstants.TootInteraction.TAG_RETOOT) || it.contains(WorkConstants.TootInteraction.TAG_UNRETOOT) })
 
     private fun newTootInteractionRequest(status: Status, action: TootInteractionWorker.Action): OneTimeWorkRequest.Builder =
             TootInteractionWorker.workRequestBuilder(
                     statusId = status.id,
                     action = action,
                     accessToken = instanceAccessToken,
-                    instanceName = instanceName
+                    instanceName = instanceName,
+                    databaseName = databaseName
             )
 
     companion object {

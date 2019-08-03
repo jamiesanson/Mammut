@@ -66,10 +66,10 @@ class TootViewHolder(
         // Set up click listeners
         with (itemView) {
             onClick {
-                viewModel.statusLiveData.value?.let(callbacks::onTootClicked)
+                callbacks.onTootClicked(viewModel.currentStatus)
             }
             profileImageView.onClick {
-                viewModel.statusLiveData.value?.account?.let(callbacks::onProfileClicked)
+                viewModel.currentStatus.account?.let(callbacks::onProfileClicked)
             }
             boostButton.onClick {
                 viewModel.onBoostClicked()

@@ -38,6 +38,7 @@ dependencies {
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleRx
+    implementation rootProject.ext.lifecycleLivedataKtx
 
     implementation rootProject.ext.retrofit
     implementation rootProject.ext.retrofitGsonConverter

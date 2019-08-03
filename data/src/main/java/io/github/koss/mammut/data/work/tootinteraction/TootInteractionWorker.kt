@@ -9,6 +9,10 @@ import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.data.work.SingleWorkerFactory
+import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_BOOST
+import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_RETOOT
+import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_UNBOOST
+import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_UNRETOOT
 
 /**
  * Worked used for interacting with a toot. This included things like boosting and retooting.
@@ -26,7 +30,14 @@ class TootInteractionWorker(
         BOOST,
         UNBOOST,
         RETOOT,
-        UNRETOOT
+        UNRETOOT;
+
+        val workTag get() = when (this) {
+            BOOST -> TAG_BOOST
+            UNBOOST -> TAG_UNBOOST
+            RETOOT -> TAG_RETOOT
+            UNRETOOT -> TAG_UNRETOOT
+        }
     }
 
     override suspend fun doWork(): Result {
@@ -49,8 +60,14 @@ class TootInteractionWorker(
             Action.UNRETOOT -> statuses.postUnreblog(statusId)
         }
 
-        request.run(retryCount = 3).toOption().orNull() ?: return Result.failure()
+        val updatedStatus = request.run(retryCount = 3).toOption().orNull() ?: return Result.failure()
 
+        val databaseName = inputData.getString(INPUT_DATABASE_NAME) ?: return Result.failure()
+
+        Room.databaseBuilder(applicationContext, StatusDatabase::class.java, databaseName)
+                .build()
+                .statusDao()
+                .insertStatus(updatedStatus.toEntity())
 
         return Result.success()
     }
@@ -60,6 +77,7 @@ class TootInteractionWorker(
         const val INPUT_ACTION = "action"
         const val INPUT_INSTANCE_NAME = "instance_name"
         const val INPUT_ACCESS_TOKEN = "access_token"
+        const val INPUT_DATABASE_NAME = "database_name"
 
         @JvmStatic
         fun factory(clientBuilder: ClientBuilder): SingleWorkerFactory = { context, params ->
@@ -67,7 +85,7 @@ class TootInteractionWorker(
         }
 
         @JvmStatic
-        fun workRequestBuilder(statusId: Long, action: Action, instanceName: String, accessToken: String): OneTimeWorkRequest.Builder {
+        fun workRequestBuilder(statusId: Long, action: Action, instanceName: String, accessToken: String, databaseName: String): OneTimeWorkRequest.Builder {
             return OneTimeWorkRequestBuilder<TootInteractionWorker>()
                     .setConstraints(Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -78,6 +96,7 @@ class TootInteractionWorker(
                             .putInt(INPUT_ACTION, action.ordinal)
                             .putString(INPUT_INSTANCE_NAME, instanceName)
                             .putString(INPUT_ACCESS_TOKEN, accessToken)
+                            .putString(INPUT_DATABASE_NAME, databaseName)
                             .build()
                     )
         }

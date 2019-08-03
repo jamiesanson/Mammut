@@ -1,6 +1,7 @@
 package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.content.Context
+import android.util.Log
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,23 +30,28 @@ class TootViewModel @Inject constructor(
         private val tootRepository: TootRepository
 ) : ViewModel(), CoroutineScope by GlobalScope {
 
-    val statusLiveData: LiveData<Status> = MutableLiveData()
+    val currentStatus: Status
+        get() = statusStateLiveData.value?.first
+                ?: throw UninitializedPropertyAccessException("No value for status found")
+
+    private val statusLiveData: LiveData<Status> = MutableLiveData()
 
     private val statusStateLiveData = Transformations
             .switchMap(statusLiveData) {
-                tootRepository.loadStatusStateLive(it)
+                tootRepository.getStatusStateLive(it)
             }
 
-    val statusViewState: LiveData<TootViewState> = Transformations.switchMap(statusStateLiveData) { (status, state) ->
-        processViewState(status, state)
-    }
+    val statusViewState: LiveData<TootViewState> = Transformations
+            .switchMap(statusStateLiveData) { (status, state) ->
+                processViewState(status, state)
+            }
 
     val timeSince: LiveData<String> = MutableLiveData()
 
     // transient state used by the view
     var isContentVisible = false
 
-    private var countJob = Job()
+    private var countJob: Job? = null
 
     fun bind(status: Status) {
         if (status == statusLiveData.value) return
@@ -56,19 +62,19 @@ class TootViewModel @Inject constructor(
 
     fun onBoostClicked() {
         launch {
-            tootRepository.toggleBoostForStatus(statusLiveData.value!!)
+            tootRepository.toggleBoostForStatus(statusStateLiveData.value!!.first)
         }
     }
 
     fun onRetootClicked() {
         launch {
-            tootRepository.toggleRetootForStatus(statusLiveData.value!!)
+            tootRepository.toggleRetootForStatus(statusStateLiveData.value!!.first)
         }
     }
 
     public override fun onCleared() {
         super.onCleared()
-        countJob.cancel()
+        countJob?.cancel()
         (timeSince as MutableLiveData).value = null
     }
 
@@ -118,7 +124,7 @@ class TootViewModel @Inject constructor(
         val submissionTime = ZonedDateTime.parse(status.createdAt)
 
         // Configure counting
-        countJob.cancel()
+        countJob?.cancel()
         countJob = GlobalScope.launch {
             while (true) {
                 withContext(Dispatchers.Main) {
