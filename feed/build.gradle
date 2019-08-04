@@ -19,6 +19,9 @@ dependencies {
     implementation project(":data")
     implementation project(":paging")
 
+    implementation rootProject.ext.room
+    implementation rootProject.ext.roomKtx
+
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
 

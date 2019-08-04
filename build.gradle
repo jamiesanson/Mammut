@@ -68,8 +68,9 @@ ext {
     mastodon4j = 'com.github.jamiesanson.mastodon4j:mastodon4j:61d6faacb1'
 
     // Room
-    def room_version = "1.1.1"
+    def room_version = "2.1.0"
     room = "android.arch.persistence.room:runtime:$room_version"
+    roomKtx = "androidx.room:room-ktx:$room_version"
     roomCompiler = "android.arch.persistence.room:compiler:$room_version"
 
     // Retrofit
