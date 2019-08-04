@@ -9,12 +9,11 @@ import com.sys1yagi.mastodon4j.api.Shutdownable
 import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.base.dagger.scope.FeedScope
-import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.data.extensions.run
-import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.data.repository.TootRepository
 import io.github.koss.mammut.feature.feedpaging.FeedPager
 import io.github.koss.mammut.feature.feedpaging.FeedStateData
@@ -121,7 +120,7 @@ class FeedModule(private val feedType: FeedType) {
             keepPlaceEnabled = feedType.persistenceEnabled && preferencesRepository.shouldKeepFeedPlace,
             scrolledToTop = pagingCallbacks.getPage() == null || pagingCallbacks.getPage() == 0,
             loadRemotePage = {
-                feedType.getRequestBuilder(client = mastodonClient)(Range(limit = 5)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toEntity() }
+                feedType.getRequestBuilder(client = mastodonClient)(Range(limit = 5)).run(retryCount = 3).toOption().orNull()?.part?.map { it.toLocalModel() }
             },
             loadLocalPage = {
                 statusDatabase.statusDao().getMostRecent(count = 5, source = feedType.key)

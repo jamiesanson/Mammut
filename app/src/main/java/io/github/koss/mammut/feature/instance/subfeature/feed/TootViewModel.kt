@@ -1,20 +1,17 @@
 package io.github.koss.mammut.feature.instance.subfeature.feed
 
 import android.content.Context
-import android.util.Log
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import arrow.data.invalid
 import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.repository.TootRepository
 import io.github.koss.mammut.extension.postSafely
-import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.toot.emoji.EmojiRenderer
 import kotlinx.coroutines.*
 import org.threeten.bp.Duration
@@ -98,7 +95,7 @@ class TootViewModel @Inject constructor(
         launch {
             // Post the HTML rendered content first such that it displays earlier.
             val renderedContent = async {
-                EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toModel() }
+                EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toNetworkModel() }
                         ?: emptyList())
             }
 

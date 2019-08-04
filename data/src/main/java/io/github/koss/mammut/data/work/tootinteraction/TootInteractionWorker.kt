@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.work.*
 import com.sys1yagi.mastodon4j.api.method.Statuses
-import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.extensions.run
@@ -67,7 +67,7 @@ class TootInteractionWorker(
         Room.databaseBuilder(applicationContext, StatusDatabase::class.java, databaseName)
                 .build()
                 .statusDao()
-                .insertStatus(updatedStatus.toEntity())
+                .insertStatus(updatedStatus.toLocalModel())
 
         return Result.success()
     }

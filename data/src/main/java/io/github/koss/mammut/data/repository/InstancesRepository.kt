@@ -1,8 +1,7 @@
 package io.github.koss.mammut.data.repository
 
-import android.util.Log
 import io.github.koss.mammut.data.BuildConfig
-import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
 import io.github.koss.mammut.data.models.InstanceSearchResult
@@ -68,7 +67,7 @@ class InstancesRepository constructor(
                 .filter { it.name.contains(query, ignoreCase = true) }
                 .distinctBy { it.name }
                 .sortedByDescending { it.users }
-                .map { it.toModel() }
+                .map { it.toNetworkModel() }
                 .toList()
     }
 }

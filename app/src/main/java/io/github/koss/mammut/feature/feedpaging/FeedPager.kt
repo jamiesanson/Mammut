@@ -1,7 +1,6 @@
 package io.github.koss.mammut.feature.feedpaging
 
 import androidx.annotation.MainThread
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -11,7 +10,7 @@ import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.Pageable
 import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.database.dao.StatusDao
 import io.github.koss.mammut.data.extensions.run
@@ -106,7 +105,7 @@ class FeedPager(
      */
     private suspend fun insertStatuses(statuses: List<Status>) = coroutineScope {
         statusDao.insertNewPage(statuses.map { status ->
-            status.toEntity().copy(
+            status.toLocalModel().copy(
                     source = feedType.key
             )
         })
@@ -137,7 +136,7 @@ class FeedPager(
                         statusDao.deleteByFeed(feedType.key)
                         val endIndex = 0
                         statusDao.insertNewPage(result.b.part.mapIndexed { index, status ->
-                            status.toEntity().copy(
+                            status.toLocalModel().copy(
                                     statusIndex = index + endIndex,
                                     source = feedType.key
                             )
