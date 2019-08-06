@@ -13,10 +13,10 @@ import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
+import io.github.koss.mammut.base.util.postSafely
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

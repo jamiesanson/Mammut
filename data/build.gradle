@@ -29,7 +29,7 @@ dependencies {
 
     implementation project(":instances")
 
-    implementation rootProject.ext.workManager
+    api rootProject.ext.workManager
 
     implementation rootProject.ext.room
     implementation rootProject.ext.roomRx

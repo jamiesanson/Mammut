@@ -17,6 +17,7 @@ dependencies {
 
     implementation project(":base")
     implementation project(":data")
+    implementation project(":emoji")
     api project(":paging")
 
     implementation rootProject.ext.room
@@ -45,6 +46,9 @@ dependencies {
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleLivedataKtx
+
+    implementation rootProject.ext.threetenabp
+
 
     implementation rootProject.ext.anko
 

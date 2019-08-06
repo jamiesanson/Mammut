@@ -69,6 +69,7 @@ dependencies {
     api project(":toot")
     api project(":feed")
     api project(":data")
+    api project(":emoji")
     api project(":notifications")
 
     api rootProject.ext.kotlinRuntime

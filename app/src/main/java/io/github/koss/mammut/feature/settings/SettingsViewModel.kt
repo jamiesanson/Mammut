@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.themes.Theme
+import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.repo.PreferencesRepository
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.settings.model.*
 import kotlinx.coroutines.CoroutineScope

@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feed.ui.toot
 
 import android.content.Context
 import androidx.core.text.HtmlCompat
@@ -13,7 +13,6 @@ import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.repository.TootRepository
-import io.github.koss.mammut.feed.ui.toot.TootViewState
 import kotlinx.coroutines.*
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime

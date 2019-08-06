@@ -2,12 +2,12 @@ package io.github.koss.mammut.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import io.github.koss.mammut.base.util.filterElements
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.InstanceRegistration
-import io.github.koss.mammut.extension.filterElements
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

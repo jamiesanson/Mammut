@@ -9,7 +9,7 @@ import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.viewmodel.ViewModelKey
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedViewModel
-import io.github.koss.mammut.feature.instance.subfeature.feed.TootViewModel
+import io.github.koss.mammut.feed.ui.toot.TootViewModel
 
 @Module
 abstract class FeedViewModelModule {

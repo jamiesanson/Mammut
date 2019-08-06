@@ -21,9 +21,9 @@ import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.themes.Theme
+import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.extension.observe
 import io.github.koss.mammut.feature.settings.dagger.SettingsModule
 import io.github.koss.mammut.feature.settings.dagger.SettingsScope
 import io.github.koss.mammut.feature.settings.model.*

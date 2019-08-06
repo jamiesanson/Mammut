@@ -37,6 +37,7 @@ import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
+import io.github.koss.mammut.feed.util.TootCallbacks
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed_old.*
@@ -273,7 +274,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     private fun onListAvailable(pagedList: PagedList<Status>) {
-        val isFirstLoad = (recyclerView?.adapter as FeedAdapter?)?.currentList == null
+        val isFirstLoad = false //(recyclerView?.adapter as FeedAdapter?)?.currentList == null
         (recyclerView?.adapter as FeedAdapter?)?.submitList(pagedList)
 
         if (isFirstLoad) {

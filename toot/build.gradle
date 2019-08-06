@@ -17,6 +17,7 @@ dependencies {
 
     implementation project(":base")
     implementation project(":data")
+    implementation project(":emoji")
 
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx

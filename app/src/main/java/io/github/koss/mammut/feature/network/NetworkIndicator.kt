@@ -14,8 +14,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.inflate
-import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.extension.postSafely
+import io.github.koss.mammut.base.util.observe
+import io.github.koss.mammut.base.util.postSafely
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.sdk27.coroutines.onClick

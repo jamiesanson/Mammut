@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature.feed
+package io.github.koss.mammut.feed.ui.toot
 
 import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup
@@ -16,14 +16,15 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.koss.mammut.R
+import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.base.util.observe
-import io.github.koss.mammut.component.GlideApp
 import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
+import io.github.koss.mammut.feed.util.TootCallbacks
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*

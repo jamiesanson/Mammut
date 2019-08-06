@@ -3,10 +3,10 @@ package io.github.koss.mammut.feature.instance.subfeature.feed
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.data.database.entities.feed.Status
-import io.github.koss.mammut.extension.awaitFirst
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.feedpaging.*
 import io.github.koss.mammut.base.dagger.scope.FeedScope
+import io.github.koss.mammut.base.util.awaitFirst
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
