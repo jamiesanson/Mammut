@@ -1,5 +1,17 @@
 apply plugin: 'com.android.library'
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath rootProject.ext.sqldelightPlugin
+    }
+}
+
+apply plugin: 'com.squareup.sqldelight'
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -45,8 +57,21 @@ dependencies {
     implementation rootProject.ext.paging
 
     implementation rootProject.ext.arrowCore
+
+    implementation rootProject.ext.sqldelightDriver
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.3.40"
 }
 
 androidExtensions {
     experimental = true
+}
+
+// The following enables Kotlin's inline class support
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+    }
 }

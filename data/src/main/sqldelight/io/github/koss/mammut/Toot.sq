@@ -1,0 +1,43 @@
+import com.sys1yagi.mastodon4j.api.entity.Attachment;
+import com.sys1yagi.mastodon4j.api.entity.Mention;
+import com.sys1yagi.mastodon4j.api.entity.Tag;
+import com.sys1yagi.mastodon4j.api.entity.VideoAttachment;
+import com.sys1yagi.mastodon4j.api.entity.GifvAttachment;
+import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment;
+import io.github.koss.mammut.data.models.Application;
+import io.github.koss.mammut.data.sqldelight.AccountId;
+import io.github.koss.mammut.data.sqldelight.StatusId;
+import java.lang.Boolean;
+import kotlin.collections.List;
+
+CREATE TABLE status (
+    id INTEGER AS StatusId PRIMARY KEY,
+    uri TEXT,
+    url TEXT,
+    in_reply_to_id INTEGER AS StatusId,
+    in_reply_to_account_id INTEGER AS AccountId,
+    reblog_id INTEGER AS StatusId,
+    content TEXT,
+    created_at TEXT,
+    replies_count INTEGER,
+    reblogs_count INTEGER,
+    favourites_count INTEGER,
+    reblogged INTEGER AS Boolean,
+    favourited INTEGER AS Boolean,
+    sensitive INTEGER AS Boolean,
+    spoiler_text TEXT,
+    visibility TEXT,
+    video_attachments TEXT AS List<VideoAttachment>,
+    gifv_attachments TEXT AS List<GifvAttachment>,
+    photo_attachments TEXT AS List<PhotoAttachment>,
+    mentions TEXT AS List<Mention>,
+    tags TEXT AS List<Tag>,
+    application TEXT AS Application,
+    language TEXT,
+    pinned INTEGER AS Boolean
+);
+
+CREATE TABLE account (
+	id INTEGER AS AccountId PRIMARY KEY
+);
+
