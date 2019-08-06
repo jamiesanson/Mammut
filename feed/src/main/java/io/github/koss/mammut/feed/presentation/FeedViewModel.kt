@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feed.domain
+package io.github.koss.mammut.feed.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

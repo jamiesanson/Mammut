@@ -19,21 +19,20 @@ private const val KEY_ACCOUNT_FEED = "account_toots"
 
 sealed class FeedType(
         val key: String,
-        val persistenceEnabled: Boolean,
         val supportsStreaming: Boolean) {
 
     abstract fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>>
 
     abstract fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)?
 
-    object Home: FeedType(KEY_HOME_FEED, true, false) {
+    object Home: FeedType(KEY_HOME_FEED, false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> =
                 Timelines(client)::getHome
     }
 
-    object Local: FeedType(KEY_LOCAL_FEED, true, true) {
+    object Local: FeedType(KEY_LOCAL_FEED, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::localPublic
 
@@ -41,7 +40,7 @@ sealed class FeedType(
                 Public(client)::getLocalPublic
     }
 
-    object Federated: FeedType(KEY_FEDERATED_FEED, false, true) {
+    object Federated: FeedType(KEY_FEDERATED_FEED, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::federatedPublic
 
@@ -49,7 +48,10 @@ sealed class FeedType(
                 Public(client)::getFederatedPublic
     }
 
-    data class AccountToots(val accountId: Long, val withReplies: Boolean): FeedType("${KEY_ACCOUNT_FEED}_${accountId}_$withReplies", false, false) {
+    data class AccountToots(
+        val accountId: Long,
+        val withReplies: Boolean
+    ): FeedType("${KEY_ACCOUNT_FEED}_${accountId}_$withReplies", false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> {

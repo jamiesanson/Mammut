@@ -6,17 +6,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.ui.broken.BrokenTimelineViewHolder
 import io.github.koss.mammut.feed.ui.toot.TootViewHolder
 import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.paging.event.PagingRelay
 
 open class FeedItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
 class FeedAdapter(
         private val viewModelProvider: ViewModelProvider,
         private val tootCallbacks: TootCallbacks,
+        private val pagingRelay: PagingRelay,
         private val onBrokenTimelineResolved: () -> Unit
 ): ListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
 
@@ -46,6 +48,11 @@ class FeedAdapter(
             }
 
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {
+        when (position) {
+            0 -> pagingRelay.startOfDataDisplayed()
+            itemCount - 1 -> pagingRelay.endOfDataDisplayed()
+        }
+
         when (holder) {
             is TootViewHolder -> {
                 // Occasionally when scrolling down quickly, we can get in to race conditions

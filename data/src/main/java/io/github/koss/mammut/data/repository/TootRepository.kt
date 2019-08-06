@@ -3,9 +3,9 @@ package io.github.koss.mammut.data.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.work.*
-import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.extensions.getUniqueWorkTag
 import io.github.koss.mammut.data.extensions.workTag
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.work.WorkConstants
 import io.github.koss.mammut.data.work.containsSuccessfulBoost

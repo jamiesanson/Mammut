@@ -19,7 +19,7 @@ import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.base.util.observe
-import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec

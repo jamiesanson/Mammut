@@ -1,6 +1,6 @@
 package io.github.koss.mammut.data.extensions
 
-import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Status
 
 val Status.workTag: String
     get() = id.toString() + account?.accountId.toString()

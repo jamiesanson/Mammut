@@ -38,6 +38,7 @@ import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileControll
 import io.github.koss.mammut.feature.network.NetworkIndicator
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
 import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed_old.*
@@ -57,6 +58,9 @@ import kotlin.run
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
 class FeedController(args: Bundle) : BaseController(args), ReselectListener, TootCallbacks {
+    override fun onTootClicked(status: io.github.koss.mammut.data.models.Status) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private lateinit var viewModel: FeedViewModel
 
@@ -173,16 +177,13 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
     }
 
-    override fun onTootClicked(status: Status) {
-        comingSoon()
-    }
-
     private fun initialiseRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 
         recyclerView.adapter = FeedAdapter(
                 viewModelProvider = ViewModelProviders.of(view!!.context as AppCompatActivity, factory),
                 tootCallbacks = this,
+                pagingRelay = PagingRelay(),
                 onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)
 
         recyclerView.itemAnimator?.addDuration = 150L
@@ -275,7 +276,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
     private fun onListAvailable(pagedList: PagedList<Status>) {
         val isFirstLoad = false //(recyclerView?.adapter as FeedAdapter?)?.currentList == null
-        (recyclerView?.adapter as FeedAdapter?)?.submitList(pagedList)
+        //(recyclerView?.adapter as FeedAdapter?)?.submitList(pagedList)
 
         if (isFirstLoad) {
             onInitialLoad()

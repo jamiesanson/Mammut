@@ -1,8 +1,8 @@
 package io.github.koss.mammut.data.work
 
 import androidx.work.WorkInfo
-import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.extensions.workTag
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_BOOST
 import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_UNBOOST
 

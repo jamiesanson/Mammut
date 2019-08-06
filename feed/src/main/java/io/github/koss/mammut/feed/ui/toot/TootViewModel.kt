@@ -10,7 +10,7 @@ import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.emoji.EmojiRenderer
 import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.data.converters.toNetworkModel
-import io.github.koss.mammut.data.database.entities.feed.Status
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.repository.TootRepository
 import kotlinx.coroutines.*

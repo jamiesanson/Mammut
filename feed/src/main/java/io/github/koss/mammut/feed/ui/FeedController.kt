@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
@@ -27,8 +29,10 @@ import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.domain.FeedType
-import io.github.koss.mammut.feed.domain.FeedViewModel
+import io.github.koss.mammut.feed.presentation.FeedViewModel
+import io.github.koss.mammut.feed.ui.list.FeedAdapter
 import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -45,6 +49,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     @Inject
     @FeedScope
     lateinit var factory: MammutViewModelFactory
+
+    @Inject
+    @FeedScope
+    lateinit var pagingRelay: PagingRelay
 
     private val accessToken: String by arg(ARG_ACCESS_TOKEN)
     private val type: FeedType by arg(ARG_TYPE)
@@ -83,8 +91,15 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
             progressBar.visibility = View.VISIBLE
         }
 
+        recyclerView.adapter = FeedAdapter(
+            viewModelProvider = ViewModelProviders.of(activity as FragmentActivity),
+            tootCallbacks = this,
+            pagingRelay = pagingRelay,
+            onBrokenTimelineResolved = { TODO() }
+        )
+
         viewModel.feedData.observe(this) {
-            // TODO - Emit to a list
+            (recyclerView.adapter as? FeedAdapter)?.submitList(it)
         }
     }
 
@@ -100,8 +115,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
     }
 
-    override fun onTootClicked(status: Status) {
+    override fun onTootClicked(status: io.github.koss.mammut.data.models.Status) {
         comingSoon()
     }
-
 }
