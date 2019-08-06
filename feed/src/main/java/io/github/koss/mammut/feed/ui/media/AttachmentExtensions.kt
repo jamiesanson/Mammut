@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature.feed.media
+package io.github.koss.mammut.feed.ui.media
 
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment

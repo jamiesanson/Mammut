@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature
+package io.github.koss.mammut.base.navigation
 
 import android.widget.ImageView
 

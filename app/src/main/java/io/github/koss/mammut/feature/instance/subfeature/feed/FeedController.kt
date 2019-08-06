@@ -22,28 +22,25 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.component.retention.retained
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.Account
-import io.github.koss.mammut.extension.comingSoon
 import io.github.koss.mammut.extension.instanceComponent
-import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.feedpaging.FeedState
-import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
+import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.dagger.FeedModule
 import io.github.koss.mammut.base.dagger.scope.FeedScope
-import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.feature.feedpaging.NetworkState
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ReselectListener
+import io.github.koss.mammut.base.navigation.ReselectListener
+import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
+import io.github.koss.mammut.feed.ui.list.FeedAdapter
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.controller_feed.*
-import kotlinx.android.synthetic.main.controller_feed.view.*
+import kotlinx.android.synthetic.main.controller_feed_old.*
+import kotlinx.android.synthetic.main.controller_feed_old.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -96,7 +93,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-            inflater.inflate(R.layout.controller_feed, container, false)
+            inflater.inflate(R.layout.controller_feed_old, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
         // Turns out, in some of Android's new launchers `onSaveInstanceState` can be called without ever

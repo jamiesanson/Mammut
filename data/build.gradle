@@ -32,6 +32,8 @@ dependencies {
     implementation rootProject.ext.workManager
 
     implementation rootProject.ext.room
+    implementation rootProject.ext.roomRx
+    implementation rootProject.ext.roomKtx
     kapt rootProject.ext.roomCompiler
 
     implementation rootProject.ext.mastodon4j

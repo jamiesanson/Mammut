@@ -1,10 +1,10 @@
-package io.github.koss.mammut.feature.instance.subfeature.feed.media
+package io.github.koss.mammut.feed.ui.media
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.koss.mammut.feature.instance.subfeature.feed.TootCallbacks
+import io.github.koss.mammut.feed.util.TootCallbacks
 
 class MediaAdapter(
         private val callbacks: TootCallbacks

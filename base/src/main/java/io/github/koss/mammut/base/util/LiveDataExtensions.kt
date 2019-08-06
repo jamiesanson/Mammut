@@ -1,4 +1,4 @@
-package io.github.koss.mammut.extension
+package io.github.koss.mammut.base.util
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.*

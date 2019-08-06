@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature.feed.media
+package io.github.koss.mammut.feed.ui.media
 
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -25,10 +25,9 @@ import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
-import io.github.koss.mammut.R
+import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
-import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
+import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.util.TootCallbacks
 import kotlinx.android.synthetic.main.media_view_holder.view.*
 import org.jetbrains.anko.imageResource

@@ -22,7 +22,10 @@ typealias FeedLocalSource = LocalDataSource<io.github.koss.mammut.data.database.
 typealias FeedNetworkSource = NetworkDataSource<Status>
 
 @Module(includes = [FeedViewModelModule::class])
-class FeedModule(private val feedType: FeedType) {
+class FeedModule(
+        private val feedType: FeedType,
+        private val uniqueId: String
+) {
 
     @Provides
     @FeedScope
@@ -47,8 +50,8 @@ class FeedModule(private val feedType: FeedType) {
     @Provides
     @FeedScope
     @Named("database_name")
-    fun provideDatabaseName(@Named("instance_name") instanceName: String): String =
-            "status_${feedType.key}_$instanceName"
+    fun provideDatabaseName(): String =
+            "status_${feedType.key}_${uniqueId.take(4)}"
 
     @Provides
     @FeedScope

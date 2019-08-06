@@ -23,6 +23,8 @@ interface InstanceComponent {
 
     fun plus(feedModule: FeedModule): FeedComponent
 
+    fun plus(feedModule: io.github.koss.mammut.feed.dagger.FeedModule): io.github.koss.mammut.feed.dagger.FeedComponent
+
     fun plus(profileModule: ProfileModule): ProfileComponent
 
     fun plus(settingsModule: SettingsModule): SettingsComponent

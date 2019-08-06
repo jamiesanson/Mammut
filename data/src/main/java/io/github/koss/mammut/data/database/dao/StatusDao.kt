@@ -2,9 +2,8 @@ package io.github.koss.mammut.data.database.dao
 
 import androidx.paging.DataSource
 import androidx.room.*
-import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.data.database.entities.feed.Status
-import kotlinx.coroutines.flow.Flow
+import org.reactivestreams.Publisher
 
 @Dao
 interface StatusDao {
@@ -16,10 +15,10 @@ interface StatusDao {
     fun getAllPaged(): DataSource.Factory<Int, Status>
 
     @Query("SELECT * from status ORDER BY createdAt DESC")
-    fun getAllFlow(): Flow<List<Status>>
+    fun getAllAsPublisher(): Publisher<List<Status>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(statuses: List<Status>)
+    fun insertAll(statuses: List<Status>): List<Long>
 
     @Query("SELECT * FROM status ORDER BY createdAt DESC LIMIT 1")
     fun getLatest(): Status?

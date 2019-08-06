@@ -37,7 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
+import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
 import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
@@ -45,7 +45,7 @@ import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.component.helper.InstanceOrderingItemTouchHelper
-import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.extension.*
@@ -56,9 +56,13 @@ import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewStat
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.base.navigation.ReselectListener
+import io.github.koss.mammut.base.util.behaviour
+import io.github.koss.mammut.base.util.startActivity
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.NotificationsController
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -292,6 +296,7 @@ class InstanceController(args: Bundle) : BaseController(args),
         return when (module) {
             is ComposeTootModule -> component.plus(module)
             is NotificationsModule -> component.plus(module)
+            is FeedModule -> component.plus(module)
             else -> throw IllegalArgumentException("Unknown module type")
         } as Subcomponent
     }

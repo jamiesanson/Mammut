@@ -67,6 +67,7 @@ dependencies {
     api project(":base")
     api project(":instances")
     api project(":toot")
+    api project(":feed")
     api project(":data")
     api project(":notifications")
 

@@ -1,9 +1,7 @@
 package io.github.koss.mammut.feed.domain.paging.network
 
 import com.sys1yagi.mastodon4j.MastodonClient
-import com.sys1yagi.mastodon4j.api.Handler
 import com.sys1yagi.mastodon4j.api.Shutdownable
-import com.sys1yagi.mastodon4j.api.entity.Notification
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.paging.network.NetworkDataSource

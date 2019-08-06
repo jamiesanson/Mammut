@@ -17,7 +17,7 @@ dependencies {
 
     implementation project(":base")
     implementation project(":data")
-    implementation project(":paging")
+    api project(":paging")
 
     implementation rootProject.ext.room
     implementation rootProject.ext.roomKtx
@@ -32,6 +32,7 @@ dependencies {
 
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
+    implementation rootProject.ext.coroutinesReactive
 
     implementation rootProject.ext.conductor
     implementation rootProject.ext.conductorArchLifecycle
@@ -43,9 +44,16 @@ dependencies {
     implementation rootProject.ext.mastodon4j
 
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
+    implementation rootProject.ext.lifecycleLivedataKtx
 
     implementation rootProject.ext.anko
 
+    implementation rootProject.ext.exoCore
+    implementation rootProject.ext.exoUi
+
     implementation rootProject.ext.glide
+}
+
+androidExtensions {
+    experimental = true
 }

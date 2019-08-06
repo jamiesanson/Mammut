@@ -1,4 +1,4 @@
-package io.github.koss.mammut.component
+package io.github.koss.mammut.base.util
 
 import android.content.Context
 import android.util.Log
@@ -6,7 +6,7 @@ import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.engine.executor.GlideExecutor
 import com.bumptech.glide.module.AppGlideModule
-import io.github.koss.mammut.BuildConfig
+import io.github.koss.mammut.base.BuildConfig
 
 @GlideModule
 class MammutGlideModule: AppGlideModule() {

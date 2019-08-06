@@ -14,6 +14,7 @@ ext {
     // Dependencies
     kotlinRuntime = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-RC"
+    coroutinesReactive = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.3.0-RC"
     coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0-RC"
 
     // AndroidX
@@ -36,7 +37,7 @@ ext {
     def lifecycle_version = "2.0.0"
     lifecycle = "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     lifecycleRx = "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
-    lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha01"
+    lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha02"
 
     // Anko
     anko = "org.jetbrains.anko:anko:0.10.8"
@@ -68,9 +69,10 @@ ext {
     mastodon4j = 'com.github.jamiesanson.mastodon4j:mastodon4j:61d6faacb1'
 
     // Room
-    def room_version = "2.1.0"
-    room = "android.arch.persistence.room:runtime:$room_version"
+    def room_version = "2.2.0-alpha01"
+    room = "androidx.room:room-runtime:$room_version"
     roomKtx = "androidx.room:room-ktx:$room_version"
+    roomRx = "androidx.room:room-rxjava2:$room_version"
     roomCompiler = "android.arch.persistence.room:compiler:$room_version"
 
     // Retrofit

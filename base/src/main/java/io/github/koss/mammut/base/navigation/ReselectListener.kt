@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.subfeature.navigation
+package io.github.koss.mammut.base.navigation
 
 /**
  * Listener root fragments should implement to handle reselection events

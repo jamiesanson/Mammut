@@ -3,8 +3,8 @@ package io.github.koss.mammut.feature.feedpaging
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.data.database.entities.feed.Status
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.feedpaging.scaffold.Reducible
 import io.github.koss.mammut.feature.feedpaging.scaffold.StateObserver
 import io.github.koss.mammut.feature.feedpaging.scaffold.Store

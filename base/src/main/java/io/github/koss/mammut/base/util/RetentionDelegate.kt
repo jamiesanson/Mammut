@@ -1,4 +1,4 @@
-package io.github.koss.mammut.component.retention
+package io.github.koss.mammut.base.util
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment

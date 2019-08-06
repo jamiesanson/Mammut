@@ -18,7 +18,7 @@ import com.google.android.material.card.MaterialCardView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.themes.ThemeEngine
-import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.themes.Theme
 import io.github.koss.mammut.dagger.application.ApplicationScope
