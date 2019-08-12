@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.base.BaseController
@@ -23,8 +25,8 @@ import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.base.util.comingSoon
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.retained
-import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.mammut.data.models.Account
+import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
@@ -33,6 +35,7 @@ import io.github.koss.mammut.feed.presentation.FeedViewModel
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
 import io.github.koss.mammut.feed.util.TootCallbacks
 import io.github.koss.paging.event.PagingRelay
+import io.github.koss.paging.network.*
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -92,15 +95,19 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         }
 
         recyclerView.adapter = FeedAdapter(
-            viewModelProvider = ViewModelProviders.of(activity as FragmentActivity),
-            tootCallbacks = this,
-            pagingRelay = pagingRelay,
-            onBrokenTimelineResolved = { TODO() }
+                viewModelProvider = ViewModelProviders.of(activity as FragmentActivity, factory),
+                tootCallbacks = this,
+                pagingRelay = pagingRelay,
+                onBrokenTimelineResolved = { TODO() }
         )
+
+        recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 
         viewModel.feedData.observe(this) {
             (recyclerView.adapter as? FeedAdapter)?.submitList(it)
         }
+
+        viewModel.loadingState.observe(this, ::processLoadingState)
     }
 
     override fun onTabReselected() {
@@ -115,7 +122,34 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         (parentController as? FullScreenPhotoHandler)?.displayFullScreenPhoto(imageView, photoUrl)
     }
 
-    override fun onTootClicked(status: io.github.koss.mammut.data.models.Status) {
+    override fun onTootClicked(status: Status) {
         comingSoon()
+    }
+
+    private fun processLoadingState(loadingState: LoadingState) {
+        when (loadingState) {
+            LoadingAtEnd -> {
+                bottomLoadingIndicator.isVisible = true
+            }
+            LoadingAtFront -> {
+                topLoadingIndicator.isVisible = true
+            }
+            LoadingAll -> {
+                progressBar.isVisible = true
+            }
+            NotLoading -> {
+                progressBar.isVisible = false
+                bottomLoadingIndicator.isVisible = false
+                topLoadingIndicator.isVisible = false
+            }
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(type: FeedType): FeedController =
+                FeedController(bundleOf(
+                        ARG_TYPE to type
+                ))
     }
 }

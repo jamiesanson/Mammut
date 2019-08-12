@@ -22,11 +22,7 @@ interface PagingManager<LocalModel, NetworkModel, DomainModel> {
 
     val networkDataSource: NetworkDataSource<NetworkModel>
 
-    fun localToDomain(local: LocalModel): DomainModel
-
-    fun networkToLocal(network: NetworkModel): LocalModel
-
-    fun domainToNetwork(domain: DomainModel): NetworkModel
+    val pagingMapper: PagingMapper<LocalModel, NetworkModel, DomainModel>
 
     /**
      * Simple lifecycle method for activating streaming and relay subscriptions

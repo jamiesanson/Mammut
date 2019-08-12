@@ -37,8 +37,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
@@ -64,6 +62,8 @@ import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feature.settings.SettingsController
 import io.github.koss.mammut.feed.dagger.FeedModule
+import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.feed.ui.FeedController
 import io.github.koss.mammut.notifications.NotificationsController
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository

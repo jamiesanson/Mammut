@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feed.domain
 
+import android.os.Parcelable
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.Handler
@@ -11,6 +12,7 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Public
 import com.sys1yagi.mastodon4j.api.method.Streaming
 import com.sys1yagi.mastodon4j.api.method.Timelines
+import kotlinx.android.parcel.Parcelize
 
 private const val KEY_HOME_FEED = "home"
 private const val KEY_LOCAL_FEED = "local"
@@ -19,12 +21,13 @@ private const val KEY_ACCOUNT_FEED = "account_toots"
 
 sealed class FeedType(
         val key: String,
-        val supportsStreaming: Boolean) {
+        val supportsStreaming: Boolean): Parcelable {
 
     abstract fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>>
 
     abstract fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)?
 
+    @Parcelize
     object Home: FeedType(KEY_HOME_FEED, false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
@@ -32,6 +35,7 @@ sealed class FeedType(
                 Timelines(client)::getHome
     }
 
+    @Parcelize
     object Local: FeedType(KEY_LOCAL_FEED, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::localPublic
@@ -40,6 +44,7 @@ sealed class FeedType(
                 Public(client)::getLocalPublic
     }
 
+    @Parcelize
     object Federated: FeedType(KEY_FEDERATED_FEED, true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
                 Streaming(client)::federatedPublic
@@ -48,6 +53,7 @@ sealed class FeedType(
                 Public(client)::getFederatedPublic
     }
 
+    @Parcelize
     data class AccountToots(
         val accountId: Long,
         val withReplies: Boolean

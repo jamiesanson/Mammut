@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 
 class PagingRelay: BroadcastChannel<PagingEvent> by ConflatedBroadcastChannel() {
 
-    fun endOfDataDisplayed() = offer(DataStartReached)
+    fun endOfDataDisplayed() = offer(DataEndReached)
 
-    fun startOfDataDisplayed() = offer(DataEndReached)
+    fun startOfDataDisplayed() = offer(DataStartReached)
 }

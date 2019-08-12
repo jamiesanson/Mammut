@@ -7,6 +7,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status
 import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.data.database.StatusDatabase
+import io.github.koss.mammut.data.repository.TootRepository
 import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.paging.local.DefaultFeedLocalSource
@@ -101,5 +102,13 @@ class FeedModule(
             localDataSource: FeedLocalSource,
             networkDataSource: FeedNetworkSource): FeedPagingManager {
         return FeedPagingManager(scope, relay, localDataSource, networkDataSource)
+    }
+
+    @Provides
+    @FeedScope
+    fun provideTootRepository(@Named("instance_access_token") accessToken: String,
+                              @Named("instance_name") instanceName: String,
+                              @Named("database_name") databaseName: String): TootRepository {
+        return TootRepository(instanceName = instanceName, instanceAccessToken = accessToken, databaseName = databaseName)
     }
 }
