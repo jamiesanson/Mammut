@@ -39,6 +39,8 @@ ext {
     lifecycleRx = "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
     lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha02"
 
+    viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha03"
+
     // Anko
     anko = "org.jetbrains.anko:anko:0.10.8"
 
@@ -120,7 +122,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

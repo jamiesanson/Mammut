@@ -4,10 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 
 class MediaAdapter(
-        private val callbacks: TootCallbacks
+        private val callbacks: FeedCallbacks
 ): ListAdapter<Attachment<*>, MediaViewHolder>(DIFF_CALLBACK) {
 
     var contentIsSensitive: Boolean = false

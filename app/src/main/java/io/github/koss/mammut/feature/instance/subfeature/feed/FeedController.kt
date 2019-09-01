@@ -37,7 +37,7 @@ import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.feature.network.NetworkIndicator
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
@@ -57,8 +57,12 @@ import kotlin.run
  * *any* pageable status endpoint. So far, I think it is, but I can't be sure.
  */
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class FeedController(args: Bundle) : BaseController(args), ReselectListener, TootCallbacks {
+class FeedController(args: Bundle) : BaseController(args), ReselectListener, FeedCallbacks {
     override fun onTootClicked(status: io.github.koss.mammut.data.models.Status) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onReloadClicked() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -182,9 +186,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
         recyclerView.adapter = FeedAdapter(
                 viewModelProvider = ViewModelProviders.of(view!!.context as AppCompatActivity, factory),
-                tootCallbacks = this,
-                pagingRelay = PagingRelay(),
-                onBrokenTimelineResolved = viewModel::onBrokenTimelineResolved)
+                feedCallbacks = this,
+                pagingRelay = PagingRelay())
 
         recyclerView.itemAnimator?.addDuration = 150L
 
@@ -211,19 +214,19 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
             FeedState.StreamingFromTop -> {
                 // Disable pull to fresh when streaming
                 swipeRefreshLayout.isEnabled = false
-                (recyclerView.adapter as FeedAdapter).setFeedBroken(false)
+                //(recyclerView.adapter as FeedAdapter).setFeedBroken(false)
             }
             FeedState.BrokenTimeline -> {
                 // Insert to front of adapter
                 swipeRefreshLayout.isEnabled = true
-                (recyclerView.adapter as FeedAdapter).setFeedBroken(true)
+                //(recyclerView.adapter as FeedAdapter).setFeedBroken(true)
 
                 if (recyclerView.isNearTop()) {
                     recyclerView.scrollToPosition(0)
                 }
             }
             FeedState.PagingUpwards -> {
-                (recyclerView.adapter as FeedAdapter).setFeedBroken(false)
+                //(recyclerView.adapter as FeedAdapter).setFeedBroken(false)
             }
         }
     }

@@ -32,10 +32,12 @@ import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.mammut.feed.presentation.FeedViewModel
+import io.github.koss.mammut.feed.presentation.state.FeedState
+import io.github.koss.mammut.feed.presentation.state.Loaded
+import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
-import io.github.koss.paging.network.*
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
@@ -45,7 +47,7 @@ const val ARG_ACCESS_TOKEN = "access_token"
 const val ARG_TYPE = "feed_type"
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
-class FeedController(args: Bundle) : BaseController(args), ReselectListener, TootCallbacks {
+class FeedController(args: Bundle) : BaseController(args), ReselectListener, FeedCallbacks {
 
     private lateinit var viewModel: FeedViewModel
 
@@ -96,22 +98,22 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
 
         recyclerView.adapter = FeedAdapter(
                 viewModelProvider = ViewModelProviders.of(activity as FragmentActivity, factory),
-                tootCallbacks = this,
-                pagingRelay = pagingRelay,
-                onBrokenTimelineResolved = { TODO() }
+                feedCallbacks = this,
+                pagingRelay = pagingRelay
         )
 
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 
-        viewModel.feedData.observe(this) {
-            (recyclerView.adapter as? FeedAdapter)?.submitList(it)
-        }
-
-        viewModel.loadingState.observe(this, ::processLoadingState)
+        viewModel.state.observe(this, ::processState)
     }
 
     override fun onTabReselected() {
-        recyclerView?.smoothScrollToPosition(0)
+        // If we're scrolled to the top reload else scroll up
+        if (recyclerView?.computeVerticalScrollOffset() == 0) {
+            viewModel.reload()
+        } else {
+            recyclerView?.smoothScrollToPosition(0)
+        }
     }
 
     override fun onProfileClicked(account: Account) {
@@ -126,23 +128,30 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Too
         comingSoon()
     }
 
-    private fun processLoadingState(loadingState: LoadingState) {
-        when (loadingState) {
-            LoadingAtEnd -> {
-                bottomLoadingIndicator.isVisible = true
-            }
-            LoadingAtFront -> {
-                topLoadingIndicator.isVisible = true
-            }
-            LoadingAll -> {
-                progressBar.isVisible = true
-            }
-            NotLoading -> {
-                progressBar.isVisible = false
-                bottomLoadingIndicator.isVisible = false
-                topLoadingIndicator.isVisible = false
-            }
+    override fun onReloadClicked() {
+        viewModel.reload()
+    }
+
+    private fun processState(state: FeedState) {
+        when (state) {
+            LoadingAll -> showLoadingAll()
+            is Loaded -> showLoaded(state)
         }
+    }
+
+    private fun showLoadingAll() {
+        progressBar.isVisible = true
+        bottomLoadingIndicator.isVisible = false
+        topLoadingIndicator.isVisible = false
+    }
+
+    private fun showLoaded(state: Loaded) {
+        topLoadingIndicator.isVisible = state.loadingAtFront
+        bottomLoadingIndicator.isVisible = state.loadingAtEnd
+
+        progressBar.isVisible = false
+
+        (recyclerView.adapter as FeedAdapter).submitList(state.items)
     }
 
     companion object {

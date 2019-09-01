@@ -26,6 +26,8 @@ dependencies {
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
 
+    implementation rootProject.ext.randux
+
     implementation rootProject.ext.appCompat
     implementation rootProject.ext.constraintLayout
 
@@ -47,8 +49,9 @@ dependencies {
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleLivedataKtx
 
-    implementation rootProject.ext.threetenabp
+    implementation rootProject.ext.viewModelKtx
 
+    implementation rootProject.ext.threetenabp
 
     implementation rootProject.ext.anko
 

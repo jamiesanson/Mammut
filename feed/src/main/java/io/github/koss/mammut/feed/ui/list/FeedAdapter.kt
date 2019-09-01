@@ -6,37 +6,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
+import io.github.koss.mammut.feed.presentation.model.BrokenTimelineModel
+import io.github.koss.mammut.feed.presentation.model.FeedModel
+import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.broken.BrokenTimelineViewHolder
 import io.github.koss.mammut.feed.ui.toot.TootViewHolder
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
 
 open class FeedItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
 class FeedAdapter(
         private val viewModelProvider: ViewModelProvider,
-        private val tootCallbacks: TootCallbacks,
-        private val pagingRelay: PagingRelay,
-        private val onBrokenTimelineResolved: () -> Unit
-): ListAdapter<Status, FeedItemViewHolder>(DIFF_CALLBACK) {
+        private val feedCallbacks: FeedCallbacks,
+        private val pagingRelay: PagingRelay
+): ListAdapter<FeedModel, FeedItemViewHolder>(DIFF_CALLBACK) {
 
     init {
         setHasStableIds(true)
-    }
-
-    private var brokenFeed: Boolean = false
-
-    fun setFeedBroken(isFeedBroken: Boolean) {
-        if (brokenFeed != isFeedBroken) {
-            brokenFeed = isFeedBroken
-            if (isFeedBroken) {
-                notifyItemInserted(0)
-            } else {
-                notifyItemRemoved(0)
-            }
-        }
     }
 
     override fun getItemId(position: Int): Long = getItem(position)?.id ?: 0L
@@ -44,7 +32,7 @@ class FeedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
             when (viewType) {
                 R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
-                else -> TootViewHolder(parent, viewModelProvider, tootCallbacks)
+                else -> TootViewHolder(parent, viewModelProvider, feedCallbacks)
             }
 
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {
@@ -60,23 +48,21 @@ class FeedAdapter(
                 // This statement is a guard for that case.
                 if (position == itemCount) return
 
-                val current = getItem(position) ?: return
+                val current = getItem(position) as? StatusModel ?: return
 
-                holder.bind(current)
+                holder.bind(current.status)
             }
             is BrokenTimelineViewHolder -> {
-                holder.bind(onBrokenTimelineResolved)
+                holder.bind(callbacks = feedCallbacks)
             }
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when {
-        position == 0 && brokenFeed -> R.layout.view_holder_broken_timeline
-        else -> R.layout.view_holder_feed_item
+    override fun getItemViewType(position: Int): Int = when (val item = getItem(position)) {
+        BrokenTimelineModel -> R.layout.view_holder_broken_timeline
+        is StatusModel -> R.layout.view_holder_feed_item
+        else -> throw IllegalArgumentException("No known viewtype for item: $item")
     }
-
-    override fun getItemCount(): Int =
-            super.getItemCount() + if (brokenFeed) 1 else 0
 
     override fun onViewRecycled(holder: FeedItemViewHolder) {
         super.onViewRecycled(holder)
@@ -86,9 +72,14 @@ class FeedAdapter(
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Status>() {
-            override fun areItemsTheSame(oldItem: Status, newItem: Status): Boolean = oldItem.id == newItem.id
-            override fun areContentsTheSame(oldItem: Status, newItem: Status): Boolean = oldItem.content == newItem.content
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FeedModel>() {
+            override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.id == newItem.id
+            override fun areContentsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem == newItem
         }
     }
+}
+
+private val FeedModel.id: Long get() = when (this) {
+    BrokenTimelineModel -> 1L
+    is StatusModel -> this.status.id
 }

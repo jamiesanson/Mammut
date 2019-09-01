@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.*
  * assumes all paging is to be backed with a local data source. It calls out to network data sources
  * based off data fed in via the PagingRelay
  *
- * TODO - investigate why data isn't emitted immediately
+ * TODO - investigate why data isn't emitted immediately (Perhaps use Channel)
  */
 class DefaultPagingManager<LocalModel, NetworkModel, DomainModel>(
         scope: CoroutineScope,

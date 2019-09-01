@@ -24,7 +24,7 @@ import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.*
@@ -34,7 +34,7 @@ import java.util.*
 class TootViewHolder(
         parent: ViewGroup,
         viewModelProvider: ViewModelProvider,
-        private val callbacks: TootCallbacks
+        private val callbacks: FeedCallbacks
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var exoPlayer: SimpleExoPlayer? = null

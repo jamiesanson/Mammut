@@ -42,6 +42,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="8dp"
         android:text="@string/new_toots"
+        android:visibility="gone"
         app:cornerRadius="48dp"/>
 
     <com.airbnb.lottie.LottieAnimationView

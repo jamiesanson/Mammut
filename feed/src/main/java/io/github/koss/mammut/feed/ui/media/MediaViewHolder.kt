@@ -28,7 +28,7 @@ import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.feed.R
-import io.github.koss.mammut.feed.util.TootCallbacks
+import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.media_view_holder.view.*
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -37,7 +37,7 @@ import kotlin.math.sqrt
 
 class MediaViewHolder(
         parent: ViewGroup,
-        private val callbacks: TootCallbacks
+        private val callbacks: FeedCallbacks
 ): RecyclerView.ViewHolder(parent.inflate(R.layout.media_view_holder)) {
 
     private var exoPlayer: SimpleExoPlayer? = null

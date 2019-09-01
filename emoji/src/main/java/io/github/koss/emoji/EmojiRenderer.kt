@@ -1,12 +1,12 @@
 package io.github.koss.emoji
 
-
 import android.content.Context
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ImageSpan
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestOptions.overrideOf
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import kotlin.coroutines.resume
@@ -36,16 +36,20 @@ object EmojiRenderer {
         val result = SpannableStringBuilder().apply {
             append(status)
             foundEmojis.sortedBy { it.first.first }.forEach { (indices, emoji) ->
-                // Load image synchronously
-                val emojiDrawable = Glide.with(context)
-                    .asBitmap()
-                    .load(emoji!!.url)
-                    .apply(overrideOf(lineHeight))
-                    .submit()
-                    .get()
+                try {
+                    // Load image synchronously
+                    val emojiDrawable = Glide.with(context)
+                        .asBitmap()
+                        .load(emoji!!.url)
+                        .apply(overrideOf(lineHeight))
+                        .submit()
+                        .get()
 
-                // Apply image span in place of emoji shortcode
-                setSpan(ImageSpan(context, emojiDrawable), indices.first, indices.second + 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    // Apply image span in place of emoji shortcode
+                    setSpan(ImageSpan(context, emojiDrawable), indices.first, indices.second + 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+                } catch (glideException: GlideException) {
+                    glideException.logRootCauses("EmojiRenderer")
+                }
             }
         }
 
