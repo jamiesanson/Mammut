@@ -7,8 +7,8 @@ sealed class FeedState
 object LoadingAll: FeedState()
 
 data class Loaded(
-    val loadingAtFront: Boolean,
-    val loadingAtEnd: Boolean,
+    val loadingAtFront: Boolean = false,
+    val loadingAtEnd: Boolean = false,
     val items: List<FeedModel>
 ): FeedState()
 

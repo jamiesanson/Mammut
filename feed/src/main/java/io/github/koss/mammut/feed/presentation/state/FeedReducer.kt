@@ -16,18 +16,8 @@ class FeedReducer : Reducer {
             when (state) {
                 LoadingAll -> {
                     when (incomingAction) {
-                        is OnItemStreamed -> {
-                            return@let Loaded(
-                                loadingAtFront = incomingAction.loadingState is LoadingAtFront,
-                                loadingAtEnd = incomingAction.loadingState is LoadingAtEnd,
-                                items = listOf(incomingAction.item.toModel())
-                            )
-                        }
-
                         is OnItemsLoaded -> {
                             return@let Loaded(
-                                loadingAtFront = incomingAction.loadingState is LoadingAtFront,
-                                loadingAtEnd = incomingAction.loadingState is LoadingAtEnd,
                                 items = incomingAction.items.map { it.toModel() }
                             )
                         }
@@ -47,6 +37,26 @@ class FeedReducer : Reducer {
                                 loadingAtEnd = incomingAction.loadingState is LoadingAtEnd
                             )
                         }
+
+                        is OnItemsLoaded -> {
+                            return@let state.copy(
+                                items = incomingAction.items.map { it.toModel() }
+                            )
+                        }
+                    }
+                }
+            }
+
+            when (incomingAction) {
+                is OnLoadingStateChanged -> {
+                    when (state) {
+                        is Loaded -> return@let state.copy(
+                            loadingAtFront = incomingAction.loadingState is LoadingAtFront,
+                            loadingAtEnd = incomingAction.loadingState is LoadingAtEnd)
+                    }
+
+                    when (incomingAction.loadingState) {
+                        is io.github.koss.paging.network.LoadingAll -> return@let LoadingAll
                     }
                 }
             }

@@ -9,6 +9,7 @@ import io.github.koss.mammut.feed.presentation.state.FeedReducer
 import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.presentation.state.OnItemsLoaded
+import io.github.koss.mammut.feed.presentation.state.OnLoadingStateChanged
 import io.github.koss.randux.applyMiddleware
 import io.github.koss.randux.createStore
 import io.github.koss.randux.utils.Store
@@ -44,12 +45,16 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             @Suppress("EXPERIMENTAL_API_USAGE")
             pagingManager.data
-                .zip(pagingManager.loadingState) { items, loading ->
-                    items to loading
-                }
-                .collect { (items, loading) ->
+                .collect { items ->
                     withContext(Dispatchers.Main) {
-                        store.dispatch(OnItemsLoaded(items, loading))
+                        store.dispatch(OnItemsLoaded(items))
+                    }
+                }
+
+            pagingManager.loadingState
+                .collect {
+                    withContext(Dispatchers.Main) {
+                        store.dispatch(OnLoadingStateChanged(it))
                     }
                 }
         }

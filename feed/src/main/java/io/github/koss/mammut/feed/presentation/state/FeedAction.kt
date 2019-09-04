@@ -11,12 +11,6 @@ data class OnLoadingStateChanged(
     val loadingState: LoadingState
 ): FeedAction()
 
-data class OnItemStreamed(
-    val item: Status,
-    val loadingState: LoadingState
-): FeedAction()
-
 data class OnItemsLoaded(
-    val items: List<Status>,
-    val loadingState: LoadingState
+    val items: List<Status>
 ): FeedAction()
