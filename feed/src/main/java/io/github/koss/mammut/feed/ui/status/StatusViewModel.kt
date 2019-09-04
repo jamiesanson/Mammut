@@ -12,6 +12,7 @@ import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.repository.TootRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
@@ -70,7 +72,7 @@ class StatusViewModel @Inject constructor(
         viewState.offer(firstState)
 
         // Begin async work
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             @Suppress("EXPERIMENTAL_API_USAGE")
             tootRepository.getStatusStateLive(status)
                 .asFlow()
@@ -154,7 +156,9 @@ class StatusViewModel @Inject constructor(
     private fun <T> LiveData<T>.asFlow() = channelFlow {
         offer(value)
         val observer = Observer<T> { t -> offer(t) }
-        observeForever(observer)
+        withContext(Dispatchers.Main) {
+            observeForever(observer)
+        }
         awaitClose {
             removeObserver(observer)
         }

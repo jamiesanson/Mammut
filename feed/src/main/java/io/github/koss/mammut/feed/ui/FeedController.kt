@@ -2,6 +2,7 @@ package io.github.koss.mammut.feed.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
+import kotlinx.android.synthetic.main.controller_feed.view.*
 import javax.inject.Inject
 
 const val ARG_ACCESS_TOKEN = "access_token"
@@ -131,6 +133,26 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         viewModel.reload()
     }
 
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        super.onSaveViewState(view, outState)
+        val state = (view.recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
+        outState.putParcelable(STATE_LAYOUT_MANAGER, state)
+        viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
+    }
+
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        super.onRestoreViewState(view, savedViewState)
+        savedViewState.let(::restoreAdapterState)
+    }
+
+    private fun restoreAdapterState(savedInstanceState: Bundle) {
+        savedInstanceState
+            .getParcelable<Parcelable>(STATE_LAYOUT_MANAGER)
+            ?.let { state ->
+                (recyclerView.layoutManager as? LinearLayoutManager)?.onRestoreInstanceState(state)
+            }
+    }
+
     private fun processState(state: FeedState) {
         when (state) {
             LoadingAll -> showLoadingAll()
@@ -159,5 +181,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
                 FeedController(bundleOf(
                         ARG_TYPE to type
                 ))
+
+        private const val STATE_LAYOUT_MANAGER = "state_layout_manager"
     }
 }

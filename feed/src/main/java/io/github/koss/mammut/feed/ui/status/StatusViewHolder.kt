@@ -68,9 +68,16 @@ class StatusViewHolder(
 
     fun bind(status: Status) {
         viewModel = viewModelProvider.get(status.id.toString(), StatusViewModel::class.java)
+
+        // Immediately resize the cell
         setHeightImmediately(status)
 
+        // Submit to the ViewModel to get additional updates
         viewModel?.submitStatus(status)
+
+        // If we're rebinding and we already have a state, use it
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        viewModel!!.viewState.valueOrNull?.let(::renderState)
 
         job?.cancel()
         job = launch {

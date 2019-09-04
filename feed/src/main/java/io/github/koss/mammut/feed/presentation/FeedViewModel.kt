@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feed.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -17,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -69,8 +67,12 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun reload() {
+    fun savePageState(position: Int) {
+        // TODO - Save position in persistence
+    }
 
+    fun reload() {
+        // TODO - Process full reload
     }
 
     override fun onCleared() {
