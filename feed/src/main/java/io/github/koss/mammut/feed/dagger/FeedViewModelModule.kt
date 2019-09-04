@@ -8,7 +8,7 @@ import dagger.multibindings.IntoMap
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.viewmodel.ViewModelKey
 import io.github.koss.mammut.feed.presentation.FeedViewModel
-import io.github.koss.mammut.feed.ui.toot.TootViewModel
+import io.github.koss.mammut.feed.ui.status.StatusViewModel
 
 @Module
 abstract class FeedViewModelModule {
@@ -21,8 +21,8 @@ abstract class FeedViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(TootViewModel::class)
-    abstract fun bindTootViewModel(viewModel: TootViewModel): ViewModel
+    @ViewModelKey(StatusViewModel::class)
+    abstract fun bindStatusViewModel(viewModel: StatusViewModel): ViewModel
 
     @Binds
     @FeedScope

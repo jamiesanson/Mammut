@@ -9,7 +9,6 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
@@ -97,7 +96,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         }
 
         recyclerView.adapter = FeedAdapter(
-                viewModelProvider = ViewModelProviders.of(activity as FragmentActivity, factory),
+                viewModelProvider = ViewModelProviders.of(activity as AppCompatActivity, factory),
                 feedCallbacks = this,
                 pagingRelay = pagingRelay
         )
