@@ -74,7 +74,7 @@ class FeedAdapter(
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FeedModel>() {
             override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.id == newItem.id
-            override fun areContentsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem == newItem
+            override fun areContentsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.content == newItem.content
         }
     }
 }
