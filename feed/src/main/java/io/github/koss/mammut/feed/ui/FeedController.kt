@@ -120,8 +120,14 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         setupRecyclerView()
 
-        viewModel.state.observe(this, ::processState)
-        viewModel.event.observe(this, ::handleEvent)
+        viewModel.state.observe(this) {
+            containerView ?: return@observe
+            processState(it)
+        }
+        viewModel.event.observe(this) {
+            containerView ?: return@observe
+            handleEvent(it)
+        }
     }
 
     override fun onTabReselected() {
@@ -180,6 +186,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
+            containerView ?: return@onScrollChange
+            
             // If we've scrolled to the top of the recyclerView, hide the new toots indicator
             if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
                 if (newTootButton.translationY == 0F) {
