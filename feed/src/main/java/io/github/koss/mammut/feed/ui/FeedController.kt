@@ -6,12 +6,16 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.base.BaseController
@@ -32,6 +36,8 @@ import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.mammut.feed.presentation.FeedViewModel
+import io.github.koss.mammut.feed.presentation.event.FeedEvent
+import io.github.koss.mammut.feed.presentation.event.ItemStreamed
 import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.Loaded
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
@@ -42,6 +48,10 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onScrollChange
 import javax.inject.Inject
 
 const val ARG_ACCESS_TOKEN = "access_token"
@@ -71,6 +81,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         FeedModule(type, uniqueId)
     }
 
+    private val tootButtonHidden: Boolean
+        get() = newTootButton?.translationY != 0f
+
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         (parentController as SubcomponentFactory)
@@ -97,15 +110,18 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             progressBar.visibility = View.VISIBLE
         }
 
-        recyclerView.adapter = FeedAdapter(
-                viewModelProvider = ViewModelProviders.of(activity as AppCompatActivity, factory),
-                feedCallbacks = this,
-                pagingRelay = pagingRelay
-        )
+        newTootButton.doOnPreDraw {
+            if (savedInstanceState?.getBoolean(STATE_NEW_TOOTS_VISIBLE) == true) {
+                showNewTootsIndicator(animate = false)
+            } else {
+                hideNewTootsIndicator(animate = false)
+            }
+        }
 
-        recyclerView.layoutManager = LinearLayoutManager(view!!.context)
+        setupRecyclerView()
 
         viewModel.state.observe(this, ::processState)
+        viewModel.event.observe(this, ::handleEvent)
     }
 
     override fun onTabReselected() {
@@ -137,6 +153,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         super.onSaveViewState(view, outState)
         val state = (view.recyclerView?.layoutManager as? LinearLayoutManager)?.onSaveInstanceState()
         outState.putParcelable(STATE_LAYOUT_MANAGER, state)
+        outState.putBoolean(STATE_NEW_TOOTS_VISIBLE, !tootButtonHidden)
         viewModel.savePageState((recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition())
     }
 
@@ -153,10 +170,49 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             }
     }
 
+    private fun setupRecyclerView() {
+        recyclerView.adapter = FeedAdapter(
+            viewModelProvider = ViewModelProviders.of(activity as AppCompatActivity, factory),
+            feedCallbacks = this,
+            pagingRelay = pagingRelay
+        )
+
+        recyclerView.layoutManager = LinearLayoutManager(view!!.context)
+
+        recyclerView.onScrollChange { _, _, _, _, _ ->
+            // If we've scrolled to the top of the recyclerView, hide the new toots indicator
+            if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
+                if (newTootButton.translationY == 0F) {
+                    hideNewTootsIndicator()
+                }
+            }
+        }
+    }
+
     private fun processState(state: FeedState) {
         when (state) {
             LoadingAll -> showLoadingAll()
             is Loaded -> showLoaded(state)
+        }
+    }
+
+    private fun handleEvent(event: FeedEvent) {
+        when (event) {
+            ItemStreamed -> onItemStreamed()
+        }
+    }
+
+    private fun onItemStreamed() {
+        if (recyclerView.isNearTop()) {
+            // Wait a little while for the insert to occur
+            launch {
+                delay(100)
+                recyclerView?.smoothScrollToPosition(0)
+            }
+        } else {
+            if (tootButtonHidden) {
+                showNewTootsIndicator()
+            }
         }
     }
 
@@ -175,6 +231,40 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         (recyclerView.adapter as FeedAdapter).submitList(state.items)
     }
 
+    private fun showNewTootsIndicator(animate: Boolean = true) {
+        if (animate) {
+            newTootButton.animate()
+                .translationY(0F)
+                .setInterpolator(OvershootInterpolator())
+                .setDuration(300L)
+                .start()
+        } else {
+            newTootButton.translationY = 0F
+        }
+
+        newTootButton.onClick {
+            hideNewTootsIndicator()
+            recyclerView?.smoothScrollToPosition(0)
+        }
+    }
+
+    private fun hideNewTootsIndicator(animate: Boolean = true) {
+        if (animate) {
+            newTootButton.animate()
+                .translationY(-(newTootButton.y + newTootButton.height))
+                .setInterpolator(AccelerateInterpolator())
+                .setDuration(150L)
+                .start()
+        } else {
+            newTootButton.translationY = -(newTootButton.y + newTootButton.height)
+        }
+    }
+
+    private fun RecyclerView.isNearTop(): Boolean =
+        (layoutManager as LinearLayoutManager?)?.run {
+            return@run findFirstVisibleItemPosition() < 3
+        } ?: false
+
     companion object {
         @JvmStatic
         fun newInstance(type: FeedType, accessToken: String): FeedController =
@@ -184,5 +274,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
                 ))
 
         private const val STATE_LAYOUT_MANAGER = "state_layout_manager"
+        private const val STATE_NEW_TOOTS_VISIBLE = "new_toots_visible"
     }
 }

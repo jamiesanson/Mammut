@@ -8,3 +8,5 @@ object DataStartReached: PagingEvent()
 
 object DataEndReached: PagingEvent()
 
+object ItemStreamed: PagingEvent()
+
