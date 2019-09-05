@@ -15,11 +15,13 @@ import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.material.button.MaterialButton
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
+import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
@@ -32,8 +34,10 @@ import kotlinx.android.synthetic.main.view_holder_feed_item.contentWarningVisibi
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.colorAttr
@@ -41,6 +45,7 @@ import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.textColor
 
+@ExperimentalCoroutinesApi
 class StatusViewHolder(
     parent: ViewGroup,
     private val viewModelProvider: ViewModelProvider,
@@ -48,53 +53,40 @@ class StatusViewHolder(
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
     private var exoPlayer: SimpleExoPlayer? = null
-    private var viewModel: StatusViewModel? = null
+    private lateinit var viewModel: StatusViewModel
     private var job: Job? = null
+
+    enum class ButtonState {
+        ACTIVE,
+        INACTIVE,
+        PENDING
+    }
 
     init {
         itemView.onClick {
-            viewModel?.currentStatus?.let(callbacks::onTootClicked)
+            viewModel.currentStatus.status.let(callbacks::onTootClicked)
         }
         profileImageView.onClick {
-            viewModel?.currentStatus?.account?.let(callbacks::onProfileClicked)
+            viewModel.currentStatus.status.account?.let(callbacks::onProfileClicked)
         }
         boostButton.onClick {
-            viewModel?.onBoostClicked()
+            viewModel.onBoostClicked()
         }
         retootButton.onClick {
-            viewModel?.onRetootClicked()
+            viewModel.onRetootClicked()
         }
     }
 
-    fun bind(status: Status) {
+    fun bind(status: StatusModel) {
         viewModel = viewModelProvider.get(status.id.toString(), StatusViewModel::class.java)
-
-        // Immediately resize the cell
-        setHeightImmediately(status)
-
-        // Submit to the ViewModel to get additional updates
-        viewModel?.submitStatus(status)
-
-        // If we're rebinding and we already have a state, use it
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        viewModel!!.viewState.valueOrNull?.let(::renderState)
+        renderState(status)
 
         job?.cancel()
-        job = launch {
-            launch {
-                for (state in viewModel!!.viewState.openSubscription()) {
-                    withContext(Dispatchers.Main) {
-                        renderState(state)
-                    }
-                }
-            }
+        viewModel.onNewModel(status)
 
-            launch {
-                for (time in viewModel!!.timeSince.openSubscription()) {
-                    withContext(Dispatchers.Main) {
-                        timeTextView.text = time
-                    }
-                }
+        job = launch(Dispatchers.Main) {
+            for (item in viewModel.statusOverrides.openSubscription()) {
+                applyOverrides(item)
             }
         }
     }
@@ -107,20 +99,16 @@ class StatusViewHolder(
         exoPlayer?.release()
     }
 
-    private fun setHeightImmediately(status: Status) {
-        if (status.mediaAttachments.isEmpty()) return
-
-        with(ConstraintSet()) {
-            clone(recyclerViewConstraintLayout)
-            setDimensionRatio(attachmentsRecyclerView.id, (status.mediaAttachments.first().getThumbnailSpec() * 1.2F).toString())
-            applyTo(recyclerViewConstraintLayout)
-        }
+    private fun applyOverrides(statusOverrides: StatusOverrides) {
+        timeTextView.text = statusOverrides.submissionTime
+        boostButton.updateState(statusOverrides.isBoosted.toButtonState())
+        retootButton.updateState(statusOverrides.isRetooted.toButtonState())
     }
 
-    private fun renderState(viewState: StatusViewState) {
+    private fun renderState(viewState: StatusModel) {
         viewState.name.let(displayNameTextView::setText)
         viewState.username.let(usernameTextView::setText)
-        viewState.content.let(contentTextView::setText)
+        viewState.renderedContent.let(contentTextView::setText)
 
         when {
             viewState.displayAttachments.isEmpty() ->
@@ -129,35 +117,13 @@ class StatusViewHolder(
                 renderAttachments(viewState.displayAttachments, viewState.isSensitive)
         }
 
-        with (boostButton) {
-            when (viewState.isBoosted) {
-                true -> {
-                    isEnabled = true
-                    textColor = colorAttr(R.attr.colorAccent)
-                }
-                false -> {
-                    isEnabled = true
-                    textColor = colorAttr(R.attr.colorControlNormalTransparent)
-                }
-                null -> isEnabled = false
-            }
-
+        with(boostButton) {
+            boostButton.updateState(viewState.isBoosted.toButtonState())
             text = if (viewState.boostCount > 0) viewState.boostCount.toString() else ""
         }
 
-        with (retootButton) {
-            when (viewState.isRetooted) {
-                true -> {
-                    isEnabled = true
-                    textColor = colorAttr(R.attr.colorAccent)
-                }
-                false -> {
-                    isEnabled = true
-                    textColor = colorAttr(R.attr.colorControlNormalTransparent)
-                }
-                null -> isEnabled = false
-            }
-
+        with(retootButton) {
+            retootButton.updateState(viewState.isRetooted.toButtonState())
             text = if (viewState.retootCount > 0) viewState.retootCount.toString() else ""
         }
 
@@ -183,7 +149,7 @@ class StatusViewHolder(
     }
 
     private fun renderAttachments(attachments: List<Attachment<*>>, isSensitive: Boolean) {
-        with (itemView) {
+        with(itemView) {
             with(ConstraintSet()) {
                 clone(recyclerViewConstraintLayout)
                 setDimensionRatio(attachmentsRecyclerView.id, (attachments.first().getThumbnailSpec() * 1.2F).toString())
@@ -205,11 +171,11 @@ class StatusViewHolder(
         }
     }
 
-    private fun setupSpoiler(state: StatusViewState) = with(itemView) {
+    private fun setupSpoiler(state: StatusModel) = with(itemView) {
         contentWarningTextView.text = state.spoilerText
         contentWarningTextView.isVisible = state.spoilerText.isNotEmpty()
         contentWarningVisibilityButton.isVisible = state.spoilerText.isNotEmpty()
-        viewModel?.isContentVisible = state.spoilerText.isEmpty()
+        viewModel.isContentVisible = state.spoilerText.isEmpty()
 
         fun renderContentVisibility(transition: Boolean) {
             if (transition) {
@@ -217,18 +183,18 @@ class StatusViewHolder(
             }
 
             // Change visibility
-            contentTextView.isVisible = viewModel?.isContentVisible ?: true
+            contentTextView.isVisible = viewModel.isContentVisible
             val hideImageView = state.displayAttachments.isNotEmpty()
-            if (hideImageView) attachmentsRecyclerView.isVisible = viewModel?.isContentVisible ?: true
+            if (hideImageView) attachmentsRecyclerView.isVisible = viewModel.isContentVisible
 
             // Change button icon
             contentWarningVisibilityButton.imageResource =
-                if (viewModel?.isContentVisible == true) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
+                if (viewModel.isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
         }
 
         if (state.spoilerText.isNotEmpty()) {
             contentWarningVisibilityButton.onClick {
-                viewModel?.let {
+                viewModel.let {
                     it.isContentVisible = !it.isContentVisible
                 }
                 renderContentVisibility(transition = true)
@@ -236,5 +202,25 @@ class StatusViewHolder(
         }
 
         renderContentVisibility(false)
+    }
+
+    private fun Boolean?.toButtonState(): ButtonState = when (this) {
+        true -> ButtonState.ACTIVE
+        false -> ButtonState.INACTIVE
+        null -> ButtonState.PENDING
+    }
+
+    private fun MaterialButton.updateState(state: ButtonState) {
+        when (state) {
+            ButtonState.ACTIVE -> {
+                isEnabled = true
+                textColor = colorAttr(R.attr.colorAccent)
+            }
+            ButtonState.INACTIVE -> {
+                isEnabled = true
+                textColor = colorAttr(R.attr.colorControlNormalTransparent)
+            }
+            ButtonState.PENDING -> isEnabled = false
+        }
     }
 }

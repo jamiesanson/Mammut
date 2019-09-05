@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feed.presentation
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.presentation.state.OnItemsLoaded
 import io.github.koss.mammut.feed.presentation.state.OnLoadingStateChanged
+import io.github.koss.mammut.feed.presentation.status.StatusRenderingMiddleware
 import io.github.koss.randux.applyMiddleware
 import io.github.koss.randux.createStore
 import io.github.koss.randux.utils.Store
@@ -21,13 +23,15 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FeedViewModel @Inject constructor(
-        private val pagingManager: FeedPagingManager
-): ViewModel() {
+    applicationContext: Context,
+    private val pagingManager: FeedPagingManager
+) : ViewModel() {
 
     private val store: Store = createStore(
         reducer = FeedReducer(),
-        enhancer = applyMiddleware(),
-        preloadedState = LoadingAll)
+        enhancer = applyMiddleware(StatusRenderingMiddleware(viewModelScope, applicationContext)),
+        preloadedState = LoadingAll
+    )
 
     init {
         pagingManager.activate()
@@ -56,7 +60,6 @@ class FeedViewModel @Inject constructor(
                     }
                 }
         }
-
     }
 
     private val stateRelay = Channel<FeedState>(capacity = CONFLATED)

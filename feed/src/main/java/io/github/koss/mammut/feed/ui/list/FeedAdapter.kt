@@ -31,7 +31,7 @@ class FeedAdapter(
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int): Long = getItem(position)?.id ?: 0L
+    override fun getItemId(position: Int): Long = getItem(position)?.feedId ?: 0L
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
             when (viewType) {
@@ -54,7 +54,7 @@ class FeedAdapter(
 
                 val current = getItem(position) as? StatusModel ?: return
 
-                holder.bind(current.status)
+                holder.bind(current)
             }
             is BrokenTimelineViewHolder -> {
                 holder.bind(callbacks = feedCallbacks)
@@ -84,13 +84,13 @@ class FeedAdapter(
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FeedModel>() {
-            override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.id == newItem.id
+            override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.feedId == newItem.feedId
             override fun areContentsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.content == newItem.content
         }
     }
 }
 
-private val FeedModel.id: Long get() = when (this) {
+private val FeedModel.feedId: Long get() = when (this) {
     BrokenTimelineModel -> 1L
-    is StatusModel -> this.status.id
+    is StatusModel -> this.id
 }

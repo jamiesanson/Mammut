@@ -1,144 +1,85 @@
 package io.github.koss.mammut.feed.ui.status
 
-import android.content.Context
-import androidx.core.text.HtmlCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sys1yagi.mastodon4j.api.entity.Attachment
-import io.github.koss.emoji.EmojiRenderer
-import io.github.koss.mammut.data.converters.toNetworkModel
-import io.github.koss.mammut.data.models.Status
-import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.repository.TootRepository
+import io.github.koss.mammut.feed.presentation.model.StatusModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
+@Suppress("EXPERIMENTAL_API_USAGE")
 class StatusViewModel @Inject constructor(
-    private val context: Context,
     private val tootRepository: TootRepository
 ): ViewModel() {
 
-    @Suppress("EXPERIMENTAL_API_USAGE")
-    val viewState: ConflatedBroadcastChannel<StatusViewState> = ConflatedBroadcastChannel()
-
-    @Suppress("EXPERIMENTAL_API_USAGE")
-    val timeSince: ConflatedBroadcastChannel<String> = ConflatedBroadcastChannel()
+    val statusOverrides = ConflatedBroadcastChannel(value = StatusOverrides())
 
     // Transient state used by the View
     var isContentVisible = false
 
-    var currentStatus: Status? by Delegates.observable<Status?>(initialValue = null) { _, old, new ->
-        if (old != new) {
-            new?.let(::onNewStatus)
-        }
-    }
+    lateinit var currentStatus: StatusModel
 
-    fun submitStatus(status: Status) {
-        currentStatus = status
-    }
+    private val job: Job = Job()
 
     fun onBoostClicked() {
         viewModelScope.launch {
-            tootRepository.toggleBoostForStatus(currentStatus!!)
+            tootRepository.toggleBoostForStatus(currentStatus.status)
         }
     }
 
     fun onRetootClicked() {
         viewModelScope.launch {
-            tootRepository.toggleRetootForStatus(currentStatus!!)
+            tootRepository.toggleRetootForStatus(currentStatus.status)
         }
     }
 
-    private fun onNewStatus(status: Status) {
-        val firstState = processMinimal(status)
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        viewState.offer(firstState)
+    fun onNewModel(model: StatusModel) {
+        job.cancelChildren()
+        currentStatus = model
 
-        // Begin async work
-        viewModelScope.launch(Dispatchers.IO) {
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            tootRepository.getStatusStateLive(status)
-                .asFlow()
-                .filterNotNull()
-                .map { (status, state) -> processStatus(status, state) }
-                .collect {
-                    viewState.offer(it)
-                }
+        // Process submission time
+        viewModelScope.launch(job) {
+            val submissionTime = ZonedDateTime.parse(model.createdAt)
 
-            // Increment time since
-            processSubmissionTime(status)
-        }
-    }
-
-    private fun processMinimal(status: Status): StatusViewState {
-        val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName)
-            ?: ""
-        val username = "@${status.account?.acct ?: status.account?.userName}"
-        val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-
-        return StatusViewState(name, username, content, status.mediaAttachments,
-            avatar = status.account?.avatar!!,
-            spoilerText = status.spoilerText,
-            isSensitive = status.isSensitive,
-            isRetooted = false,
-            isBoosted = false,
-            retootCount = status.reblogsCount,
-            boostCount = status.favouritesCount)
-    }
-
-    private suspend fun processStatus(status: Status, state: StatusState): StatusViewState = coroutineScope {
-        val name = (if (status.account?.displayName?.isEmpty() == true) status.account!!.acct else status.account?.displayName)
-            ?: ""
-        val username = "@${status.account?.acct ?: status.account?.userName}"
-
-        val content = HtmlCompat.fromHtml(status.content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
-
-
-        // Post the HTML rendered content first such that it displays earlier.
-        val renderedContent = EmojiRenderer.render(context, content, emojis = status.emojis?.map { it.toNetworkModel() }
-                ?: emptyList())
-
-        return@coroutineScope StatusViewState(
-            name,
-            username,
-            renderedContent,
-            status.mediaAttachments,
-            avatar = status.account?.avatar!!,
-            spoilerText = status.spoilerText,
-            isSensitive = status.isSensitive,
-            isRetooted = status.isReblogged.takeUnless { state.isRetootPending },
-            isBoosted = status.isFavourited.takeUnless { state.isBoostPending },
-            retootCount = status.reblogsCount,
-            boostCount = status.favouritesCount
-        )
-    }
-
-    private suspend fun processSubmissionTime(status: Status) = coroutineScope {
-        val submissionTime = ZonedDateTime.parse(status.createdAt)
-
-        launch {
             while (true) {
                 val timeSinceSubmission = Duration.between(submissionTime, ZonedDateTime.now())
-                timeSince.offer(timeSinceSubmission.toElapsedTime())
+                val newOverrides = statusOverrides.value.copy(submissionTime = timeSinceSubmission.toElapsedTime())
+                statusOverrides.send(newOverrides)
                 delay(1000)
             }
+        }
+
+        // Process boost/retoot state
+        viewModelScope.launch(job) {
+            tootRepository.getStatusStateLive(model.status)
+                .asFlow()
+                .filterNotNull()
+                .collect { (status, state) ->
+                    currentStatus = currentStatus.copy(status = status)
+
+                    val newOverrides = statusOverrides.value.copy(
+                        isBoosted = status.isFavourited.takeUnless { state.isBoostPending },
+                        isRetooted = status.isReblogged.takeUnless { state.isRetootPending }
+                    )
+
+                    statusOverrides.send(newOverrides)
+                }
         }
     }
 
@@ -166,16 +107,8 @@ class StatusViewModel @Inject constructor(
 
 }
 
-data class StatusViewState(
-    val name: String,
-    val username: String,
-    val content: CharSequence,
-    val displayAttachments: List<Attachment<*>>,
-    val isRetooted: Boolean?,
-    val isBoosted: Boolean?,
-    val avatar: String,
-    val spoilerText: String,
-    val isSensitive: Boolean,
-    val boostCount: Int,
-    val retootCount: Int
+data class StatusOverrides(
+    val isRetooted: Boolean? = null,
+    val isBoosted: Boolean? = null,
+    val submissionTime: String = ""
 )

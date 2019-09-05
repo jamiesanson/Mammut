@@ -9,6 +9,7 @@ import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.data.models.StatusState
 import io.github.koss.mammut.data.work.WorkConstants
 import io.github.koss.mammut.data.work.containsSuccessfulBoost
+import io.github.koss.mammut.data.work.containsSuccessfulRetoot
 import io.github.koss.mammut.data.work.containsSuccessfulUnboost
 import io.github.koss.mammut.data.work.hasPendingBoostFor
 import io.github.koss.mammut.data.work.tootinteraction.TootInteractionWorker
@@ -32,6 +33,11 @@ class TootRepository(
                             it.containsSuccessfulBoost(status) -> true
                             it.containsSuccessfulUnboost(status) -> false
                             else -> status.isFavourited
+                        },
+                        isReblogged = when {
+                            it.containsSuccessfulRetoot(status) -> true
+                            it.containsSuccessfulUnboost(status) -> false
+                            else -> status.isReblogged
                         }
                 ) to it.toStatusState(status)
             }

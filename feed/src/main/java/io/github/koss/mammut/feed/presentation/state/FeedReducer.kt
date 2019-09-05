@@ -1,8 +1,6 @@
 package io.github.koss.mammut.feed.presentation.state
 
-import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.presentation.model.BrokenTimelineModel
-import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.paging.network.LoadingAtEnd
 import io.github.koss.paging.network.LoadingAtFront
 import io.github.koss.randux.utils.Action
@@ -16,9 +14,9 @@ class FeedReducer : Reducer {
             when (state) {
                 LoadingAll -> {
                     when (incomingAction) {
-                        is OnItemsLoaded -> {
+                        is OnItemsRendered -> {
                             return@let Loaded(
-                                items = incomingAction.items.map { it.toModel() }
+                                items = incomingAction.renderedItems
                             )
                         }
                     }
@@ -38,9 +36,9 @@ class FeedReducer : Reducer {
                             )
                         }
 
-                        is OnItemsLoaded -> {
+                        is OnItemsRendered -> {
                             return@let state.copy(
-                                items = incomingAction.items.map { it.toModel() }
+                                items = incomingAction.renderedItems
                             )
                         }
                     }
@@ -63,6 +61,4 @@ class FeedReducer : Reducer {
 
             return@let null
         } ?: currentState
-
-    private fun Status.toModel(): StatusModel = StatusModel(this)
 }

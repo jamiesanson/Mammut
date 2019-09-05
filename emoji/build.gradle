@@ -16,6 +16,8 @@ dependencies {
 
     implementation rootProject.ext.kotlinRuntime
 
+    implementation rootProject.ext.coroutinesCore
+
     implementation rootProject.ext.mastodon4j
 
     implementation rootProject.ext.glide
