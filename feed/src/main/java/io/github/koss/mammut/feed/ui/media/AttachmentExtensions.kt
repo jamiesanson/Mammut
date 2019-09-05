@@ -32,3 +32,9 @@ fun Attachment<*>.getThumbnailSpec(): Float {
         else -> throw IllegalArgumentException("Unknown attachment type")
     }
 }
+
+fun processSpec(attachment: Attachment<*>): Float {
+    @Suppress("RedundantRequireNotNullCall")
+    checkNotNull(attachment)
+    return attachment.getThumbnailSpec()
+}

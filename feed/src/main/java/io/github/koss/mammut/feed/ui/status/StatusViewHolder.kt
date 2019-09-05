@@ -25,6 +25,7 @@ import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
+import io.github.koss.mammut.feed.ui.media.processSpec
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.view_holder_feed_item.*
 import kotlinx.android.synthetic.main.view_holder_feed_item.attachmentsRecyclerView
@@ -152,7 +153,7 @@ class StatusViewHolder(
         with(itemView) {
             with(ConstraintSet()) {
                 clone(recyclerViewConstraintLayout)
-                setDimensionRatio(attachmentsRecyclerView.id, (attachments.first().getThumbnailSpec() * 1.2F).toString())
+                setDimensionRatio(attachmentsRecyclerView.id, (processSpec(attachments.first()) * 1.2F).toString())
                 applyTo(recyclerViewConstraintLayout)
             }
 

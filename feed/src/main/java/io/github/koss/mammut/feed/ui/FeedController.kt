@@ -207,7 +207,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             // Wait a little while for the insert to occur
             launch {
                 delay(100)
-                recyclerView?.smoothScrollToPosition(0)
+                containerView?.recyclerView?.smoothScrollToPosition(0)
             }
         } else {
             if (tootButtonHidden) {

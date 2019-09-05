@@ -10,6 +10,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestOptions.overrideOf
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import kotlinx.coroutines.coroutineScope
+import java.lang.Exception
 
 /**
  * Emoji rendering class, used to encapsulate logic around loading and displaying emoji
@@ -46,8 +47,9 @@ object EmojiRenderer {
 
                     // Apply image span in place of emoji shortcode
                     setSpan(ImageSpan(context, emojiDrawable), indices.first, indices.second + 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
-                } catch (glideException: GlideException) {
-                    glideException.logRootCauses("EmojiRenderer")
+                } catch (exception: Exception) {
+                    // If an exception occurs, who cares. Log the exception and keep going.
+                    (exception as? GlideException)?.logRootCauses("EmojiRenderer")
                 }
             }
         }
