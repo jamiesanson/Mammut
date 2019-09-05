@@ -188,7 +188,9 @@ class InstanceController(args: Bundle) : BaseController(args),
         if (routerStates.size() == 0) {
             // Select the first item
             currentSelectedItemId = R.id.homeDestination
-            childRouter.setRoot(RouterTransaction.with(FeedController.newInstance(FeedType.Home)))
+            childRouter.setRoot(RouterTransaction.with(
+                FeedController.newInstance(FeedType.Home, accessToken = component.accessToken()))
+            )
         } else {
             // We have something in the back stack. Maybe an orientation change happen?
             // We can just rebind the current router
@@ -224,9 +226,9 @@ class InstanceController(args: Bundle) : BaseController(args),
 
     private fun selectTabById(menuItemId: Int): Boolean {
         val controller = when (menuItemId) {
-            Tab.Home.menuItemId -> FeedController.newInstance(FeedType.Home)
-            Tab.Local.menuItemId -> FeedController.newInstance(FeedType.Local)
-            Tab.Federated.menuItemId -> FeedController.newInstance(FeedType.Federated)
+            Tab.Home.menuItemId -> FeedController.newInstance(FeedType.Home, accessToken = component.accessToken())
+            Tab.Local.menuItemId -> FeedController.newInstance(FeedType.Local, accessToken = component.accessToken())
+            Tab.Federated.menuItemId -> FeedController.newInstance(FeedType.Federated, accessToken = component.accessToken())
             Tab.Notification.menuItemId -> NotificationsController.newInstance(accessToken = component.accessToken()).apply { targetController = this@InstanceController }
             else -> return false
         }

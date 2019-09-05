@@ -177,9 +177,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
     companion object {
         @JvmStatic
-        fun newInstance(type: FeedType): FeedController =
+        fun newInstance(type: FeedType, accessToken: String): FeedController =
                 FeedController(bundleOf(
-                        ARG_TYPE to type
+                        ARG_TYPE to type,
+                        ARG_ACCESS_TOKEN to accessToken
                 ))
 
         private const val STATE_LAYOUT_MANAGER = "state_layout_manager"
