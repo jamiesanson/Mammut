@@ -62,6 +62,7 @@ class TootRepository(
             val workRequest = newTootInteractionRequest(status, toggleAction)
                     .addTag(toggleAction.workTag)
                     .addTag(status.workTag)
+                    .addTag("mammut")
                     .build()
 
             WorkManager.getInstance().enqueueUniqueWork(
@@ -89,6 +90,7 @@ class TootRepository(
             val workRequest = newTootInteractionRequest(status, toggleAction)
                     .addTag(toggleAction.workTag)
                     .addTag(status.workTag)
+                    .addTag("mammut")
                     .build()
 
             WorkManager.getInstance().enqueueUniqueWork(

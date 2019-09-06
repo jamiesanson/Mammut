@@ -59,6 +59,7 @@ class TriStateButton @JvmOverloads constructor(
         }
 
         imageView.setImageDrawable(activeDrawable)
+        imageView.setColorFilter(colorAttr(R.attr.colorAccent))
         progressBar.isVisible = false
     }
 

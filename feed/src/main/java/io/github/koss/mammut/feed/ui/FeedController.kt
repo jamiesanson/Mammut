@@ -11,6 +11,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnLayout
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
@@ -110,7 +111,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             progressBar.visibility = View.VISIBLE
         }
 
-        newTootButton.doOnPreDraw {
+        containerView?.doOnLayout {
             if (savedInstanceState?.getBoolean(STATE_NEW_TOOTS_VISIBLE) == true) {
                 showNewTootsIndicator(animate = false)
             } else {

@@ -60,6 +60,7 @@ import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.startActivity
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.feature.pending.PendingWorkController
 import io.github.koss.mammut.feature.settings.SettingsController
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.domain.FeedType
@@ -457,6 +458,15 @@ class InstanceController(args: Bundle) : BaseController(args),
                             .with(SettingsController())
                             .popChangeHandler(VerticalChangeHandler())
                             .pushChangeHandler(VerticalChangeHandler()))
+        }
+
+        view.pendingWorkCell.onClick {
+            collapseBottomSheet()
+            parentController?.router?.pushController(
+                RouterTransaction
+                    .with(PendingWorkController())
+                    .popChangeHandler(VerticalChangeHandler())
+                    .pushChangeHandler(VerticalChangeHandler()))
         }
 
         view.aboutAppCell.onClick {
