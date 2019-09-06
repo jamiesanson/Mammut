@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">feed</string>
     <string name="new_toots">New toots</string>
+    <string name="profile_picture_content_descrption">Profile picture</string>
 </resources>

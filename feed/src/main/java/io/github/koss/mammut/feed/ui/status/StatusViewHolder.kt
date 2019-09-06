@@ -26,6 +26,7 @@ import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
 import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.ui.media.processSpec
+import io.github.koss.mammut.feed.ui.view.TriStateButton
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.view_holder_feed_item.*
 import kotlinx.android.synthetic.main.view_holder_feed_item.attachmentsRecyclerView
@@ -57,12 +58,6 @@ class StatusViewHolder(
     private lateinit var viewModel: StatusViewModel
     private var job: Job? = null
 
-    enum class ButtonState {
-        ACTIVE,
-        INACTIVE,
-        PENDING
-    }
-
     init {
         itemView.onClick {
             viewModel.currentStatus.status.let(callbacks::onTootClicked)
@@ -76,6 +71,8 @@ class StatusViewHolder(
         retootButton.onClick {
             viewModel.onRetootClicked()
         }
+
+        replyButton.updateState(TriStateButton.State.INACTIVE)
     }
 
     fun bind(status: StatusModel) {
@@ -205,23 +202,9 @@ class StatusViewHolder(
         renderContentVisibility(false)
     }
 
-    private fun Boolean?.toButtonState(): ButtonState = when (this) {
-        true -> ButtonState.ACTIVE
-        false -> ButtonState.INACTIVE
-        null -> ButtonState.PENDING
-    }
-
-    private fun MaterialButton.updateState(state: ButtonState) {
-        when (state) {
-            ButtonState.ACTIVE -> {
-                isEnabled = true
-                textColor = colorAttr(R.attr.colorAccent)
-            }
-            ButtonState.INACTIVE -> {
-                isEnabled = true
-                textColor = colorAttr(R.attr.colorControlNormalTransparent)
-            }
-            ButtonState.PENDING -> isEnabled = false
-        }
+    private fun Boolean?.toButtonState(): TriStateButton.State = when (this) {
+        true -> TriStateButton.State.ACTIVE
+        false -> TriStateButton.State.INACTIVE
+        null -> TriStateButton.State.PENDING
     }
 }

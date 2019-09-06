@@ -26,7 +26,8 @@ class DefaultFeedNetworkSource(
 
         when (val result = builder(range).run()) {
             is Either.Left -> {
-                throw Exception("Failed to load more results with config $config. Error: ${result.a}")
+                //throw Exception("Failed to load more results with config $config. Error: ${result.a}")
+                return@coroutineScope emptyList<Status>()
             }
             is Either.Right -> {
                 return@coroutineScope result.b.part

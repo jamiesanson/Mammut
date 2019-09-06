@@ -26,7 +26,7 @@
             android:background="@drawable/accent_ripple"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="8dp"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.Guideline
@@ -204,68 +204,47 @@
                 app:srcCompat="@drawable/ic_visibility_off_black_24dp"
                 tools:visibility="visible" />
 
-            <com.google.android.material.button.MaterialButton
+            <io.github.koss.mammut.feed.ui.view.TriStateButton
                 android:id="@+id/boostButton"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:textColor="?attr/colorControlNormalTransparent"
-                app:backgroundTint="@android:color/transparent"
-                app:icon="@drawable/ic_star_border_black_24dp"
-                android:text=""
-                android:textAlignment="textStart"
-                app:iconGravity="start"
-                app:iconTint="?attr/colorControlNormalTransparent"
+                app:activeIcon="@drawable/ic_star_filled_black_24dp"
+                app:inactiveIcon="@drawable/ic_star_empty_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
                 app:layout_constraintVertical_bias="0.0"
-                app:layout_constraintStart_toEndOf="@id/retootButton"
-                app:rippleColor="?attr/colorAccent"
-                app:strokeColor="?attr/colorControlNormalTransparent" />
+                app:layout_constraintStart_toEndOf="@id/retootButton" />
 
-            <com.google.android.material.button.MaterialButton
+            <io.github.koss.mammut.feed.ui.view.TriStateButton
                 android:id="@+id/retootButton"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:textSize="14sp"
-                android:textColor="?attr/colorControlNormalTransparent"
-                app:backgroundTint="@android:color/transparent"
-                app:icon="@drawable/ic_cached_black_24dp"
-                app:iconGravity="start"
-                app:iconTint="?attr/colorControlNormalTransparent"
+                app:activeIcon="@drawable/ic_cached_black_24dp"
+                app:inactiveIcon="@drawable/ic_cached_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/boostButton"
                 app:layout_constraintStart_toEndOf="@+id/replyButton"
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
-                app:layout_constraintVertical_bias="0.0"
-                app:rippleColor="?attr/colorAccent"
-                app:strokeColor="?attr/colorControlNormalTransparent" />
+                app:layout_constraintVertical_bias="0.0" />
 
-            <com.google.android.material.button.MaterialButton
+            <io.github.koss.mammut.feed.ui.view.TriStateButton
                 android:id="@+id/replyButton"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:textColor="?attr/colorControlNormalTransparent"
-                app:backgroundTint="@android:color/transparent"
-                app:icon="@drawable/ic_round_reply_24dp"
-                app:iconGravity="start"
-                app:iconTint="?attr/colorControlNormalTransparent"
+                app:activeIcon="@drawable/ic_round_reply_24dp"
+                app:inactiveIcon="@drawable/ic_round_reply_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/retootButton"
                 app:layout_constraintStart_toStartOf="@+id/nameLayout"
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewConstraintLayout"
-                app:layout_constraintVertical_bias="0.0"
-                app:rippleColor="?attr/colorAccent"
-                app:strokeColor="?attr/colorControlNormalTransparent" />
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

@@ -56,6 +56,7 @@ import kotlin.run
  * Controller used to display a feed. TODO - This needs to be generic enough to be started with
  * *any* pageable status endpoint. So far, I think it is, but I can't be sure.
  */
+@Deprecated(message = "Deprecated in favour of redesigned FeedController")
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
 class FeedController(args: Bundle) : BaseController(args), ReselectListener, FeedCallbacks {
     override fun onTootClicked(status: io.github.koss.mammut.data.models.Status) {
