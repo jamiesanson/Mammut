@@ -53,12 +53,21 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onScrollChange
+import org.jetbrains.anko.support.v4.onRefresh
 import javax.inject.Inject
 
 const val ARG_ACCESS_TOKEN = "access_token"
 const val ARG_TYPE = "feed_type"
 
-@ContainerOptions(cache = CacheImplementation.NO_CACHE)
+/**
+ * This class is the Controller responsible for displaying a feed.
+ *
+ * The things needed to be added from the old one:
+ * * Pull to refresh
+ * * Full screen loading state
+ * * Don't show the loading indicator when at the top
+ * * Position persistence
+ */
 class FeedController(args: Bundle) : BaseController(args), ReselectListener, FeedCallbacks {
 
     private lateinit var viewModel: FeedViewModel
@@ -111,15 +120,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             progressBar.visibility = View.VISIBLE
         }
 
-        containerView?.doOnLayout {
-            if (savedInstanceState?.getBoolean(STATE_NEW_TOOTS_VISIBLE) == true) {
-                showNewTootsIndicator(animate = false)
-            } else {
-                hideNewTootsIndicator(animate = false)
-            }
-        }
-
         setupRecyclerView()
+        setupSwipeToRefresh()
 
         viewModel.state.observe(this) {
             containerView ?: return@observe
@@ -167,6 +169,17 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
         super.onRestoreViewState(view, savedViewState)
         savedViewState.let(::restoreAdapterState)
+        savedViewState.let(::restoreNewTootIndicatorState)
+    }
+
+    private fun restoreNewTootIndicatorState(savedInstanceState: Bundle) {
+        containerView?.doOnLayout {
+            if (savedInstanceState.getBoolean(STATE_NEW_TOOTS_VISIBLE)) {
+                showNewTootsIndicator(animate = false)
+            } else {
+                hideNewTootsIndicator(animate = false)
+            }
+        }
     }
 
     private fun restoreAdapterState(savedInstanceState: Bundle) {
@@ -198,6 +211,12 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         }
     }
 
+    private fun setupSwipeToRefresh() {
+        swipeRefreshLayout.onRefresh {
+            viewModel.reload()
+        }
+    }
+
     private fun processState(state: FeedState) {
         when (state) {
             LoadingAll -> showLoadingAll()
@@ -216,7 +235,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             // Wait a little while for the insert to occur
             launch {
                 delay(100)
-                containerView?.recyclerView?.smoothScrollToPosition(0)
+                if (recyclerView?.isAttachedToWindow == true) {
+                    containerView?.recyclerView?.smoothScrollToPosition(0)
+                }
             }
         } else {
             if (tootButtonHidden) {
