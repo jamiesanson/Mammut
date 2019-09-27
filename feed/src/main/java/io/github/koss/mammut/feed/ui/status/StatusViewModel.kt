@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feed.ui.status
 
+import androidx.core.text.PrecomputedTextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel

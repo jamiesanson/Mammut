@@ -4,6 +4,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.isVisible
@@ -108,14 +109,13 @@ class StatusViewHolder(
         viewState.name.let(displayNameTextView::setText)
         viewState.username.let(usernameTextView::setText)
 
-        // PreCompute text content off the main thread
+        val usernameParams = usernameTextView.textMetricsParamsCompat
+        usernameTextView.text = viewState.username
+        usernameTextView.setTextFuture(PrecomputedTextCompat.getTextFuture(viewState.renderedUsername, usernameParams, null))
+
         val params = contentTextView.textMetricsParamsCompat
-        launch {
-            val text = PrecomputedTextCompat.create(viewState.renderedContent, params)
-            contentTextView.post {
-                contentTextView?.text = text
-            }
-        }
+        contentTextView.text = viewState.content
+        contentTextView.setTextFuture(PrecomputedTextCompat.getTextFuture(viewState.renderedContent, params, null))
 
         when {
             viewState.displayAttachments.isEmpty() ->
