@@ -82,6 +82,17 @@ class DefaultPagingManager<LocalModel, NetworkModel, DomainModel>(
         activatedJob = null
     }
 
+    override fun reload() {
+        launch {
+            performLoad(LoadingAll) {
+                // Load the initial page, replace statuses in a single transaction
+                val newData = networkDataSource.loadMore(Initial())
+                val localData = newData.map(pagingMapper::networkToLocal)
+                localDataSource.clearAllAndInsert(localData)
+            }
+        }
+    }
+
     private suspend fun loadFresh() = performLoad(LoadingAll) {
         doLoad(Initial())
     }

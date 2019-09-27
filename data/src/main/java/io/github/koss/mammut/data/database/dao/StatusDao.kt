@@ -29,6 +29,9 @@ interface StatusDao {
     @Query("DELETE FROM status WHERE id == :id")
     fun deleteById(id: Long)
 
+    @Query("DELETE FROM status")
+    fun deleteAll()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertStatus(status: Status)
 
@@ -46,4 +49,10 @@ interface StatusDao {
 
     @Query("SELECT * FROM status WHERE source = :source ORDER BY createdAt DESC LIMIT :count")
     fun getMostRecent(count: Int, source: String): List<Status>
+
+    @Transaction
+    fun deleteAllAndInsert(page: List<Status>) {
+        deleteAll()
+        insertAll(page)
+    }
 }

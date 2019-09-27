@@ -30,10 +30,13 @@ class FeedReducer : Reducer {
                         }
 
                         is OnLoadingStateChanged -> {
-                            return@let state.copy(
-                                loadingAtFront = incomingAction.loadingState is LoadingAtFront,
-                                loadingAtEnd = incomingAction.loadingState is LoadingAtEnd
-                            )
+                            return@let when (incomingAction.loadingState) {
+                                is io.github.koss.paging.network.LoadingAll -> LoadingAll
+                                else -> state.copy(
+                                        loadingAtFront = incomingAction.loadingState is LoadingAtFront,
+                                        loadingAtEnd = incomingAction.loadingState is LoadingAtEnd
+                                )
+                            }
                         }
 
                         is OnItemsRendered -> {

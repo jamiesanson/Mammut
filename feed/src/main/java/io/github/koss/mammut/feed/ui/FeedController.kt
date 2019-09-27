@@ -247,7 +247,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun showLoadingAll() {
-        progressBar.isVisible = true
+        // Only show the full progress bar if the swipe refresh layout isn't refreshing
+        if (!swipeRefreshLayout.isRefreshing) {
+            progressBar.isVisible = true
+        }
         bottomLoadingIndicator.isVisible = false
         topLoadingIndicator.isVisible = false
     }
@@ -255,6 +258,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     private fun showLoaded(state: Loaded) {
         topLoadingIndicator.isVisible = state.loadingAtFront
         bottomLoadingIndicator.isVisible = state.loadingAtEnd
+
+        swipeRefreshLayout.isRefreshing = false
 
         progressBar.isVisible = false
 

@@ -61,7 +61,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun reload() {
-        // TODO - Process full reload
+        pagingManager.reload()
     }
 
     private fun setupStore() {
