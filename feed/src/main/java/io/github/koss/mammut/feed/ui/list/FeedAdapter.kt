@@ -71,7 +71,7 @@ class FeedAdapter(
     override fun onViewDetachedFromWindow(holder: FeedItemViewHolder) {
         super.onViewDetachedFromWindow(holder)
         when (holder) {
-            is StatusViewHolder -> holder.dettach()
+            is StatusViewHolder -> holder.detach()
         }
     }
 

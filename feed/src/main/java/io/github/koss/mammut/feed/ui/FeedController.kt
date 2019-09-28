@@ -136,6 +136,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     override fun onTabReselected() {
         // If we're scrolled to the top reload else scroll up
         if (recyclerView?.computeVerticalScrollOffset() == 0) {
+            // Show the swipe to refresh loading indicator
+            swipeRefreshLayout.isRefreshing = true
             viewModel.reload()
         } else {
             recyclerView?.smoothScrollToPosition(0)

@@ -91,7 +91,7 @@ class StatusViewHolder(
         }
     }
 
-    fun dettach() {
+    fun detach() {
         job?.cancel()
     }
 
