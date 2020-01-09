@@ -12,11 +12,12 @@ class FeedReducer : Reducer {
     override fun invoke(currentState: State?, incomingAction: Action): State? =
         (currentState as? FeedState)?.let { state ->
             when (state) {
-                LoadingAll -> {
+                is LoadingAll -> {
                     when (incomingAction) {
                         is OnItemsRendered -> {
                             return@let Loaded(
-                                items = incomingAction.renderedItems
+                                items = incomingAction.renderedItems,
+                                initialPosition = state.initialPosition
                             )
                         }
                     }
@@ -54,7 +55,7 @@ class FeedReducer : Reducer {
                     }
 
                     when (incomingAction.loadingState) {
-                        is io.github.koss.paging.network.LoadingAll -> return@let LoadingAll
+                        is io.github.koss.paging.network.LoadingAll -> return@let LoadingAll()
                     }
                 }
             }

@@ -53,6 +53,7 @@ import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewStat
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.base.navigation.NavigationHub
 import io.github.koss.mammut.base.navigation.ReselectListener
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.behaviour
@@ -113,6 +114,7 @@ const val ARG_AUTH_CODE = "auth_code"
 class InstanceController(args: Bundle) : BaseController(args),
         BottomNavigationView.OnNavigationItemSelectedListener,
         FullScreenPhotoHandler,
+        NavigationHub,
         SubcomponentFactory {
 
     /**
@@ -303,6 +305,11 @@ class InstanceController(args: Bundle) : BaseController(args),
             is FeedModule -> component.plus(module)
             else -> throw IllegalArgumentException("Unknown module type")
         } as Subcomponent
+    }
+
+
+    override fun pushProfileController(account: Account) {
+        childRouter.pushController(RouterTransaction.with(ProfileController.newInstance(account, isMe = false)))
     }
 
     /**

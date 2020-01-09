@@ -24,6 +24,8 @@ interface PagingManager<LocalModel, NetworkModel, DomainModel> {
 
     val pagingMapper: PagingMapper<LocalModel, NetworkModel, DomainModel>
 
+    fun reload()
+
     /**
      * Simple lifecycle method for activating streaming and relay subscriptions
      */

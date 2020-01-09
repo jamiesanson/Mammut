@@ -13,6 +13,7 @@ import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.paging.local.DefaultFeedLocalSource
 import io.github.koss.mammut.feed.domain.paging.network.DefaultFeedNetworkSource
 import io.github.koss.mammut.feed.domain.paging.network.StreamingSupportedFeedNetworkSource
+import io.github.koss.mammut.feed.domain.preferences.PreferencesRepository
 import io.github.koss.paging.event.PagingRelay
 import io.github.koss.paging.local.LocalDataSource
 import io.github.koss.paging.network.NetworkDataSource
@@ -111,4 +112,8 @@ class FeedModule(
                               @Named("database_name") databaseName: String): TootRepository {
         return TootRepository(instanceName = instanceName, instanceAccessToken = accessToken, databaseName = databaseName)
     }
+
+    @Provides
+    @FeedScope
+    fun providePreferencesRepository(context: Context): PreferencesRepository = PreferencesRepository(context)
 }

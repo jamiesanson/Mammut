@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
+import io.github.koss.mammut.feed.domain.preferences.PreferencesRepository
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
 import io.github.koss.mammut.feed.presentation.state.FeedReducer
 import io.github.koss.mammut.feed.presentation.state.FeedState
@@ -26,13 +28,21 @@ import javax.inject.Inject
 
 class FeedViewModel @Inject constructor(
     applicationContext: Context,
-    private val pagingManager: FeedPagingManager
+    private val feedType: FeedType,
+    private val pagingManager: FeedPagingManager,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     private val store: Store = createStore(
         reducer = FeedReducer(),
         enhancer = applyMiddleware(StatusRenderingMiddleware(viewModelScope, applicationContext)),
-        preloadedState = LoadingAll
+        preloadedState = LoadingAll(
+            initialPosition = when (feedType) {
+                FeedType.Home -> preferencesRepository.homeFeedLastPositionSeen
+                FeedType.Local -> preferencesRepository.localFeedLastPositionSeen
+                else -> -1
+            }
+        )
     )
 
     init {
@@ -57,11 +67,14 @@ class FeedViewModel @Inject constructor(
     }
 
     fun savePageState(position: Int) {
-        // TODO - Save position in persistence
+        when (feedType) {
+            FeedType.Home -> preferencesRepository.homeFeedLastPositionSeen = position
+            FeedType.Local -> preferencesRepository.localFeedLastPositionSeen = position
+        }
     }
 
     fun reload() {
-        // TODO - Process full reload
+        pagingManager.reload()
     }
 
     private fun setupStore() {

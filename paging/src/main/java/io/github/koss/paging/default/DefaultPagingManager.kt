@@ -82,6 +82,12 @@ class DefaultPagingManager<LocalModel, NetworkModel, DomainModel>(
         activatedJob = null
     }
 
+    override fun reload() {
+        launch {
+            loadFresh()
+        }
+    }
+
     private suspend fun loadFresh() = performLoad(LoadingAll) {
         doLoad(Initial())
     }

@@ -12,7 +12,6 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
-import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
@@ -28,6 +26,7 @@ import io.github.koss.mammut.base.navigation.NavigationHub
 import io.github.koss.mammut.base.navigation.ReselectListener
 import io.github.koss.mammut.base.util.arg
 import io.github.koss.mammut.base.util.comingSoon
+import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.data.models.Account
@@ -47,12 +46,14 @@ import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onScrollChange
+import org.jetbrains.anko.support.v4.onRefresh
 import javax.inject.Inject
 
 const val ARG_ACCESS_TOKEN = "access_token"
@@ -87,7 +88,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
-        (parentController as SubcomponentFactory)
+        findSubcomponentFactory()
                 .buildSubcomponent<FeedModule, FeedComponent>(feedModule)
                 .inject(this)
 
@@ -99,6 +100,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
     override fun initialise(savedInstanceState: Bundle?) {
         super.initialise(savedInstanceState)
+
+        // Ensure all stuck references are cleared (Big hack, sorry)
+        clearFindViewByIdCache()
 
         // Only show the progress bar if we're displaying this controller the first time
         if (savedInstanceState == null) {
@@ -120,6 +124,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         }
 
         setupRecyclerView()
+
+        swipeRefreshLayout.onRefresh {
+            viewModel.reload()
+        }
 
         viewModel.state.observe(this) {
             containerView ?: return@observe
@@ -200,7 +208,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
     private fun processState(state: FeedState) {
         when (state) {
-            LoadingAll -> showLoadingAll()
+            is LoadingAll -> showLoadingAll()
             is Loaded -> showLoaded(state)
         }
     }
@@ -232,12 +240,22 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun showLoaded(state: Loaded) {
+        // Ensure all stuck references are cleared (Big hack, sorry)
+        clearFindViewByIdCache()
+
         topLoadingIndicator.isVisible = state.loadingAtFront
         bottomLoadingIndicator.isVisible = state.loadingAtEnd
 
         progressBar.isVisible = false
 
-        (recyclerView.adapter as FeedAdapter).submitList(state.items)
+        swipeRefreshLayout.isRefreshing = false
+
+        (recyclerView?.adapter as? FeedAdapter)?.submitList(state.items)
+        recyclerView?.doOnLayout {
+            if (state.initialPosition > 0 || state.initialPosition < state.items.size) {
+                recyclerView?.scrollToPosition(state.initialPosition)
+            }
+        }
     }
 
     private fun showNewTootsIndicator(animate: Boolean = true) {
