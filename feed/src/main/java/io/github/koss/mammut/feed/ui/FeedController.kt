@@ -59,7 +59,15 @@ import javax.inject.Inject
 const val ARG_ACCESS_TOKEN = "access_token"
 const val ARG_TYPE = "feed_type"
 
-@ContainerOptions(cache = CacheImplementation.NO_CACHE)
+/**
+ * This class is the Controller responsible for displaying a feed.
+ *
+ * The things needed to be added from the old one:
+ * * Pull to refresh
+ * * Full screen loading state
+ * * Don't show the loading indicator when at the top
+ * * Position persistence
+ */
 class FeedController(args: Bundle) : BaseController(args), ReselectListener, FeedCallbacks {
 
     private lateinit var viewModel: FeedViewModel
@@ -115,15 +123,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             progressBar.visibility = View.VISIBLE
         }
 
-        containerView?.doOnLayout {
-            if (savedInstanceState?.getBoolean(STATE_NEW_TOOTS_VISIBLE) == true) {
-                showNewTootsIndicator(animate = false)
-            } else {
-                hideNewTootsIndicator(animate = false)
-            }
-        }
-
         setupRecyclerView()
+        setupSwipeToRefresh()
 
         swipeRefreshLayout.onRefresh {
             viewModel.reload()
@@ -142,6 +143,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     override fun onTabReselected() {
         // If we're scrolled to the top reload else scroll up
         if (recyclerView?.computeVerticalScrollOffset() == 0) {
+            // Show the swipe to refresh loading indicator
+            swipeRefreshLayout.isRefreshing = true
             viewModel.reload()
         } else {
             recyclerView?.smoothScrollToPosition(0)
@@ -175,6 +178,17 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
         super.onRestoreViewState(view, savedViewState)
         savedViewState.let(::restoreAdapterState)
+        savedViewState.let(::restoreNewTootIndicatorState)
+    }
+
+    private fun restoreNewTootIndicatorState(savedInstanceState: Bundle) {
+        containerView?.doOnLayout {
+            if (savedInstanceState.getBoolean(STATE_NEW_TOOTS_VISIBLE)) {
+                showNewTootsIndicator(animate = false)
+            } else {
+                hideNewTootsIndicator(animate = false)
+            }
+        }
     }
 
     private fun restoreAdapterState(savedInstanceState: Bundle) {
@@ -206,6 +220,12 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         }
     }
 
+    private fun setupSwipeToRefresh() {
+        swipeRefreshLayout.onRefresh {
+            viewModel.reload()
+        }
+    }
+
     private fun processState(state: FeedState) {
         when (state) {
             is LoadingAll -> showLoadingAll()
@@ -224,7 +244,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             // Wait a little while for the insert to occur
             launch {
                 delay(100)
-                containerView?.recyclerView?.smoothScrollToPosition(0)
+                if (recyclerView?.isAttachedToWindow == true) {
+                    containerView?.recyclerView?.smoothScrollToPosition(0)
+                }
             }
         } else {
             if (tootButtonHidden) {
@@ -234,7 +256,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun showLoadingAll() {
-        progressBar.isVisible = true
+        // Only show the full progress bar if the swipe refresh layout isn't refreshing
+        if (!swipeRefreshLayout.isRefreshing) {
+            progressBar.isVisible = true
+        }
         bottomLoadingIndicator.isVisible = false
         topLoadingIndicator.isVisible = false
     }
@@ -245,6 +270,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         topLoadingIndicator.isVisible = state.loadingAtFront
         bottomLoadingIndicator.isVisible = state.loadingAtEnd
+
+        swipeRefreshLayout.isRefreshing = false
 
         progressBar.isVisible = false
 

@@ -29,7 +29,7 @@ class InstancesRepository constructor(
                 .baseUrl(INSTANCES_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(io.github.koss.mammut.instances.MastodonInstancesService::class.java)
+                .create(MastodonInstancesService::class.java)
     }
 
     suspend fun getInstanceInformation(name: String): InstanceDetail? {

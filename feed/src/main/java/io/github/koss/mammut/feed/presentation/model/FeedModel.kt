@@ -11,6 +11,7 @@ data class StatusModel(
     val id: Long,
     val name: String,
     val username: String,
+    val renderedUsername: CharSequence,
     val renderedContent: CharSequence,
     val createdAt: String,
     val displayAttachments: List<Attachment<*>>,

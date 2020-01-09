@@ -9,4 +9,6 @@ interface LocalDataSource<LocalModel> {
     suspend fun insertOrUpdate(vararg model: LocalModel)
 
     suspend fun insertOrUpdateAll(models: List<LocalModel>)
+
+    suspend fun clearAllAndInsert(models: List<LocalModel>)
 }

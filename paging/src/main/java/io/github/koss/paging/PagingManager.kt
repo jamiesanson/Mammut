@@ -35,4 +35,10 @@ interface PagingManager<LocalModel, NetworkModel, DomainModel> {
      * Simple lifecycle method for deactivating streaming and relay subscriptions
      */
     fun deactivate()
+
+    /**
+     * Function for reloading data backing this manager. This invalidates local storage and
+     * reloads the latest data from network
+     */
+    fun reload()
 }

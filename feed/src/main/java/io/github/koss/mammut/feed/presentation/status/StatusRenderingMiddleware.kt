@@ -59,6 +59,8 @@ class StatusRenderingMiddleware(
         val name = (if (account?.displayName?.isEmpty() == true) account!!.acct else account?.displayName)
             ?: ""
         val username = "@${account?.acct ?: account?.userName}"
+        val renderedUsername = EmojiRenderer.render(applicationContext, username, emojis = emojis?.map { it.toNetworkModel() }
+                ?: emptyList())
 
         val content = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
 
@@ -69,6 +71,7 @@ class StatusRenderingMiddleware(
             id = id,
             name = name,
             username = username,
+            renderedUsername = renderedUsername,
             renderedContent = renderedContent,
             createdAt = createdAt,
             displayAttachments = mediaAttachments,

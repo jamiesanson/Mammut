@@ -22,4 +22,8 @@ class DefaultFeedLocalSource(
     override suspend fun insertOrUpdateAll(models: List<Status>) {
         statusDao.insertAll(models)
     }
+
+    override suspend fun clearAllAndInsert(models: List<Status>) {
+        statusDao.deleteAllAndInsert(models)
+    }
 }

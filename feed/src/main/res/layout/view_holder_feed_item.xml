@@ -81,7 +81,7 @@
                     android:textSize="16sp"
                     tools:text="Jamie Sanson" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/usernameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
 
             </LinearLayout>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/contentTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -4,7 +4,9 @@ import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -89,7 +91,7 @@ class StatusViewHolder(
         }
     }
 
-    fun dettach() {
+    fun detach() {
         job?.cancel()
     }
 
@@ -106,7 +108,14 @@ class StatusViewHolder(
     private fun renderState(viewState: StatusModel) {
         viewState.name.let(displayNameTextView::setText)
         viewState.username.let(usernameTextView::setText)
-        viewState.renderedContent.let(contentTextView::setText)
+
+        val usernameParams = usernameTextView.textMetricsParamsCompat
+        usernameTextView.text = viewState.username
+        usernameTextView.setTextFuture(PrecomputedTextCompat.getTextFuture(viewState.renderedUsername, usernameParams, null))
+
+        val params = contentTextView.textMetricsParamsCompat
+        contentTextView.text = viewState.content
+        contentTextView.setTextFuture(PrecomputedTextCompat.getTextFuture(viewState.renderedContent, params, null))
 
         when {
             viewState.displayAttachments.isEmpty() ->
