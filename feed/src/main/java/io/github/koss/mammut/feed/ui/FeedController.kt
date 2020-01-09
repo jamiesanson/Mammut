@@ -13,11 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
@@ -128,6 +130,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         swipeRefreshLayout.onRefresh {
             viewModel.reload()
+        }
+
+        recyclerView?.doOnApplyWindowInsets { view, insets, _ ->
+            view.updatePadding(top = insets.systemWindowInsetTop)
         }
 
         viewModel.state.observe(this) {

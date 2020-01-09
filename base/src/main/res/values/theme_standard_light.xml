@@ -11,10 +11,10 @@
     <color name="standardLightSecondaryTextColor">#000000</color>
     <color name="standardLightColorControlTransparent">#33000000</color>
 
-    <style name="Mammut.Standard.Light" parent="Mammut.Base.Light">
-        <item name="colorPrimary">@color/standardLightPrimaryColor</item>
-        <item name="colorPrimaryLight">@color/standardLightPrimaryLightColor</item>
-        <item name="colorPrimaryDark">@color/standardLightPrimaryColor</item>
+    <style name="Mammut.Standard.Light" parent="Mammut.Base">
+        <item name="colorPrimary">@color/standardLightSecondaryColor</item>
+        <item name="colorPrimaryLight">@color/standardLightSecondaryLightColor</item>
+        <item name="colorPrimaryDark">@color/standardLightSecondaryColor</item>
         <item name="colorAccent">@color/standardLightSecondaryColor</item>
         <item name="colorAccentLight">@color/standardLightSecondaryLightColor</item>
         <item name="colorAccentDark">@color/standardLightSecondaryDarkColor</item>

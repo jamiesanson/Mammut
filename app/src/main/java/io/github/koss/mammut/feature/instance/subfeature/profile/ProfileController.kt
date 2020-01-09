@@ -17,6 +17,8 @@ import androidx.core.text.HtmlCompat
 import androidx.core.view.children
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
@@ -26,6 +28,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.util.retained
@@ -84,6 +87,13 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     override fun onAttach(view: View) {
         super.onAttach(view)
         setupToolbar()
+
+        collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
+            layout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.systemWindowInsetTop
+            }
+        }
+
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
         viewModel.networkState.observe(this, ::bindNetworkState)

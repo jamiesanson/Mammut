@@ -11,7 +11,7 @@
     <color name="pastelGreenLightSecondaryTextColor">#000000</color>
     <color name="pastelGreenLightColorControlTransparent">#33000000</color>
 
-    <style name="Mammut.Pastel.Green.Light" parent="Mammut.Base.Light">
+    <style name="Mammut.Pastel.Green.Light" parent="Mammut.Base">
         <item name="colorPrimary">@color/pastelGreenLightPrimaryColor</item>
         <item name="colorPrimaryLight">@color/pastelGreenLightPrimaryLightColor</item>
         <item name="colorPrimaryDark">@color/pastelGreenLightPrimaryColor</item>

@@ -51,6 +51,8 @@ dependencies {
     implementation rootProject.ext.material
 
     api rootProject.ext.arrowCore
+
+    api "dev.chrisbanes:insetter-ktx:0.2.0"
 }
 
 androidExtensions {

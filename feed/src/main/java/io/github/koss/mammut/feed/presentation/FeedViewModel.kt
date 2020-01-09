@@ -45,14 +45,14 @@ class FeedViewModel @Inject constructor(
         )
     )
 
+    private val stateRelay = Channel<FeedState>(capacity = CONFLATED)
+
+    private val eventRelay = Channel<FeedEvent>(capacity = CONFLATED)
+
     init {
         setupStore()
         setupPaging()
     }
-
-    private val stateRelay = Channel<FeedState>(capacity = CONFLATED)
-
-    private val eventRelay = Channel<FeedEvent>(capacity = CONFLATED)
 
     val state = liveData {
         for (item in stateRelay) {

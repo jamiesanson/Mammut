@@ -124,7 +124,7 @@ class JoinInstanceActivity: BaseActivity() {
     private fun launchOauthUrl(url: String) {
         val customTabsIntent = CustomTabsIntent.Builder()
                 .addDefaultShareMenuItem()
-                .setToolbarColor(colorAttr(R.attr.colorPrimary))
+                .setToolbarColor(colorAttr(R.attr.colorSurface))
                 .setShowTitle(true)
                 .build()
 
