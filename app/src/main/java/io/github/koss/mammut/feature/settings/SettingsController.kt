@@ -9,12 +9,14 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProviders
+import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
 import com.google.android.material.card.MaterialCardView
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.themes.ThemeEngine
@@ -66,7 +68,7 @@ class SettingsController : BaseController() {
                 .plus(settingsModule)
                 .inject(this)
 
-        viewModel = ViewModelProviders.of(context, viewModelFactory).get(SettingsViewModel::class.java)
+        viewModel = ViewModelProvider(context, viewModelFactory).get(SettingsViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
@@ -84,6 +86,11 @@ class SettingsController : BaseController() {
         // Setup close button
         toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.navigationIcon?.setTint(view!!.colorAttr(R.attr.colorControlNormal))
+
+        // Setup insets
+        collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
+            layout.updatePadding(top = insets.systemWindowInsetTop)
+        }
 
         toolbar.setNavigationOnClickListener {
             router.popCurrentController()

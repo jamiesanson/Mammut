@@ -19,7 +19,7 @@
         android:clickable="true"
         android:clipChildren="false"
         android:clipToPadding="false"
-        app:cardElevation="24dp"
+        app:cardElevation="8dp"
         android:focusable="true"
         android:paddingTop="6dp"
         app:cardCornerRadius="12dp"

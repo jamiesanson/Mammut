@@ -20,7 +20,7 @@ import androidx.core.content.getSystemService
 import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -28,6 +28,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.BaseController
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
@@ -90,8 +91,7 @@ class ComposeTootController: BaseController {
                 ?.buildSubcomponent<ComposeTootModule, ComposeTootComponent>(ComposeTootModule())
                 ?.inject(this) ?: throw IllegalStateException("ParentController must be subcomponent factory")
 
-        viewModel = ViewModelProviders
-                .of(context as FragmentActivity, factory).get(accessToken, ComposeTootViewModel::class.java)
+        viewModel = ViewModelProvider(context as FragmentActivity, factory).get(accessToken, ComposeTootViewModel::class.java)
     }
 
     override fun onDetach(view: View) {
@@ -116,6 +116,10 @@ class ComposeTootController: BaseController {
         setupPrivacySelector()
         setupContentWarnings()
         setupProfileCell(account)
+
+        appBarLayout.doOnApplyWindowInsets { layout, insets, _ ->
+            layout.updatePadding(top = insets.systemWindowInsetTop)
+        }
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
 

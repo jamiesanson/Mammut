@@ -15,6 +15,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -35,6 +36,7 @@ import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
@@ -156,6 +158,8 @@ class InstanceController(args: Bundle) : BaseController(args),
      */
     @IdRes
     private var currentSelectedItemId: Int = -1
+
+    private var peekInsetAddition: Int = 0
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
@@ -372,7 +376,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                 bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     (behavior as BottomSheetBehavior).apply {
                         state = BottomSheetBehavior.STATE_EXPANDED
-                        peekHeight = startingHeight + additionalHeight
+                        peekHeight = startingHeight + additionalHeight + peekInsetAddition
                         state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                 }
@@ -384,10 +388,10 @@ class InstanceController(args: Bundle) : BaseController(args),
                 bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     (behavior as BottomSheetBehavior).apply {
                         if (state != BottomSheetBehavior.STATE_COLLAPSED) {
-                            peekHeight = startingHeight
+                            peekHeight = startingHeight + peekInsetAddition
                         } else {
                             state = BottomSheetBehavior.STATE_EXPANDED
-                            peekHeight = startingHeight
+                            peekHeight = startingHeight + peekInsetAddition
                             state = BottomSheetBehavior.STATE_COLLAPSED
                         }
                     }
@@ -403,7 +407,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                 is CancellationException -> {
                     // Reset the peek height of the bottom sheet
                     launch (Dispatchers.Main) {
-                        bottomNavigationSheet.behaviour<BottomSheetBehavior<View>>()?.peekHeight = container.dimen(R.dimen.default_navigation_peek_height)
+                        bottomNavigationSheet.behaviour<BottomSheetBehavior<View>>()?.peekHeight = container.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
                     }
                 }
             }
@@ -425,7 +429,7 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun resetPeek() {
         // Reset peak height and re-enable dimming
         view?.let {
-            it.behaviour<BottomSheetBehavior<View>>()?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height)
+            it.behaviour<BottomSheetBehavior<View>>()?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
         }
 
         peekJob?.cancel()
@@ -433,6 +437,12 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     private fun setupBottomNavigation(view: View) {
+        // Edge to edge
+        view.bottomNavigationSheet.doOnApplyWindowInsets { _, insets, _ ->
+            peekInsetAddition = insets.systemWindowInsetBottom
+            resetPeek()
+        }
+
         view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
         view.bottomNavigationTopScrim.elevation = view.bottomNavigationView.elevation
 
@@ -451,7 +461,6 @@ class InstanceController(args: Bundle) : BaseController(args),
         bottomNavigationViewModel.viewState.observe(this, ::renderBottomNavigationContent)
 
         val dimBackground = view.bottomNavigationDim
-        val statusBarColor = (view.context as AppCompatActivity).window.statusBarColor
         dimBackground.isVisible = false
         dimBackground.onClick {
             collapseBottomSheet()
@@ -488,18 +497,15 @@ class InstanceController(args: Bundle) : BaseController(args),
         // Recyclerview setup
         setupInstancesRecycler(view)
 
-        // Setup Slide handling
-        val dimBackgroundColor = view.colorAttr(R.attr.colorControlNormalTransparent)
-
         view.bottomNavigationSheet
                 .behaviour<BottomSheetBehavior<View>>()
-                ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                ?.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onSlide(view: View, proportion: Float) {
                         if (peekJob?.isActive == true) {
                             // Check to see that the user hasn't tried to swipe up the bottom sheet
                             val peekHeight = view.behaviour<BottomSheetBehavior<View>>()?.peekHeight
                             val screenHeight = view.context.displayMetrics.heightPixels
-                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight)) {
+                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
                                 // Reset peak height and re-enable dimming
                                 resetPeek()
                             } else {
@@ -510,7 +516,6 @@ class InstanceController(args: Bundle) : BaseController(args),
                         when (proportion) {
                             0f -> {
                                 dimBackground.isVisible = false
-                                (view.context as AppCompatActivity).window.statusBarColor = statusBarColor
                                 (parentController as MultiInstanceController).unlockViewPager()
                             }
                             else -> dimBackground.apply {
@@ -519,18 +524,6 @@ class InstanceController(args: Bundle) : BaseController(args),
                                 (parentController as MultiInstanceController).lockViewPager()
                             }
                         }
-
-                        // Mask and modify alpha of background color and apply to statusbar
-                        val maxAlpha = ((dimBackgroundColor and "FF000000".toLong(radix = 16).toInt()) shr 24).run {
-                            this and "FF".toLong(radix = 16).toInt()
-                        }
-
-                        val newAlpha = (maxAlpha * proportion).toInt() shl 24
-
-                        val newStatusColor = (dimBackgroundColor and "00FFFFFF".toLong(radix = 16).toInt()) + newAlpha
-
-                        // Update status bar colour
-                        (view.context as AppCompatActivity).window.statusBarColor = newStatusColor
                     }
 
                     override fun onStateChanged(p0: View, p1: Int) {}
@@ -539,7 +532,7 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     private fun setupInstancesRecycler(view: View) {
-        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorOnSurface)
 
         view.instancesRecyclerView.layoutManager =
                 LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
@@ -597,7 +590,7 @@ class InstanceController(args: Bundle) : BaseController(args),
 
     private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
         // Load Account
-        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorOnSurface)
 
         GlideApp.with(container)
                 .load(state.currentUser.avatar)
