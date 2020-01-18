@@ -21,6 +21,10 @@ android {
 
         buildConfigField "String", "INSTANCES_SECRET", INSTANCES_SECRET
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 
