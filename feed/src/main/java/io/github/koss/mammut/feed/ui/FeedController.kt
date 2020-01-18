@@ -219,7 +219,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             )
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(view!!.context)
+        if (recyclerView.layoutManager == null) {
+            recyclerView.layoutManager = LinearLayoutManager(view!!.context)
+        }
 
         recyclerView.onScrollChange { _, _, _, _, _ ->
             containerView ?: return@onScrollChange
