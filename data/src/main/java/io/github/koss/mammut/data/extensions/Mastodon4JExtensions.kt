@@ -7,19 +7,17 @@ import arrow.core.Right
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
 import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.models.Account
-
-
-typealias MastodonResult<T> = Either<Error, T>
+import okhttp3.OkHttpClient
 
 tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Error, T> {
     val result = try {
         Right(execute())
     } catch (e: Mastodon4jRequestException) {
-        Log.e("MastodonRunner", "An error occurred", e)
         if (e.isErrorResponse()) {
             e.response?.body()?.string()?.run {
                 when {
@@ -27,7 +25,7 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Erro
                         Left(GsonBuilder()
                                 .excludeFieldsWithoutExposeAnnotation()
                                 .create()
-                                .fromJson<Error>(e.response?.body()?.charStream(), Error::class.java))
+                                .fromJson(e.response?.body()?.charStream(), Error::class.java))
                     } catch (e: Exception) {
                         null
                     }
@@ -42,6 +40,10 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Erro
 
     if (result is Either.Left && retryCount > 0) {
         return run(retryCount - 1)
+    }
+
+    if (result is Either.Left) {
+        Log.e("MastodonRunner", "An error occurred: ${result.a}")
     }
 
     return result
@@ -59,3 +61,13 @@ data class Error(
 )
 
 fun Account.fullAcct(instanceName: String): String = "@$userName@$instanceName"
+
+
+class ClientBuilder(
+        private val okHttpClient: OkHttpClient.Builder,
+        private val gson: GsonBuilder
+) {
+
+    fun getInstanceBuilder(instanceName: String): MastodonClient.Builder =
+            MastodonClient.Builder(instanceName, okHttpClient, gson)
+}

@@ -15,6 +15,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -35,17 +36,16 @@ import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
-import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.component.helper.InstanceOrderingItemTouchHelper
-import io.github.koss.mammut.component.retention.retained
+import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.dagger.application.ApplicationScope
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.extension.*
@@ -56,9 +56,19 @@ import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewStat
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.base.navigation.NavigationHub
+import io.github.koss.mammut.base.navigation.ReselectListener
+import io.github.koss.mammut.base.util.GlideApp
+import io.github.koss.mammut.base.util.behaviour
+import io.github.koss.mammut.base.util.observe
+import io.github.koss.mammut.base.util.startActivity
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.feature.pending.PendingWorkController
 import io.github.koss.mammut.feature.settings.SettingsController
+import io.github.koss.mammut.feed.dagger.FeedModule
+import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.feed.ui.FeedController
 import io.github.koss.mammut.notifications.NotificationsController
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -107,6 +117,7 @@ const val ARG_AUTH_CODE = "auth_code"
 class InstanceController(args: Bundle) : BaseController(args),
         BottomNavigationView.OnNavigationItemSelectedListener,
         FullScreenPhotoHandler,
+        NavigationHub,
         SubcomponentFactory {
 
     /**
@@ -149,6 +160,8 @@ class InstanceController(args: Bundle) : BaseController(args),
     @IdRes
     private var currentSelectedItemId: Int = -1
 
+    private var peekInsetAddition: Int = 0
+
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         component = (context as AppCompatActivity).applicationComponent
@@ -183,7 +196,9 @@ class InstanceController(args: Bundle) : BaseController(args),
         if (routerStates.size() == 0) {
             // Select the first item
             currentSelectedItemId = R.id.homeDestination
-            childRouter.setRoot(RouterTransaction.with(FeedController.newInstance(FeedType.Home)))
+            childRouter.setRoot(RouterTransaction.with(
+                FeedController.newInstance(FeedType.Home, accessToken = component.accessToken()))
+            )
         } else {
             // We have something in the back stack. Maybe an orientation change happen?
             // We can just rebind the current router
@@ -219,9 +234,9 @@ class InstanceController(args: Bundle) : BaseController(args),
 
     private fun selectTabById(menuItemId: Int): Boolean {
         val controller = when (menuItemId) {
-            Tab.Home.menuItemId -> FeedController.newInstance(FeedType.Home)
-            Tab.Local.menuItemId -> FeedController.newInstance(FeedType.Local)
-            Tab.Federated.menuItemId -> FeedController.newInstance(FeedType.Federated)
+            Tab.Home.menuItemId -> FeedController.newInstance(FeedType.Home, accessToken = component.accessToken())
+            Tab.Local.menuItemId -> FeedController.newInstance(FeedType.Local, accessToken = component.accessToken())
+            Tab.Federated.menuItemId -> FeedController.newInstance(FeedType.Federated, accessToken = component.accessToken())
             Tab.Notification.menuItemId -> NotificationsController.newInstance(accessToken = component.accessToken()).apply { targetController = this@InstanceController }
             else -> return false
         }
@@ -292,8 +307,14 @@ class InstanceController(args: Bundle) : BaseController(args),
         return when (module) {
             is ComposeTootModule -> component.plus(module)
             is NotificationsModule -> component.plus(module)
+            is FeedModule -> component.plus(module)
             else -> throw IllegalArgumentException("Unknown module type")
         } as Subcomponent
+    }
+
+
+    override fun pushProfileController(account: Account) {
+        childRouter.pushController(RouterTransaction.with(ProfileController.newInstance(account, isMe = false)))
     }
 
     /**
@@ -356,7 +377,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                 bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     (behavior as BottomSheetBehavior).apply {
                         state = BottomSheetBehavior.STATE_EXPANDED
-                        peekHeight = startingHeight + additionalHeight
+                        peekHeight = startingHeight + additionalHeight + peekInsetAddition
                         state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                 }
@@ -368,10 +389,10 @@ class InstanceController(args: Bundle) : BaseController(args),
                 bottomNavigationSheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     (behavior as BottomSheetBehavior).apply {
                         if (state != BottomSheetBehavior.STATE_COLLAPSED) {
-                            peekHeight = startingHeight
+                            peekHeight = startingHeight + peekInsetAddition
                         } else {
                             state = BottomSheetBehavior.STATE_EXPANDED
-                            peekHeight = startingHeight
+                            peekHeight = startingHeight + peekInsetAddition
                             state = BottomSheetBehavior.STATE_COLLAPSED
                         }
                     }
@@ -387,7 +408,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                 is CancellationException -> {
                     // Reset the peek height of the bottom sheet
                     launch (Dispatchers.Main) {
-                        bottomNavigationSheet.behaviour<BottomSheetBehavior<View>>()?.peekHeight = container.dimen(R.dimen.default_navigation_peek_height)
+                        bottomNavigationSheet.behaviour<BottomSheetBehavior<View>>()?.peekHeight = container.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
                     }
                 }
             }
@@ -409,7 +430,9 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun resetPeek() {
         // Reset peak height and re-enable dimming
         view?.let {
-            it.behaviour<BottomSheetBehavior<View>>()?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height)
+            bottomNavigationSheet
+                    .behaviour<BottomSheetBehavior<View>>()
+                    ?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
         }
 
         peekJob?.cancel()
@@ -417,6 +440,15 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     private fun setupBottomNavigation(view: View) {
+        // Edge to edge
+        view.bottomNavigationSheet.doOnApplyWindowInsets { _, insets, _ ->
+            if (insets.systemWindowInsetBottom != 0) {
+                peekInsetAddition = insets.systemWindowInsetBottom
+                view.bottomNavigationContent.updatePadding(bottom = insets.systemWindowInsetBottom)
+                resetPeek()
+            }
+        }
+
         view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
         view.bottomNavigationTopScrim.elevation = view.bottomNavigationView.elevation
 
@@ -435,7 +467,6 @@ class InstanceController(args: Bundle) : BaseController(args),
         bottomNavigationViewModel.viewState.observe(this, ::renderBottomNavigationContent)
 
         val dimBackground = view.bottomNavigationDim
-        val statusBarColor = (view.context as AppCompatActivity).window.statusBarColor
         dimBackground.isVisible = false
         dimBackground.onClick {
             collapseBottomSheet()
@@ -451,6 +482,16 @@ class InstanceController(args: Bundle) : BaseController(args),
                             .pushChangeHandler(VerticalChangeHandler()))
         }
 
+        view.pendingWorkCell.isVisible = BuildConfig.DEBUG
+        view.pendingWorkCell.onClick {
+            collapseBottomSheet()
+            parentController?.router?.pushController(
+                RouterTransaction
+                    .with(PendingWorkController())
+                    .popChangeHandler(VerticalChangeHandler())
+                    .pushChangeHandler(VerticalChangeHandler()))
+        }
+
         view.aboutAppCell.onClick {
             collapseBottomSheet()
             parentController?.router?.pushController(
@@ -463,18 +504,15 @@ class InstanceController(args: Bundle) : BaseController(args),
         // Recyclerview setup
         setupInstancesRecycler(view)
 
-        // Setup Slide handling
-        val dimBackgroundColor = view.colorAttr(R.attr.colorControlNormalTransparent)
-
         view.bottomNavigationSheet
                 .behaviour<BottomSheetBehavior<View>>()
-                ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                ?.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onSlide(view: View, proportion: Float) {
                         if (peekJob?.isActive == true) {
                             // Check to see that the user hasn't tried to swipe up the bottom sheet
                             val peekHeight = view.behaviour<BottomSheetBehavior<View>>()?.peekHeight
                             val screenHeight = view.context.displayMetrics.heightPixels
-                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight)) {
+                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
                                 // Reset peak height and re-enable dimming
                                 resetPeek()
                             } else {
@@ -485,7 +523,6 @@ class InstanceController(args: Bundle) : BaseController(args),
                         when (proportion) {
                             0f -> {
                                 dimBackground.isVisible = false
-                                (view.context as AppCompatActivity).window.statusBarColor = statusBarColor
                                 (parentController as MultiInstanceController).unlockViewPager()
                             }
                             else -> dimBackground.apply {
@@ -494,18 +531,6 @@ class InstanceController(args: Bundle) : BaseController(args),
                                 (parentController as MultiInstanceController).lockViewPager()
                             }
                         }
-
-                        // Mask and modify alpha of background color and apply to statusbar
-                        val maxAlpha = ((dimBackgroundColor and "FF000000".toLong(radix = 16).toInt()) shr 24).run {
-                            this and "FF".toLong(radix = 16).toInt()
-                        }
-
-                        val newAlpha = (maxAlpha * proportion).toInt() shl 24
-
-                        val newStatusColor = (dimBackgroundColor and "00FFFFFF".toLong(radix = 16).toInt()) + newAlpha
-
-                        // Update status bar colour
-                        (view.context as AppCompatActivity).window.statusBarColor = newStatusColor
                     }
 
                     override fun onStateChanged(p0: View, p1: Int) {}
@@ -514,7 +539,7 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     private fun setupInstancesRecycler(view: View) {
-        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = view.colorAttr(R.attr.colorOnSurface)
 
         view.instancesRecyclerView.layoutManager =
                 LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
@@ -572,7 +597,7 @@ class InstanceController(args: Bundle) : BaseController(args),
 
     private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
         // Load Account
-        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorOnSurface)
 
         GlideApp.with(container)
                 .load(state.currentUser.avatar)

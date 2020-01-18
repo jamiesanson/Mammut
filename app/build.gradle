@@ -52,6 +52,10 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -67,7 +71,9 @@ dependencies {
     api project(":base")
     api project(":instances")
     api project(":toot")
+    api project(":feed")
     api project(":data")
+    api project(":emoji")
     api project(":notifications")
 
     api rootProject.ext.kotlinRuntime
@@ -144,6 +150,9 @@ dependencies {
     api rootProject.ext.lottie
 
     api rootProject.ext.customTabsHelper
+    api rootProject.ext.customTabs
+
+    api rootProject.ext.workManager
 }
 
 androidExtensions {

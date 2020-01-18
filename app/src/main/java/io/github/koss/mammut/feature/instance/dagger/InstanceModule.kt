@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
-import io.github.koss.mammut.extension.ClientBuilder
+import io.github.koss.mammut.data.extensions.ClientBuilder
 import javax.inject.Named
 
 @Module(includes = [ InstanceViewModelModule::class ])

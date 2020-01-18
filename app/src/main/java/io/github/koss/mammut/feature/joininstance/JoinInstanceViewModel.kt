@@ -12,12 +12,12 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.util.postSafely
+import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.models.*
 import io.github.koss.mammut.data.repository.InstancesRepository
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
-import io.github.koss.mammut.extension.ClientBuilder
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.base.InputError
@@ -79,7 +79,7 @@ class JoinInstanceViewModel @Inject constructor(
                 }
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> result.a.description }))
+                    errorMessage.postSafely(Event { _ -> result.a.description })
 
                     return@launch
                 }
@@ -155,13 +155,12 @@ class JoinInstanceViewModel @Inject constructor(
 
             // Get the users account and save it with the registration
             val authenticatedClient = getClientForUrl(instanceName, accessToken.accessToken)
-            val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()
 
-            val account = when (accountResult) {
+            val account = when (val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()) {
                 is Either.Right -> accountResult.b
                 is Either.Left -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> accountResult.a.description }))
+                    errorMessage.postSafely(Event { _ -> accountResult.a.description })
 
                     return@launch
                 }

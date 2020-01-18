@@ -3,7 +3,7 @@ package io.github.koss.mammut.data.repository
 import arrow.core.getOrElse
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Public
-import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.entities.EmojiListEntity
 import io.github.koss.mammut.data.extensions.run
@@ -40,7 +40,7 @@ class InstanceDetailRepository(
             else -> Public(clientBuilder(instance)).getEmojis()
                     .run()
                     .getOrElse { emptyList() }
-                    .map { it.toEntity() }
+                    .map { it.toLocalModel() }
                     .also {
                         // Save to DB
                         mammutDatabase.instanceDetailDao()

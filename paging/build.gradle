@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.kotlinRuntime
+    implementation rootProject.ext.ktx
+
+    implementation rootProject.ext.coroutinesCore
+    implementation rootProject.ext.coroutinesAndroid
+}

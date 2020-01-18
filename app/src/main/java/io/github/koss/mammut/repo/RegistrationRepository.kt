@@ -2,12 +2,12 @@ package io.github.koss.mammut.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import io.github.koss.mammut.base.util.filterElements
 import io.github.koss.mammut.dagger.application.ApplicationScope
-import io.github.koss.mammut.data.converters.toEntity
-import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.converters.toLocalModel
+import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.InstanceRegistration
-import io.github.koss.mammut.extension.filterElements
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,16 +28,16 @@ class RegistrationRepository @Inject constructor(
     }
 
     suspend fun addOrUpdateRegistration(registration: InstanceRegistration) {
-        database.instanceRegistrationDao().insertRegistration(registration = registration.toEntity())
+        database.instanceRegistrationDao().insertRegistration(registration = registration.toLocalModel())
     }
 
-    suspend fun getRegistrationForName(name: String): InstanceRegistration? = database.instanceRegistrationDao().getRegistrationByName(name)?.toModel()
+    suspend fun getRegistrationForName(name: String): InstanceRegistration? = database.instanceRegistrationDao().getRegistrationByName(name)?.toNetworkModel()
 
     suspend fun hasRegistrations(): Boolean = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
 
-    suspend fun getAllRegistrations(): List<InstanceRegistration> = database.instanceRegistrationDao().getAllRegistrations().map { it.toModel() }
+    suspend fun getAllRegistrations(): List<InstanceRegistration> = database.instanceRegistrationDao().getAllRegistrations().map { it.toNetworkModel() }
 
-    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toModel() } }
+    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toNetworkModel() } }
 
     fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(getAllRegistrationsLive()
             .filterElements {

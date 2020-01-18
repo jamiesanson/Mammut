@@ -21,6 +21,10 @@ android {
 
         buildConfigField "String", "INSTANCES_SECRET", INSTANCES_SECRET
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 
@@ -29,13 +33,20 @@ dependencies {
 
     implementation project(":instances")
 
+    api rootProject.ext.workManager
+
     implementation rootProject.ext.room
+    implementation rootProject.ext.roomRx
+    implementation rootProject.ext.roomKtx
     kapt rootProject.ext.roomCompiler
 
     implementation rootProject.ext.mastodon4j
 
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleRx
+    implementation rootProject.ext.lifecycleLivedataKtx
+
+    implementation rootProject.ext.coroutinesCore
 
     implementation rootProject.ext.retrofit
     implementation rootProject.ext.retrofitGsonConverter

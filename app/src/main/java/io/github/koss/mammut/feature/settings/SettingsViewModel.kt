@@ -1,12 +1,14 @@
 package io.github.koss.mammut.feature.settings
 
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.themes.Theme
+import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.repo.PreferencesRepository
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.settings.model.*
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +29,19 @@ class SettingsViewModel @Inject constructor(
 
     private fun rebuildSettingsScreen() {
         settingsItems.postSafely(
-                listOf(
+                listOfNotNull(
+                        ToggleableItem(
+                                titleRes = R.string.dark_mode,
+                                isSet = preferencesRepository.darkModeOverrideEnabled,
+                                action = ToggleDarkMode,
+                                isEnabled = if (Build.VERSION.SDK_INT >= 29) !preferencesRepository.darkModeFollowSystem else true
+                        ),
+                        ToggleableItem(
+                                titleRes = R.string.dark_mode_follow_system,
+                                subtitleRes = R.string.dark_mode_follow_system_description,
+                                isSet = preferencesRepository.darkModeFollowSystem,
+                                action = ToggleDarkModeFollowSystem
+                        ).takeIf { Build.VERSION.SDK_INT >= 29 },
                         SectionHeader(
                                 titleRes = R.string.app_settings
                         ),
@@ -64,6 +78,16 @@ class SettingsViewModel @Inject constructor(
             }
             ToggleSwipingBetweenInstance -> {
                 preferencesRepository.swipingBetweenInstancesEnabled = !preferencesRepository.swipingBetweenInstancesEnabled
+                rebuildSettingsScreen()
+            }
+            ToggleDarkMode -> {
+                preferencesRepository.darkModeOverrideEnabled = !preferencesRepository.darkModeOverrideEnabled
+                restartApp.postSafely(Event(Unit))
+                rebuildSettingsScreen()
+            }
+            ToggleDarkModeFollowSystem -> {
+                preferencesRepository.darkModeFollowSystem = !preferencesRepository.darkModeFollowSystem
+                restartApp.postSafely(Event(Unit))
                 rebuildSettingsScreen()
             }
         }

@@ -14,9 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
-import androidx.core.view.children
-import androidx.core.view.isNotEmpty
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
@@ -26,21 +24,22 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.component.GlideApp
-import io.github.koss.mammut.component.retention.retained
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.util.retained
+import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
-import io.github.koss.mammut.extension.comingSoon
 import io.github.koss.mammut.extension.instanceComponent
-import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.feature.instance.subfeature.FullScreenPhotoHandler
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedController
-import io.github.koss.mammut.feature.instance.subfeature.feed.FeedType
+import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
+import io.github.koss.mammut.base.util.GlideApp
+import io.github.koss.mammut.base.util.comingSoon
+import io.github.koss.mammut.base.util.observe
+import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.feed.ui.FeedController
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
@@ -49,7 +48,6 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
-
 
 @ContainerOptions(cache = CacheImplementation.NO_CACHE)
 class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHandler {
@@ -70,14 +68,14 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-            inflater.inflate(R.layout.fragment_profile, container, false)
+        inflater.inflate(R.layout.fragment_profile, container, false)
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         router.getControllerWithTag("")
         instanceComponent()
-                .plus(profileModule)
-                .inject(this)
+            .plus(profileModule)
+            .inject(this)
 
         viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(key, ProfileViewModel::class.java)
     }
@@ -85,6 +83,7 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     override fun onAttach(view: View) {
         super.onAttach(view)
         setupToolbar()
+
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
         viewModel.networkState.observe(this, ::bindNetworkState)
@@ -96,6 +95,18 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     private fun setupToolbar() {
         val context = view?.context ?: return
+
+        view!!.doOnApplyWindowInsets { _, insets, _ ->
+            if (insets.systemWindowInsetTop > 0) {
+                toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = insets.systemWindowInsetTop
+                }
+                collapsingToolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = insets.systemWindowInsetTop
+                }
+            }
+        }
+
         // Resolve colors
         val typedValue = TypedValue()
         val theme = context.theme
@@ -136,6 +147,8 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
                 }
             }
         }
+
+        toolbar.requestApplyInsets()
     }
 
     private fun onEditClicked() {
@@ -148,14 +161,20 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
                     val controller = when (position) {
-                        0 -> FeedController.newInstance(FeedType.AccountToots(
+                        0 -> FeedController.newInstance(
+                            type = FeedType.AccountToots(
                                 accountId = account.accountId,
                                 withReplies = false
-                        ))
-                        1 -> FeedController.newInstance(FeedType.AccountToots(
+                            ),
+                            accessToken = instanceComponent().accessToken()
+                        )
+                        1 -> FeedController.newInstance(
+                            type = FeedType.AccountToots(
                                 accountId = account.accountId,
                                 withReplies = true
-                        ))
+                            ),
+                            accessToken = instanceComponent().accessToken()
+                        )
                         else -> return
                     }
 
@@ -215,26 +234,26 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
         // Notification image
         GlideApp.with(profileImageView)
-                .load(account.avatar)
-                .thumbnail(
-                        GlideApp.with(profileImageView)
-                                .load(ColorDrawable(color))
-                                .apply(RequestOptions.circleCropTransform())
-                )
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(RequestOptions.circleCropTransform())
-                .into(profileImageView)
+            .load(account.avatar)
+            .thumbnail(
+                GlideApp.with(profileImageView)
+                    .load(ColorDrawable(color))
+                    .apply(RequestOptions.circleCropTransform())
+            )
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .apply(RequestOptions.circleCropTransform())
+            .into(profileImageView)
 
         // Header image
         GlideApp.with(coverPhotoImageView)
-                .load(account.header)
-                .thumbnail(
-                        GlideApp.with(coverPhotoImageView)
-                                .load(ColorDrawable(color))
-                )
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(RequestOptions.bitmapTransform(MultiTransformation(BlurTransformation(25), ColorFilterTransformation(color))))
-                .into(coverPhotoImageView)
+            .load(account.header)
+            .thumbnail(
+                GlideApp.with(coverPhotoImageView)
+                    .load(ColorDrawable(color))
+            )
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .apply(RequestOptions.bitmapTransform(MultiTransformation(BlurTransformation(25), ColorFilterTransformation(color))))
+            .into(coverPhotoImageView)
 
         usernameTextView.text = "@${account.acct}"
         displayNameTextView.text = if (account.displayName.isEmpty()) account.acct else account.displayName
@@ -290,10 +309,12 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     companion object {
         @JvmStatic
         fun newInstance(account: Account? = null, isMe: Boolean = true): ProfileController =
-                ProfileController(bundleOf(
-                        ARG_ACCOUNT to account,
-                        ARG_IS_ME to isMe
-                ))
+            ProfileController(
+                bundleOf(
+                    ARG_ACCOUNT to account,
+                    ARG_IS_ME to isMe
+                )
+            )
 
         private val profileOpenCount = AtomicInteger()
 
