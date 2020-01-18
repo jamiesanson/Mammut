@@ -45,8 +45,6 @@ import io.github.koss.mammut.feed.ui.list.FeedAdapter
 import io.github.koss.mammut.feed.ui.view.NetworkIndicator
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
-import kotlinx.android.extensions.CacheImplementation
-import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.controller_feed.*
 import kotlinx.android.synthetic.main.controller_feed.view.*
@@ -135,7 +133,10 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         recyclerView?.doOnApplyWindowInsets { view, insets, _ ->
             view.updatePadding(top = insets.systemWindowInsetTop)
-            newTootButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        }
+
+        newTootButton?.doOnApplyWindowInsets { view, insets, _ ->
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.systemWindowInsetTop
             }
         }
@@ -210,11 +211,13 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun setupRecyclerView() {
-        recyclerView.adapter = FeedAdapter(
-            viewModelProvider = ViewModelProviders.of(activity as AppCompatActivity, factory),
-            feedCallbacks = this,
-            pagingRelay = pagingRelay
-        )
+        if (recyclerView.adapter == null) {
+            recyclerView.adapter = FeedAdapter(
+                viewModelProvider = ViewModelProviders.of(activity as AppCompatActivity, factory),
+                feedCallbacks = this,
+                pagingRelay = pagingRelay
+            )
+        }
 
         recyclerView.layoutManager = LinearLayoutManager(view!!.context)
 

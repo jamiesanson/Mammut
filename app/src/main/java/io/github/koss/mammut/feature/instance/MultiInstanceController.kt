@@ -112,12 +112,9 @@ class MultiInstanceController : BaseController() {
 
         override fun configureRouter(router: Router, position: Int) {
             if (!router.hasRootController()) {
-
                 val controller = InstanceController(args = bundleOf(
                         ARG_AUTH_CODE to registrations[position].accessToken?.accessToken,
                         ARG_INSTANCE_NAME to registrations[position].instanceName))
-
-                controller.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
 
                 router.setRoot(RouterTransaction
                         .with(controller))

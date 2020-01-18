@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="6dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="?attr/colorPrimaryLight"
+    app:cardBackgroundColor="?attr/colorSurface"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

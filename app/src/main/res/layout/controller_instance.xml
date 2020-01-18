@@ -35,27 +35,33 @@
             <FrameLayout
                 android:id="@+id/bottomNavigationTopScrim"
                 android:layout_width="match_parent"
-                android:layout_height="24dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom">
 
                 <View
                     android:layout_width="24dp"
                     android:layout_height="4dp"
-                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center|top"
+                    android:alpha="0.32"
                     android:background="@drawable/bottom_navigation_drag_pill_background" />
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottomNavigationView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="24dp"
+                    app:elevation="0dp"
+                    app:backgroundTint="@android:color/transparent"
+                    app:itemHorizontalTranslationEnabled="false"
+                    app:itemIconTint="@drawable/bottom_navigation_color_state"
+                    app:itemTextColor="@drawable/bottom_navigation_color_state"
+                    app:labelVisibilityMode="labeled"
+                    app:menu="@menu/instance_bottom_navigation" />
+
             </FrameLayout>
 
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottomNavigationView"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                app:elevation="0dp"
-                app:backgroundTint="@android:color/transparent"
-                app:itemHorizontalTranslationEnabled="false"
-                app:itemIconTint="@drawable/bottom_navigation_color_state"
-                app:itemTextColor="@drawable/bottom_navigation_color_state"
-                app:labelVisibilityMode="labeled"
-                app:menu="@menu/instance_bottom_navigation" />
+
 
             <include
                 android:id="@+id/bottomSheetContentLayout"
