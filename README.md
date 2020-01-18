@@ -1,4 +1,4 @@
-# Mammut
+# Mammut [![CircleCI](https://circleci.com/gh/k-oss/Mammut/tree/master.svg?style=svg)](https://circleci.com/gh/k-oss/Mammut/tree/master)
 Mammut is a multi-account capable Mastodon client for Android. It's built with offline support from the get-go for home and local timelines, and will soon allow for offline toot queuing. The key capabilities so far are:
 * Multi-account support, including more than one account per instance
 * Offline support
