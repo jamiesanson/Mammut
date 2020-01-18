@@ -159,6 +159,8 @@ class StatusViewHolder(
         with(itemView) {
             with(ConstraintSet()) {
                 clone(recyclerViewConstraintLayout)
+                @Suppress("SENSELESS_COMPARISON") // lmao
+                if (attachments.first() == null) return
                 setDimensionRatio(attachmentsRecyclerView.id, (processSpec(attachments.first()) * 1.2F).toString())
                 applyTo(recyclerViewConstraintLayout)
             }

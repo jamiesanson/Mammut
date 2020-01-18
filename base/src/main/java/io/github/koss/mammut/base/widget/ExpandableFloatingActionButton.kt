@@ -1,4 +1,4 @@
-package io.github.koss.mammut.component.widget
+package io.github.koss.mammut.base.widget
 
 import android.animation.AnimatorInflater
 import android.content.Context
@@ -15,7 +15,7 @@ import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
-import io.github.koss.mammut.R
+import io.github.koss.mammut.base.R
 import kotlinx.android.synthetic.main.button_expandable_fab.view.*
 import org.jetbrains.anko.textColor
 

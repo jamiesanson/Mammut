@@ -64,4 +64,7 @@
     <string name="retoot">Retoot</string>
     <string name="reply">Reply</string>
     <string name="boost">Boost</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_follow_system">Dark Mode - Follow System</string>
+    <string name="dark_mode_follow_system_description">Follow night mode system preference</string>
 </resources>

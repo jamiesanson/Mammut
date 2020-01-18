@@ -7,8 +7,10 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingLayout"
@@ -17,15 +19,16 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <androidx.appcompat.widget.Toolbar
+                android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 app:layout_collapseMode="pin" />
 
             <FrameLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout"
@@ -37,8 +40,8 @@
                         android:id="@+id/coverPhotoImageView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:scaleType="centerCrop"
                         android:contentDescription="@null"
+                        android:scaleType="centerCrop"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -49,7 +52,7 @@
                     <androidx.appcompat.widget.Toolbar
                         android:id="@+id/toolbar"
                         android:layout_width="match_parent"
-                        android:layout_height="?actionBarSize"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="top"
                         android:layout_marginBottom="8dp"
                         android:background="@android:color/transparent"
@@ -85,14 +88,14 @@
                         android:layout_marginEnd="24dp"
                         android:layout_marginBottom="8dp"
                         android:textColor="?attr/colorControlNormal"
-                        android:visibility="gone"
-                        tools:visibility="visible"
                         android:theme="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/profileImageView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toEndOf="@+id/profileImageView"
-                        app:layout_constraintTop_toTopOf="@+id/profileImageView" />
+                        app:layout_constraintTop_toTopOf="@+id/profileImageView"
+                        tools:visibility="visible" />
 
                     <TextView
                         android:id="@+id/usernameTextView"
@@ -100,8 +103,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:shadowColor="?attr/colorPrimaryDark"
-                        android:shadowRadius="4"
                         app:layout_constraintBottom_toBottomOf="@+id/displayNameTextView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.01"
@@ -118,8 +119,6 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
-                        android:shadowColor="?attr/colorPrimaryDark"
-                        android:shadowRadius="4"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -132,7 +131,7 @@
                     <ImageView
                         android:id="@+id/gradientImageView"
                         android:layout_width="0dp"
-                        android:layout_height="96dp"
+                        android:layout_height="240dp"
                         android:layout_marginTop="8dp"
                         android:contentDescription="@null"
                         app:layout_constraintBottom_toBottomOf="@+id/coverPhotoImageView"
@@ -165,7 +164,8 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="24dp"
-                        android:background="?attr/colorControlNormalTransparent"
+                        android:alpha="0.25"
+                        android:background="?attr/colorOnSurface"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -179,7 +179,8 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
-                        android:background="?attr/colorControlNormalTransparent"
+                        android:alpha="0.25"
+                        android:background="?attr/colorOnSurface"
                         app:layout_constraintBottom_toBottomOf="@+id/coverPhotoImageView"
                         app:layout_constraintBottom_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -294,14 +295,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:layout_gravity="bottom"
-                    android:background="?attr/colorSurface"
                     android:layout_marginTop="?actionBarSize"
-                    app:tabMaxWidth="140dp"
+                    android:background="?attr/colorSurface"
                     app:tabGravity="center"
-                    app:tabMode="fixed"
-                    app:tabPaddingStart="16dp"
                     app:tabInlineLabel="true"
-                    app:tabPaddingEnd="16dp"/>
+                    app:tabMaxWidth="140dp"
+                    app:tabMode="fixed"
+                    app:tabPaddingEnd="16dp"
+                    app:tabPaddingStart="16dp" />
 
             </FrameLayout>
 

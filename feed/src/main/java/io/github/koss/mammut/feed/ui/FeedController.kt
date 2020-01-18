@@ -11,9 +11,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnLayout
-import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
+import androidx.core.view.*
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +42,7 @@ import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.Loaded
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
+import io.github.koss.mammut.feed.ui.view.NetworkIndicator
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.extensions.CacheImplementation
@@ -128,12 +127,17 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         setupRecyclerView()
         setupSwipeToRefresh()
 
+        NetworkIndicator(view!!.context).attach(view as ViewGroup, this)
+
         swipeRefreshLayout.onRefresh {
             viewModel.reload()
         }
 
         recyclerView?.doOnApplyWindowInsets { view, insets, _ ->
             view.updatePadding(top = insets.systemWindowInsetTop)
+            newTootButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.systemWindowInsetTop
+            }
         }
 
         viewModel.state.observe(this) {
@@ -304,7 +308,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         newTootButton.onClick {
             hideNewTootsIndicator()
-            recyclerView?.smoothScrollToPosition(0)
+            recyclerView?.scrollToPosition(0)
         }
     }
 

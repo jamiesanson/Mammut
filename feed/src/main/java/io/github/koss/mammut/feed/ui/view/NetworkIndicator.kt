@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.network
+package io.github.koss.mammut.feed.ui.view
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,13 +9,15 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.core.view.doOnLayout
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.github.koss.mammut.R
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.postSafely
+import io.github.koss.mammut.feed.R
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -35,6 +37,12 @@ class NetworkIndicator(context: Context) {
     fun attach(view: ViewGroup, lifecycleOwner: LifecycleOwner) {
         if (view.offlineModeButton == null) {
             view.inflate(R.layout.button_network_indicator, addToRoot = true)
+        }
+
+        view.doOnApplyWindowInsets { _, insets, initialState ->
+            view.offlineModeButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = initialState.margins.top + insets.systemWindowInsetTop
+            }
         }
 
         // Observe network state

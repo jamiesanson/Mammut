@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feature.settings
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,7 +32,6 @@ import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
 import kotlinx.android.synthetic.main.card_theme.view.*
 import kotlinx.android.synthetic.main.controller_settings.*
-import kotlinx.android.synthetic.main.section_settings_footer.view.*
 import kotlinx.android.synthetic.main.section_settings_header.view.*
 import kotlinx.android.synthetic.main.section_toggleable_item.view.*
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +83,7 @@ class SettingsController : BaseController() {
 
         // Setup close button
         toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        toolbar.navigationIcon?.setTint(view!!.colorAttr(R.attr.colorControlNormal))
+        toolbar.navigationIcon?.setTint(view!!.colorAttr(R.attr.colorOnSurface))
 
         // Setup insets
         collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
@@ -142,15 +140,21 @@ class SettingsController : BaseController() {
         // Toggleable items
         adapter.register<ToggleableItem>(layout = R.layout.section_toggleable_item) { toggleableItem, view, _ ->
             with(view) {
+                isEnabled = toggleableItem.isEnabled
+
                 toggleableTitleTextView.setText(toggleableItem.titleRes)
+                toggleableTitleTextView.isEnabled = toggleableItem.isEnabled
+
                 if (toggleableItem.subtitleRes == 0) {
                     toggleableSubtitleTextView.isVisible = false
                 } else {
                     toggleableSubtitleTextView.isVisible = true
                     toggleableSubtitleTextView.setText(toggleableItem.subtitleRes)
+                    toggleableSubtitleTextView.isEnabled = toggleableItem.isEnabled
                 }
 
                 toggleableSwitch.setOnCheckedChangeListener(null)
+                toggleableSwitch.isEnabled = toggleableItem.isEnabled
 
                 if (toggleableSwitch.isChecked != toggleableItem.isSet) {
                     toggleableSwitch.isChecked = toggleableItem.isSet
@@ -172,22 +176,13 @@ class SettingsController : BaseController() {
                 }
             }
         }
-
-        // Footer
-        adapter.register<SettingsFooter>(layout = R.layout.section_settings_footer) { settingsFooter, view, _ ->
-            with(view) {
-                @SuppressLint("SetTextI18n")
-                buildVersionTextView.text = "Mammut build ${settingsFooter.appVersion}"
-            }
-        }
     }
 
     private fun setupThemesAdapter(adapter: FlexAdapter<Theme>) {
         adapter.register<Theme>(layout = R.layout.card_theme) { theme, view, _ ->
             val resolvedTheme = view.context.theme.apply { applyStyle(theme.styleRes, true) }
 
-            view.cardView.accentColorView.setBackgroundColor(resolvedTheme.color(R.attr.colorAccent))
-            view.cardView.setCardBackgroundColor(resolvedTheme.color(R.attr.colorPrimary))
+            view.cardView.setCardBackgroundColor(resolvedTheme.color(R.attr.colorAccent))
 
             view.themeNameTextView.text = theme.themeName
 

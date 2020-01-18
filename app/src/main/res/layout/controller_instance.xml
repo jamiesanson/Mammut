@@ -27,6 +27,7 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <LinearLayout
+            android:id="@+id/bottomNavigationContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -74,6 +75,8 @@
         android:src="@drawable/ic_add_black_24dp"
         android:tint="?attr/colorControlNormal"
         android:tintMode="src_in"
+        android:backgroundTint="?attr/colorAccent"
+        android:backgroundTintMode="src_in"
         app:layout_anchor="@id/bottomNavigationSheet"
         app:layout_anchorGravity="end|top"
         app:useCompatPadding="true" />

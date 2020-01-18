@@ -119,6 +119,10 @@ class ComposeTootController: BaseController {
 
         appBarLayout.doOnApplyWindowInsets { layout, insets, _ ->
             layout.updatePadding(top = insets.systemWindowInsetTop)
+
+            if (insets.systemWindowInsetBottom != 0) {
+                bottomContentLayout.updatePadding(bottom = insets.systemWindowInsetBottom)
+            }
         }
 
         viewModel.initialise(null, textHeight = inputEditText.lineHeight)
@@ -203,7 +207,7 @@ class ComposeTootController: BaseController {
         if (toolbar.menu.isNotEmpty()) return
 
         // Inflate delete and send items
-        val colorControlNormal = toolbar.context.colorAttr(R.attr.colorControlNormal)
+        val colorControlNormal = toolbar.context.colorAttr(R.attr.colorOnSurface)
         toolbar.inflateMenu(R.menu.menu_compose)
         toolbar.menu.children
                 .forEach {

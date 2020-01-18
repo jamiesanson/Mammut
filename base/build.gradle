@@ -25,6 +25,8 @@ dependencies {
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
+    implementation rootProject.ext.constraintLayout
+
     implementation rootProject.ext.conductor
     implementation rootProject.ext.conductorArchLifecycle
     implementation rootProject.ext.conductorSupport

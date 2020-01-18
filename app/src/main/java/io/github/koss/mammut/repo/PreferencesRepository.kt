@@ -22,5 +22,10 @@ class PreferencesRepository(appContext: Context) {
     var shouldKeepFeedPlace by preferences.boolean(defaultReturn = true)
 
     var swipingBetweenInstancesEnabled by preferences.boolean(defaultReturn = false)
+
+    var darkModeOverrideEnabled by preferences.boolean(defaultReturn = false)
+
+    var darkModeFollowSystem by preferences.boolean(defaultReturn = true)
+
 }
 

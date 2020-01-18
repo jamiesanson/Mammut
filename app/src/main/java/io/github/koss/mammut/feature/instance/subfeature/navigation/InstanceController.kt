@@ -37,6 +37,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.profile.ProfileController
@@ -429,7 +430,9 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun resetPeek() {
         // Reset peak height and re-enable dimming
         view?.let {
-            it.behaviour<BottomSheetBehavior<View>>()?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
+            bottomNavigationSheet
+                    .behaviour<BottomSheetBehavior<View>>()
+                    ?.peekHeight = it.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
         }
 
         peekJob?.cancel()
@@ -439,8 +442,11 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun setupBottomNavigation(view: View) {
         // Edge to edge
         view.bottomNavigationSheet.doOnApplyWindowInsets { _, insets, _ ->
-            peekInsetAddition = insets.systemWindowInsetBottom
-            resetPeek()
+            if (insets.systemWindowInsetBottom != 0) {
+                peekInsetAddition = insets.systemWindowInsetBottom
+                view.bottomNavigationContent.updatePadding(bottom = insets.systemWindowInsetBottom)
+                resetPeek()
+            }
         }
 
         view.bottomSheetContentLayout.elevation = view.bottomNavigationView.elevation
@@ -476,6 +482,7 @@ class InstanceController(args: Bundle) : BaseController(args),
                             .pushChangeHandler(VerticalChangeHandler()))
         }
 
+        view.pendingWorkCell.isVisible = BuildConfig.DEBUG
         view.pendingWorkCell.onClick {
             collapseBottomSheet()
             parentController?.router?.pushController(

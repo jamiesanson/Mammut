@@ -14,11 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
-import androidx.core.view.children
-import androidx.core.view.isNotEmpty
-import androidx.core.view.isVisible
-import androidx.core.view.marginTop
-import androidx.core.view.updateLayoutParams
+import androidx.core.view.*
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
@@ -88,12 +84,6 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
         super.onAttach(view)
         setupToolbar()
 
-        collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
-            layout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.systemWindowInsetTop
-            }
-        }
-
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
         viewModel.networkState.observe(this, ::bindNetworkState)
@@ -105,6 +95,18 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
     private fun setupToolbar() {
         val context = view?.context ?: return
+
+        view!!.doOnApplyWindowInsets { _, insets, _ ->
+            if (insets.systemWindowInsetTop > 0) {
+                toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = insets.systemWindowInsetTop
+                }
+                collapsingToolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = insets.systemWindowInsetTop
+                }
+            }
+        }
+
         // Resolve colors
         val typedValue = TypedValue()
         val theme = context.theme
@@ -131,10 +133,10 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
             toolbar.inflateMenu(R.menu.user_profile_menu)
             toolbar.menu.children
-                .forEach {
-                    it.icon.setTint(colorControlNormal)
-                    it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
-                }
+                    .forEach {
+                        it.icon.setTint(colorControlNormal)
+                        it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
+                    }
             toolbar.setOnMenuItemClickListener { item ->
                 return@setOnMenuItemClickListener when (item.itemId) {
                     R.id.edit_item -> {
@@ -145,6 +147,8 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
                 }
             }
         }
+
+        toolbar.requestApplyInsets()
     }
 
     private fun onEditClicked() {

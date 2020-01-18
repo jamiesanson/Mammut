@@ -11,3 +11,7 @@ object ToggleStreaming: SettingsAction()
 object TogglePlaceKeeping: SettingsAction()
 
 object ToggleSwipingBetweenInstance: SettingsAction()
+
+object ToggleDarkMode: SettingsAction()
+
+object ToggleDarkModeFollowSystem: SettingsAction()

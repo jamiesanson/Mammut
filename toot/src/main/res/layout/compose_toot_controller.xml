@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorSurface"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -11,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:elevation="0dp"
+        android:background="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,8 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/compose"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="?attr/colorControlNormal" />
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -119,7 +120,6 @@
             android:id="@+id/contentWarningEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:hint="@string/content_warning"
             android:inputType="textCapSentences"
             android:maxLines="1"
@@ -155,7 +155,6 @@
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:gravity="top"
             android:hint="@string/what_s_on_your_mind"
             android:inputType="textCapSentences|textMultiLine"
@@ -173,8 +172,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
+        android:clickable="false"
         app:cardCornerRadius="0dp"
         app:cardElevation="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -184,6 +182,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
+            android:id="@+id/bottomContentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

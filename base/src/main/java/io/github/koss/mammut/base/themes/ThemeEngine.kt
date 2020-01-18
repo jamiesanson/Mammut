@@ -2,6 +2,7 @@ package io.github.koss.mammut.base.themes
 
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import io.github.koss.mammut.base.R
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
@@ -12,9 +13,7 @@ class ThemeEngine(
 
     val allThemes = setOf(
             Standard,
-            StandardLight,
-            PastelGreen,
-            PastelGreenLight
+            PastelGreen
     )
 
     val currentTheme: Theme
@@ -23,10 +22,12 @@ class ThemeEngine(
                 Standard
             }
 
-    val isLightTheme: Boolean
-        get() = currentTheme.lightTheme
-
     fun apply(activity: AppCompatActivity) {
+        if (!config.darkModeFollowSystem) {
+            activity.delegate.localNightMode = if (config.darkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        } else {
+            activity.delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
         activity.setTheme(currentTheme.styleRes)
         updateFontDefaults()
     }

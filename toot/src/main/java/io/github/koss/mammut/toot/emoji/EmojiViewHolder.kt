@@ -5,9 +5,9 @@ import android.view.View
 import androidx.appcompat.widget.TooltipCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.toot.R
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.view_holder_emoji.*
@@ -21,13 +21,16 @@ class EmojiViewHolder(
         get() = itemView
 
     fun bind(emoji: Emoji, clickCallback: (Emoji) -> Unit) {
-        val color = itemView.context.colorAttr(R.attr.colorPrimaryTransparency)
+        val color = itemView.context.colorAttr(R.attr.colorOnSurface)
 
-        Glide.with(itemView)
+        GlideApp.with(itemView)
                 .load(emoji.url)
+                .placeholder(ColorDrawable(color).apply {
+                    alpha = ((255f / 100f) * 54f).toInt()
+                })
                 .thumbnail(
                         Glide.with(itemView)
-                                .load(ColorDrawable(color))
+                                .load(ColorDrawable(color).apply { alpha = ((255f / 100f) * 54f).toInt() })
                                 .apply(circleCropTransform())
                 )
                 .into(emojiImageView)
