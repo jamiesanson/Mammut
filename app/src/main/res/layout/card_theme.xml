@@ -30,13 +30,6 @@
             android:layout_width="64dp"
             android:layout_height="64dp">
 
-            <View
-                android:id="@+id/accentColorView"
-                android:layout_width="32dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:background="?colorAccent"/>
-
         </com.google.android.material.card.MaterialCardView>
 
         <TextView

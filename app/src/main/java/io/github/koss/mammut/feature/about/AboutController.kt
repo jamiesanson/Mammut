@@ -9,8 +9,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
-import io.github.koss.mammut.extension.comingSoon
-import io.github.koss.mammut.extension.startActivity
+import io.github.koss.mammut.base.util.startActivity
 import io.github.koss.mammut.feature.contributors.ContributorsController
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions

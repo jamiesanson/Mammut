@@ -12,9 +12,9 @@
     <color name="standardColorControlTransparent">#8AFFFFFF</color>
 
     <style name="Mammut.Standard" parent="Mammut.Base">
-        <item name="colorPrimary">@color/standardPrimaryColor</item>
-        <item name="colorPrimaryLight">@color/standardPrimaryLightColor</item>
-        <item name="colorPrimaryDark">@color/standardPrimaryColor</item>
+        <item name="colorPrimary">@color/standardSecondaryColor</item>
+        <item name="colorPrimaryLight">@color/standardSecondaryLightColor</item>
+        <item name="colorPrimaryDark">@color/standardSecondaryDarkColor</item>
         <item name="colorAccent">@color/standardSecondaryColor</item>
         <item name="colorAccentLight">@color/standardSecondaryLightColor</item>
         <item name="colorAccentDark">@color/standardSecondaryDarkColor</item>

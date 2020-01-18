@@ -9,14 +9,14 @@ import arrow.core.orNull
 import com.crashlytics.android.Crashlytics
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
-import io.github.koss.mammut.data.converters.toEntity
+import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
-import io.github.koss.mammut.extension.postSafely
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
+import io.github.koss.mammut.base.util.postSafely
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ class ProfileViewModel @Inject constructor(
                         Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.a.error)
                         null
                     }
-                }?.toEntity() ?: return@launch
+                }?.toLocalModel() ?: return@launch
 
                 accountLiveData.postSafely(account)
                 followStateLiveData.postSafely(FollowState.IsMe)

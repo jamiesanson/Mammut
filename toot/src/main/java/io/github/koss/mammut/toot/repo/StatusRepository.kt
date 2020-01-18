@@ -5,7 +5,7 @@ import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.data.extensions.run
-import io.github.koss.mammut.data.converters.toModel
+import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.repository.InstanceDetailRepository
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
@@ -62,5 +62,5 @@ class StatusRepository(
                 .loadEmojisForInstance(client.getInstanceName())
                 .filter { it.visibleInPicker }
                 .sortedBy { it.shortcode }
-                .map { it.toModel() }
+                .map { it.toNetworkModel() }
 }

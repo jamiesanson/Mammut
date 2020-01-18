@@ -10,6 +10,10 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -17,6 +21,7 @@ dependencies {
 
     implementation project(":base")
     implementation project(":data")
+    implementation project(":emoji")
 
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx

@@ -32,31 +32,10 @@ abstract class BaseActivity: AppCompatActivity(), CoroutineScope by GlobalScope 
     @CallSuper
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            contentView?.apply {
-                systemUiVisibility = when {
-                    themeEngine.isLightTheme -> View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.run {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            this or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                        } else {
-                            this
-                        }
-                    }
-                    else -> systemUiVisibility and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.run {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            this or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                        } else {
-                            this
-                        }
-                    }).inv()
-                }
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Only apply this on O such that we can also tint the nav bar icons
-            window.navigationBarColor = colorAttr(R.attr.colorPrimary)
-        }
+        // Enable edge-to-edge drawing
+        contentView?.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
     }
 
     override fun attachBaseContext(newBase: Context?) {

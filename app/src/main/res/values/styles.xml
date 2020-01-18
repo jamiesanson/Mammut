@@ -1,21 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppStart.Transparent" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="AppStart.Transparent" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
     </style>
 
-    <style name="AppStart.SplashStyle" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="AppStart.SplashStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/drawable_splash_background</item>
-        <item name="android:statusBarColor">@color/standardPrimaryColor</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
-    <style name="Mammut.Base" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="android:windowBackground">?attr/colorPrimary</item>
-    </style>
+    <style name="Mammut.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-    <style name="Mammut.Base.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">?attr/colorPrimary</item>
+        <!--  Edge to edge theming  -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
+
+        <item name="android:windowBackground">?attr/colorSurface</item>
     </style>
 
 </resources>

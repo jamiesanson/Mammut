@@ -1,0 +1,70 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(":base")
+    implementation project(":data")
+    implementation project(":emoji")
+    api project(":paging")
+
+    implementation rootProject.ext.room
+    implementation rootProject.ext.roomKtx
+
+    implementation rootProject.ext.kotlinRuntime
+    implementation rootProject.ext.ktx
+
+    implementation rootProject.ext.randux
+
+    implementation rootProject.ext.appCompat
+    implementation rootProject.ext.constraintLayout
+
+    implementation rootProject.ext.material
+
+    implementation rootProject.ext.coroutinesCore
+    implementation rootProject.ext.coroutinesAndroid
+    implementation rootProject.ext.coroutinesReactive
+
+    implementation rootProject.ext.conductor
+    implementation rootProject.ext.conductorArchLifecycle
+    implementation rootProject.ext.conductorSupport
+
+    implementation rootProject.ext.dagger
+    kapt rootProject.ext.daggerCompiler
+
+    implementation rootProject.ext.mastodon4j
+
+    implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleLivedataKtx
+
+    implementation rootProject.ext.viewModelKtx
+
+    implementation rootProject.ext.threetenabp
+
+    implementation rootProject.ext.anko
+
+    implementation rootProject.ext.exoCore
+    implementation rootProject.ext.exoUi
+
+    implementation rootProject.ext.glide
+}
+
+androidExtensions {
+    experimental = true
+}

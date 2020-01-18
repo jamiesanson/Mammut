@@ -1,19 +1,14 @@
 package io.github.koss.mammut.toot
 
 import android.content.Context
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.style.DynamicDrawableSpan
-import android.text.style.ImageSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.entity.Status
-import io.github.koss.mammut.toot.emoji.EmojiRenderer
+import io.github.koss.emoji.EmojiRenderer
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import io.github.koss.mammut.toot.repo.StatusRepository
@@ -21,8 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.Bold
-import org.jetbrains.anko.Underline
 import javax.inject.Inject
 
 class ComposeTootViewModel @Inject constructor(
@@ -203,7 +196,8 @@ class ComposeTootViewModel @Inject constructor(
         val liveData = MutableLiveData<SpannableStringBuilder>()
 
         launch {
-            liveData.postValue(EmojiRenderer.render(context, string, availableEmojis.value
+            liveData.postValue(
+                EmojiRenderer.render(context, string, availableEmojis.value
                     ?: emptyList(), textHeight))
         }
 

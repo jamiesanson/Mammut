@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.data.models.InstanceSearchResult
-import io.github.koss.mammut.extension.inflate
 import kotlinx.android.synthetic.main.instance_suggestion_layout.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 

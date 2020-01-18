@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -11,9 +12,10 @@ android {
     }
 }
 
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(":data")
 
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
@@ -23,9 +25,15 @@ dependencies {
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
+    implementation rootProject.ext.constraintLayout
+
     implementation rootProject.ext.conductor
     implementation rootProject.ext.conductorArchLifecycle
     implementation rootProject.ext.conductorSupport
+
+    implementation rootProject.ext.glide
+    implementation rootProject.ext.glideTransformations
+    kapt rootProject.ext.glideCompiler
 
     implementation rootProject.ext.mastodon4j
 
@@ -45,6 +53,8 @@ dependencies {
     implementation rootProject.ext.material
 
     api rootProject.ext.arrowCore
+
+    api "dev.chrisbanes:insetter-ktx:0.2.0"
 }
 
 androidExtensions {

@@ -11,12 +11,9 @@ import android.widget.PopupWindow
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.BuildConfig
-import io.github.koss.mammut.base.dagger.MammutViewModelFactory
+import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.data.models.InstanceSearchResult
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.extension.observe
-import io.github.koss.mammut.extension.provideViewModel
-import io.github.koss.mammut.extension.snackbar
 import io.github.koss.mammut.feature.base.InputError
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
 import io.github.koss.mammut.feature.joininstance.suggestion.InstanceSuggestionPopupWindow
@@ -28,6 +25,9 @@ import javax.inject.Inject
 import androidx.browser.customtabs.CustomTabsIntent
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseActivity
+import io.github.koss.mammut.base.util.observe
+import io.github.koss.mammut.base.util.provideViewModel
+import io.github.koss.mammut.base.util.snackbar
 import io.github.koss.mammut.feature.instance.MultiInstanceActivity
 import org.jetbrains.anko.colorAttr
 import saschpe.android.customtabs.CustomTabsHelper
@@ -124,7 +124,7 @@ class JoinInstanceActivity: BaseActivity() {
     private fun launchOauthUrl(url: String) {
         val customTabsIntent = CustomTabsIntent.Builder()
                 .addDefaultShareMenuItem()
-                .setToolbarColor(colorAttr(R.attr.colorPrimary))
+                .setToolbarColor(colorAttr(R.attr.colorSurface))
                 .setShowTitle(true)
                 .build()
 
