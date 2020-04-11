@@ -125,7 +125,7 @@ class MediaViewHolder(
         // Resolve colors
         val typedValue = TypedValue()
         val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
+        theme.resolveAttribute(R.attr.colorSurface, typedValue, true)
         @ColorInt val color = typedValue.data
 
         val requestManager = GlideApp.with(itemView)

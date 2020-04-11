@@ -20,7 +20,7 @@
         android:focusable="true"
         android:foreground="@drawable/accent_ripple"
         android:stateListAnimator="@animator/cardview_click_animator"
-        app:cardBackgroundColor="?attr/colorControlNormal"
+        app:cardBackgroundColor="?colorSurface"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -48,7 +48,7 @@
             android:id="@+id/sensitiveContentFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/colorControlNormal"
+            android:background="?colorSurface"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone"
@@ -60,7 +60,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="4dp"
                 android:text="@string/sensitive_content_warning"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="?colorOnSurface"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
         </LinearLayout>
@@ -76,7 +76,7 @@
             android:elevation="4dp"
             android:focusable="true"
             android:padding="8dp"
-            android:tint="?attr/colorControlNormal"
+            android:tint="?colorControlNormal"
             android:tintMode="src_in"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_visibility_off_black_24dp"
