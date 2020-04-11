@@ -99,15 +99,6 @@ dependencies {
     api rootProject.ext.rxAndroid
     api rootProject.ext.rxKotlin
 
-    api rootProject.ext.arrowCore
-    api rootProject.ext.arrowSyntax
-    api rootProject.ext.arrowTypeclasses
-    api rootProject.ext.arrowData
-    api rootProject.ext.arrowInstancesCore
-    api rootProject.ext.arrowInstancesCoreData
-    api rootProject.ext.arrowOptics
-    kapt rootProject.ext.arrowProcessor
-
     api rootProject.ext.calligraphy
 
     api rootProject.ext.mastodon4j

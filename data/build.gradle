@@ -52,8 +52,6 @@ dependencies {
     implementation rootProject.ext.retrofitGsonConverter
 
     implementation rootProject.ext.paging
-
-    implementation rootProject.ext.arrowCore
 }
 
 androidExtensions {

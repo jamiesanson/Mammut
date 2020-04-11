@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import arrow.core.Either
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Scope
 import com.sys1yagi.mastodon4j.api.method.Accounts
@@ -14,6 +13,7 @@ import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.data.extensions.ClientBuilder
+import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.models.*
 import io.github.koss.mammut.data.repository.InstancesRepository
 import io.github.koss.mammut.repo.PreferencesRepository
@@ -61,7 +61,7 @@ class JoinInstanceViewModel @Inject constructor(
             // Attempt to make a call to get the instance info - if it fails, the URL is incorrect
             // and we shouldn't continue
             val instanceResult = Public(client).getInstance().run()
-            if (instanceResult is Either.Left) {
+            if (instanceResult is Result.Failure) {
                 isLoading.postSafely(false)
                 errorMessage.postSafely(InputError { resources -> resources.getString(R.string.error_non_existant_instance) })
 
@@ -74,12 +74,12 @@ class JoinInstanceViewModel @Inject constructor(
                     scope = Scope(Scope.Name.ALL)).run()
 
             val registration = when (result) {
-                is Either.Right -> {
-                    result.b
+                is Result.Success -> {
+                    result.data
                 }
-                is Either.Left -> {
+                is Result.Failure -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event { _ -> result.a.description })
+                    errorMessage.postSafely(Event { _ -> result.error.description })
 
                     return@launch
                 }
@@ -142,12 +142,12 @@ class JoinInstanceViewModel @Inject constructor(
             ).run()
 
             val accessToken = when (result) {
-                is Either.Right -> {
-                    result.b
+                is Result.Success -> {
+                    result.data
                 }
-                is Either.Left -> {
+                is Result.Failure -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> result.a.description }))
+                    errorMessage.postSafely(Event({ _ -> result.error.description }))
 
                     return@launch
                 }
@@ -157,10 +157,10 @@ class JoinInstanceViewModel @Inject constructor(
             val authenticatedClient = getClientForUrl(instanceName, accessToken.accessToken)
 
             val account = when (val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()) {
-                is Either.Right -> accountResult.b
-                is Either.Left -> {
+                is Result.Success -> accountResult.data
+                is Result.Failure -> {
                     isLoading.postSafely(false)
-                    errorMessage.postSafely(Event { _ -> accountResult.a.description })
+                    errorMessage.postSafely(Event { _ -> accountResult.error.description })
 
                     return@launch
                 }

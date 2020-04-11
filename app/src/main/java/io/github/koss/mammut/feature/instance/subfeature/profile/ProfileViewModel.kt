@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import arrow.core.Either
-import arrow.core.orNull
 import com.crashlytics.android.Crashlytics
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
@@ -17,6 +15,8 @@ import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.base.util.postSafely
+import io.github.koss.mammut.data.extensions.Result
+import io.github.koss.mammut.data.extensions.orNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -54,11 +54,11 @@ class ProfileViewModel @Inject constructor(
                 val id = registration?.account?.accountId ?: throw IllegalStateException("No associated account found with for $instanceName")
                 val accountResult = Accounts(client).getAccount(id).run()
                 val account = when (accountResult) {
-                    is Either.Right -> accountResult.b
-                    is Either.Left -> {
+                    is Result.Success -> accountResult.data
+                    is Result.Failure -> {
                         // We're most likely offline. Log this as a warning just in case
                         networkState.postSafely(NetworkState.Offline)
-                        Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.a.error)
+                        Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.error.error)
                         null
                     }
                 }?.toLocalModel() ?: return@launch
