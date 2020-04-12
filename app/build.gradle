@@ -53,6 +53,10 @@ android {
         targetCompatibility 1.8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     lintOptions {
         abortOnError false
     }
@@ -99,8 +103,6 @@ dependencies {
     api rootProject.ext.rxAndroid
     api rootProject.ext.rxKotlin
 
-    api rootProject.ext.calligraphy
-
     api rootProject.ext.mastodon4j
 
     api rootProject.ext.room
@@ -112,10 +114,6 @@ dependencies {
     api rootProject.ext.glide
     api rootProject.ext.glideTransformations
     kapt rootProject.ext.glideCompiler
-
-    api rootProject.ext.inboxRecyclerView
-
-    api rootProject.ext.paging
 
     api rootProject.ext.threetenabp
 

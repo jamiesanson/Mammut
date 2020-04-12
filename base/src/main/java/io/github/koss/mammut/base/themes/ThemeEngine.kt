@@ -4,8 +4,6 @@ import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import io.github.koss.mammut.base.R
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 class ThemeEngine(
         private val config: ThemeConfig
@@ -29,15 +27,6 @@ class ThemeEngine(
             activity.delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
         activity.setTheme(currentTheme.styleRes)
-        updateFontDefaults()
-    }
-
-    fun updateFontDefaults() {
-        CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
-                .setDefaultFontPath(currentTheme.primaryFont.path)
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        )
     }
 
     fun applyFontToCollapsingLayout(collapsingToolbarLayout: CollapsingToolbarLayout) {

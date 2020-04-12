@@ -19,6 +19,7 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
 
         <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:fontFamily">@font/varela_round_regular</item>
     </style>
 
 </resources>

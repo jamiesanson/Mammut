@@ -10,6 +10,15 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -45,8 +54,6 @@ dependencies {
     implementation rootProject.ext.lifecycleRx
 
     implementation rootProject.ext.anko
-
-    implementation rootProject.ext.calligraphy
 
     implementation rootProject.ext.dagger
 

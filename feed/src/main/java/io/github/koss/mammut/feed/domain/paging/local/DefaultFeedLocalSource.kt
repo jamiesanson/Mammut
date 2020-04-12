@@ -5,7 +5,7 @@ import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.paging.local.LocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.reactive.flow.asFlow
+import kotlinx.coroutines.reactive.asFlow
 
 class DefaultFeedLocalSource(
         private val statusDao: StatusDao

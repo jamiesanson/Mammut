@@ -32,8 +32,6 @@ class MammutApplication: Application() {
                 .build()
                 .also { it.inject(this) }
 
-        themeEngine.updateFontDefaults()
-
         AndroidThreeTen.init(this)
 
         Fabric.with(this, Crashlytics())

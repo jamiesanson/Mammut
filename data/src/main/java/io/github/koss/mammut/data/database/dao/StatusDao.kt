@@ -1,6 +1,5 @@
 package io.github.koss.mammut.data.database.dao
 
-import androidx.paging.DataSource
 import androidx.room.*
 import io.github.koss.mammut.data.database.entities.feed.Status
 import org.reactivestreams.Publisher
@@ -10,9 +9,6 @@ interface StatusDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertNewPage(page: List<Status>)
-
-    @Query("SELECT * from status ORDER BY createdAt DESC")
-    fun getAllPaged(): DataSource.Factory<Int, Status>
 
     @Query("SELECT * from status ORDER BY createdAt DESC")
     fun getAllAsPublisher(): Publisher<List<Status>>
@@ -37,9 +33,6 @@ interface StatusDao {
 
     @Query("DELETE FROM status WHERE source = :source")
     fun deleteByFeed(source: String)
-
-    @Query("SELECT * FROM status WHERE source = :source ORDER BY createdAt DESC")
-    fun getAllPagedInFeed(source: String): DataSource.Factory<Int, Status>
 
     @Query("SELECT MAX(statusIndex) + 1 FROM status WHERE source = :source")
     fun getNextIndexInFeed(source: String): Int
