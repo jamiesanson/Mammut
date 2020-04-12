@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import io.github.koss.mammut.base.R
+import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.textColor
@@ -86,3 +87,8 @@ fun <T> Fragment.viewLifecycleLazy(initialise: () -> T): ReadOnlyProperty<Fragme
                 }
             }
         }
+
+fun Fragment.findSubcomponentFactory(): SubcomponentFactory =
+        (parentFragment as? SubcomponentFactory)
+                ?: parentFragment?.findSubcomponentFactory()
+                ?: throw IllegalStateException("No parent SubComponentFactory found")

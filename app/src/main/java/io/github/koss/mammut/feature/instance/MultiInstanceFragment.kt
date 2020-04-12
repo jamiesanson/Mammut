@@ -114,7 +114,5 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
                     ARG_INSTANCE_NAME to registrations[position].instanceName
             )
         }
-
-        override fun getItemId(position: Int): Long = registrations[position].id
     }
 }

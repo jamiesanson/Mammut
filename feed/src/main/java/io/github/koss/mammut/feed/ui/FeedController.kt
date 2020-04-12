@@ -87,7 +87,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private val feedModule: FeedModule by retained(key = ::uniqueId) {
-        FeedModule(type, uniqueId)
+        FeedModule(type)
     }
 
     private val tootButtonHidden: Boolean
@@ -125,7 +125,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         setupRecyclerView()
         setupSwipeToRefresh()
 
-        NetworkIndicator(view!!.context).attach(view as ViewGroup, this)
+        NetworkIndicator().attach(view as ViewGroup, this)
 
         swipeRefreshLayout.onRefresh {
             viewModel.reload()

@@ -10,6 +10,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,23 +21,22 @@ import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.feed.R
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
 import org.jetbrains.anko.connectivityManager
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * General network indicator class - can be attached to any `FrameLayout`-esque layout
  */
-class NetworkIndicator(context: Context) {
+class NetworkIndicator {
 
-    init {
-        @Suppress("DEPRECATION") // Deprecation suppressed here as this is the most simple solution for now.
-        context.registerReceiver(NetworkIndicatorReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-    }
+    private val receiver = NetworkIndicatorReceiver()
 
     private val isConnectedLiveData: LiveData<Boolean> = MutableLiveData()
 
     fun attach(view: ViewGroup, lifecycleOwner: LifecycleOwner) {
         if (view.offlineModeButton == null) {
             view.inflate(R.layout.button_network_indicator, addToRoot = true)
+            view.context.registerReceiver(NetworkIndicatorReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
         view.doOnApplyWindowInsets { _, insets, initialState ->
@@ -45,11 +45,18 @@ class NetworkIndicator(context: Context) {
             }
         }
 
+        lifecycleOwner.lifecycle.addObserver(object: DefaultLifecycleObserver {
+            override fun onDestroy(owner: LifecycleOwner) {
+                super.onDestroy(owner)
+                view.context.unregisterReceiver(receiver)
+            }
+        })
+
         // Observe network state
         view.offlineModeButton.doOnLayout {
             view.offlineModeButton.apply {
                 translationY = if (isConnectedLiveData.value != false) {
-                    -(y + height + 50)
+                    -(y + height + dip(50))
                 } else {
                     0f.also {
                         view.offlineModeButton.postDelayed({
@@ -89,7 +96,7 @@ class NetworkIndicator(context: Context) {
                         if (view.offlineModeButton.translationY == 0F) {
                             // Animate out
                             view.offlineModeButton.animate()
-                                    .translationY(-(view.offlineModeButton.y + view.offlineModeButton.height + 50))
+                                    .translationY(-(view.offlineModeButton.y + view.offlineModeButton.height - 50))
                                     .setInterpolator(AccelerateInterpolator())
                                     .setDuration(150L)
                                     .start()

@@ -25,8 +25,7 @@ typealias FeedNetworkSource = NetworkDataSource<Status>
 
 @Module(includes = [FeedViewModelModule::class])
 class FeedModule(
-        private val feedType: FeedType,
-        private val uniqueId: String
+        private val feedType: FeedType
 ) {
 
     @Provides
@@ -52,8 +51,8 @@ class FeedModule(
     @Provides
     @FeedScope
     @Named("database_name")
-    fun provideDatabaseName(): String =
-            "status_${feedType.key}_${uniqueId.take(4)}"
+    fun provideDatabaseName(@Named("instance_access_token") accessToken: String): String =
+            "status_${feedType.key}_${accessToken.take(4)}"
 
     @Provides
     @FeedScope

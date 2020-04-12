@@ -15,21 +15,22 @@
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
-        android:clipToPadding="false"
         android:clipChildren="false"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"/>
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="false"
+        app:cardElevation="12dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
+        android:backgroundTint="?attr/colorAccent"
+        android:backgroundTintMode="src_in"
         android:src="@drawable/ic_add_black_24dp"
         android:tint="?attr/colorControlNormal"
         android:tintMode="src_in"
-        android:backgroundTint="?attr/colorAccent"
-        android:backgroundTintMode="src_in"
         app:layout_anchor="@id/bottomSheet"
         app:layout_anchorGravity="end|top"
         app:useCompatPadding="true" />

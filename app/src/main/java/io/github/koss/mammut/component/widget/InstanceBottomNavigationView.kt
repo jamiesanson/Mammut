@@ -242,8 +242,10 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         //        ItemTouchHelper(InstanceOrderingItemTouchHelper(registrationRepository))
         //                .attachToRecyclerView(binding.instancesRecyclerView)
 
-        LinearSnapHelper()
-                .attachToRecyclerView(binding.instancesRecyclerView)
+        if (binding.instancesRecyclerView.onFlingListener == null) {
+            LinearSnapHelper()
+                    .attachToRecyclerView(binding.instancesRecyclerView)
+        }
 
         // Setup flex adapter
         binding.instancesRecyclerView.adapter = FlexAdapter<Pair<Account, Boolean>>().apply {

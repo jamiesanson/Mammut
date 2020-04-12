@@ -38,21 +38,12 @@
         app:iconGravity="start"
         app:iconTint="?attr/colorControlNormal"
         app:iconTintMode="src_in"
-        android:translationY="-64dp"
+        android:translationY="-120dp"
         android:textColor="?attr/colorControlNormal"
         android:paddingEnd="16dp"
         android:paddingStart="8dp"
         android:text="@string/new_toots"
         app:cornerRadius="48dp"/>
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/emptyStateView"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:visibility="gone"
-        android:layout_gravity="top|center_horizontal"
-        app:lottie_fileName="moon.json"
-        app:lottie_loop="true"/>
 
     <ProgressBar
         android:id="@+id/topLoadingIndicator"

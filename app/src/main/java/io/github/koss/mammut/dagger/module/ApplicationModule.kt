@@ -49,6 +49,6 @@ class ApplicationModule(private val appContext: Context) {
 
     @Provides
     @ApplicationScope
-    fun provideNetworkIndicator(context: Context): NetworkIndicator =
-            NetworkIndicator(context)
+    fun provideNetworkIndicator(): NetworkIndicator =
+            NetworkIndicator()
 }

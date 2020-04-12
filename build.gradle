@@ -95,7 +95,7 @@ ext {
     crashlytics = 'com.crashlytics.sdk.android:crashlytics:2.9.5@aar'
     gestureView = 'com.alexvasilkov:gesture-views:2.5.2'
     flexAdapter = "com.github.ajalt:flexadapter:2.2.0"
-    lottie = "com.airbnb.android:lottie:2.8.0"
+    lottie = "com.airbnb.android:lottie:3.4.0"
     customTabsHelper = 'saschpe.android:customtabs:2.0.0'
 }
 

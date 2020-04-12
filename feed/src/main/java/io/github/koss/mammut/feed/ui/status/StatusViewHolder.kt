@@ -4,7 +4,6 @@ import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.isVisible
@@ -17,37 +16,29 @@ import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.material.button.MaterialButton
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
-import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
-import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.ui.media.processSpec
 import io.github.koss.mammut.feed.ui.view.TriStateButton
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.view_holder_feed_item.*
 import kotlinx.android.synthetic.main.view_holder_feed_item.attachmentsRecyclerView
 import kotlinx.android.synthetic.main.view_holder_feed_item.contentTextView
-import kotlinx.android.synthetic.main.view_holder_feed_item.contentWarningTextView
-import kotlinx.android.synthetic.main.view_holder_feed_item.contentWarningVisibilityButton
 import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.filter
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.textColor
 
 @ExperimentalCoroutinesApi
 class StatusViewHolder(
