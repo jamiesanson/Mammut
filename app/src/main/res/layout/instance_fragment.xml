@@ -65,7 +65,7 @@
 
             <include
                 android:id="@+id/bottomSheetContentLayout"
-                layout="@layout/navigation_bottom_sheet_content"
+                layout="@layout/instance_bottom_navigation_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

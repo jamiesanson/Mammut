@@ -8,6 +8,7 @@ import io.github.koss.mammut.dagger.module.RepositoryModule
 import io.github.koss.mammut.dagger.module.WorkerModule
 import io.github.koss.mammut.feature.instance.MultiInstanceActivity
 import io.github.koss.mammut.feature.instance.MultiInstanceController
+import io.github.koss.mammut.feature.instance.MultiInstanceFragment
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceComponent
@@ -32,6 +33,7 @@ interface ApplicationComponent {
     fun inject(activity: MultiInstanceActivity)
 
     fun inject(activity: MultiInstanceController)
+    fun inject(fragment: MultiInstanceFragment)
 
     fun plus(joinInstanceModule: JoinInstanceModule): JoinInstanceComponent
 

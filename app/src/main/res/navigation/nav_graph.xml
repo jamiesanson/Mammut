@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="io.github.koss.mammut.feed.ui.HomeFeedFragment"
+        android:label="HomeFeedFragment" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/localTimeline"
+        android:name="io.github.koss.mammut.feed.ui.LocalFeedFragment"
+        android:label="LocalFeedFragment" >
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/federatedTimeline"
+        android:name="io.github.koss.mammut.feed.ui.FederatedFeedFragment"
+        android:label="FederatedFeedFragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/notifications"
+        android:name="io.github.koss.mammut.notifications.NotificationsFragment"
+        android:label="NotificationsFragment" />
+</navigation>

@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/homeDestination"
+        android:id="@+id/home"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/home"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/localTimelineDestination"
+        android:id="@+id/localTimeline"
         android:icon="@drawable/ic_people_black_24dp"
         android:title="@string/local"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/federatedTimelineDestination"
+        android:id="@+id/federatedTimeline"
         android:icon="@drawable/ic_public_black_24dp"
         android:title="@string/federated"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/notificationDestination"
+        android:id="@+id/notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/notifications"
         app:showAsAction="ifRoom" />

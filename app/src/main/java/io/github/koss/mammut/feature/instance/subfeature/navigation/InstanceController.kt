@@ -76,9 +76,8 @@ import io.github.koss.mammut.toot.ComposeTootController
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.controller_instance.*
-import kotlinx.android.synthetic.main.controller_instance.view.*
-import kotlinx.android.synthetic.main.navigation_bottom_sheet_content.view.*
+import kotlinx.android.synthetic.main.instance_fragment.*
+import kotlinx.android.synthetic.main.instance_fragment.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
@@ -175,7 +174,7 @@ class InstanceController(args: Bundle) : BaseController(args),
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val view = inflater.inflate(R.layout.controller_instance, container, false)
+        val view = inflater.inflate(R.layout.instance_fragment, container, false)
 
         childRouter = getChildRouter(view.container)
 
@@ -195,7 +194,7 @@ class InstanceController(args: Bundle) : BaseController(args),
         // Looks like this [HomeController] was created for the first time
         if (routerStates.size() == 0) {
             // Select the first item
-            currentSelectedItemId = R.id.homeDestination
+            currentSelectedItemId = R.id.home
             childRouter.setRoot(RouterTransaction.with(
                 FeedController.newInstance(FeedType.Home, accessToken = component.accessToken()))
             )
@@ -473,33 +472,33 @@ class InstanceController(args: Bundle) : BaseController(args),
         }
 
         // Setup Button click handlers
-        view.settingsCell.onClick {
-            collapseBottomSheet()
-            parentController?.router?.pushController(
-                    RouterTransaction
-                            .with(SettingsController())
-                            .popChangeHandler(VerticalChangeHandler())
-                            .pushChangeHandler(VerticalChangeHandler()))
-        }
-
-        view.pendingWorkCell.isVisible = BuildConfig.DEBUG
-        view.pendingWorkCell.onClick {
-            collapseBottomSheet()
-            parentController?.router?.pushController(
-                RouterTransaction
-                    .with(PendingWorkController())
-                    .popChangeHandler(VerticalChangeHandler())
-                    .pushChangeHandler(VerticalChangeHandler()))
-        }
-
-        view.aboutAppCell.onClick {
-            collapseBottomSheet()
-            parentController?.router?.pushController(
-                    RouterTransaction
-                            .with(AboutController())
-                            .popChangeHandler(VerticalChangeHandler())
-                            .pushChangeHandler(VerticalChangeHandler()))
-        }
+//        view.settingsCell.onClick {
+//            collapseBottomSheet()
+//            parentController?.router?.pushController(
+//                    RouterTransaction
+//                            .with(SettingsController())
+//                            .popChangeHandler(VerticalChangeHandler())
+//                            .pushChangeHandler(VerticalChangeHandler()))
+//        }
+//
+//        view.pendingWorkCell.isVisible = BuildConfig.DEBUG
+//        view.pendingWorkCell.onClick {
+//            collapseBottomSheet()
+//            parentController?.router?.pushController(
+//                RouterTransaction
+//                    .with(PendingWorkController())
+//                    .popChangeHandler(VerticalChangeHandler())
+//                    .pushChangeHandler(VerticalChangeHandler()))
+//        }
+//
+//        view.aboutAppCell.onClick {
+//            collapseBottomSheet()
+//            parentController?.router?.pushController(
+//                    RouterTransaction
+//                            .with(AboutController())
+//                            .popChangeHandler(VerticalChangeHandler())
+//                            .pushChangeHandler(VerticalChangeHandler()))
+//        }
 
         // Recyclerview setup
         setupInstancesRecycler(view)
@@ -541,113 +540,113 @@ class InstanceController(args: Bundle) : BaseController(args),
     private fun setupInstancesRecycler(view: View) {
         @ColorInt val placeholderColor = view.colorAttr(R.attr.colorOnSurface)
 
-        view.instancesRecyclerView.layoutManager =
-                LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
-
-        ItemTouchHelper(InstanceOrderingItemTouchHelper(registrationRepository))
-                .attachToRecyclerView(view.instancesRecyclerView)
-
-        LinearSnapHelper()
-                .attachToRecyclerView(view.instancesRecyclerView)
-
-        // Setup flex adapter
-        view.instancesRecyclerView.adapter = FlexAdapter<Pair<Account, Boolean>>().apply {
-            register<Pair<Account, Boolean>>(layout = R.layout.card_account) { (account, selected), view, index ->
-                (view as MaterialCardView).apply {
-                    if (selected) {
-                        strokeWidth = dip(2)
-                    } else {
-                        strokeWidth = 0
-                        onClick {
-                            notifyPageChangeRequested(index)
-                        }
-                    }
-                }
-
-                view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
-                view.findViewById<TextView>(R.id.usernameTextView).apply {
-                    text = account.acct
-                    isSelected = true
-                }
-
-                GlideApp.with(view)
-                        .load(account.header)
-                        .thumbnail(
-                                GlideApp.with(view)
-                                        .load(ColorDrawable(placeholderColor))
-                        )
-                        .apply(RequestOptions.centerCropTransform())
-                        .transition(withCrossFade())
-                        .into(view.findViewById(R.id.backgroundImageView))
-
-                GlideApp.with(view)
-                        .load(account.avatar)
-                        .thumbnail(
-                                GlideApp.with(view)
-                                        .load(ColorDrawable(placeholderColor))
-                                        .apply(RequestOptions.circleCropTransform())
-                        )
-                        .apply(RequestOptions.circleCropTransform())
-                        .transition(withCrossFade())
-                        .into(view.findViewById(R.id.avatarImageView))
-            }
-
-        }
+//        view.instancesRecyclerView.layoutManager =
+//                LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
+//
+//        ItemTouchHelper(InstanceOrderingItemTouchHelper(registrationRepository))
+//                .attachToRecyclerView(view.instancesRecyclerView)
+//
+//        LinearSnapHelper()
+//                .attachToRecyclerView(view.instancesRecyclerView)
+//
+//        // Setup flex adapter
+//        view.instancesRecyclerView.adapter = FlexAdapter<Pair<Account, Boolean>>().apply {
+//            register<Pair<Account, Boolean>>(layout = R.layout.card_account) { (account, selected), view, index ->
+//                (view as MaterialCardView).apply {
+//                    if (selected) {
+//                        strokeWidth = dip(2)
+//                    } else {
+//                        strokeWidth = 0
+//                        onClick {
+//                            notifyPageChangeRequested(index)
+//                        }
+//                    }
+//                }
+//
+//                view.findViewById<TextView>(R.id.displayNameTextView).text = account.displayName
+//                view.findViewById<TextView>(R.id.usernameTextView).apply {
+//                    text = account.acct
+//                    isSelected = true
+//                }
+//
+//                GlideApp.with(view)
+//                        .load(account.header)
+//                        .thumbnail(
+//                                GlideApp.with(view)
+//                                        .load(ColorDrawable(placeholderColor))
+//                        )
+//                        .apply(RequestOptions.centerCropTransform())
+//                        .transition(withCrossFade())
+//                        .into(view.findViewById(R.id.backgroundImageView))
+//
+//                GlideApp.with(view)
+//                        .load(account.avatar)
+//                        .thumbnail(
+//                                GlideApp.with(view)
+//                                        .load(ColorDrawable(placeholderColor))
+//                                        .apply(RequestOptions.circleCropTransform())
+//                        )
+//                        .apply(RequestOptions.circleCropTransform())
+//                        .transition(withCrossFade())
+//                        .into(view.findViewById(R.id.avatarImageView))
+//            }
+//
+//        }
     }
 
     private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
-        // Load Account
-        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorOnSurface)
-
-        GlideApp.with(container)
-                .load(state.currentUser.avatar)
-                .thumbnail(
-                        GlideApp.with(container)
-                                .load(ColorDrawable(placeholderColor))
-                                .apply(RequestOptions.circleCropTransform())
-                )
-                .transition(withCrossFade())
-                .apply(RequestOptions.circleCropTransform())
-                .into(bottomSheetContentLayout.profileImageView)
-
-        val selectedItemList = state.allAccounts.map { it.accountCreatedAt == state.currentUser.accountCreatedAt }
-
-        @Suppress("UNCHECKED_CAST")
-        (bottomSheetContentLayout.instancesRecyclerView.adapter as FlexAdapter<Pair<Account, Boolean>>).let {
-            if (it.items.size == 0) {
-                it.resetItems(state.allAccounts.zip(selectedItemList))
-            } else {
-                val diff = DiffUtil.calculateDiff(getInstancesDiffCallback(it.items.map { it.first }, state.allAccounts.toList()), true)
-                diff.dispatchUpdatesTo(it)
-
-                // Find selected account and scroll to it
-                val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
-                bottomSheetContentLayout.instancesRecyclerView.scrollToPosition(selectedIndex)
-            }
-        }
-
-        with(bottomSheetContentLayout) {
-            displayNameTextView.text = state.currentUser.displayName
-            usernameTextView.text = state.currentUser.fullAcct(instanceModule.provideInstanceName())
-
-            // Find selected account and scroll to it
-            val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
-            instancesRecyclerView.scrollToPosition(selectedIndex)
-
-            addAccountButton.onClick {
-                collapseBottomSheet()
-                startActivity<JoinInstanceActivity>()
-            }
-
-            profileCell.onClick {
-                collapseBottomSheet()
-                childRouter.pushController(
-                        RouterTransaction
-                                .with(ProfileController.newInstance(account = state.currentUser, isMe = true))
-                                .pushChangeHandler(FadeChangeHandler())
-                                .popChangeHandler(FadeChangeHandler()))
-            }
-        }
+//        // Load Account
+//        @ColorInt val placeholderColor = container.colorAttr(R.attr.colorOnSurface)
+//
+//        GlideApp.with(container)
+//                .load(state.currentUser.avatar)
+//                .thumbnail(
+//                        GlideApp.with(container)
+//                                .load(ColorDrawable(placeholderColor))
+//                                .apply(RequestOptions.circleCropTransform())
+//                )
+//                .transition(withCrossFade())
+//                .apply(RequestOptions.circleCropTransform())
+//                .into(bottomSheetContentLayout.profileImageView)
+//
+//        val selectedItemList = state.allAccounts.map { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+//
+//        @Suppress("UNCHECKED_CAST")
+//        (bottomSheetContentLayout.instancesRecyclerView.adapter as FlexAdapter<Pair<Account, Boolean>>).let {
+//            if (it.items.size == 0) {
+//                it.resetItems(state.allAccounts.zip(selectedItemList))
+//            } else {
+//                val diff = DiffUtil.calculateDiff(getInstancesDiffCallback(it.items.map { it.first }, state.allAccounts.toList()), true)
+//                diff.dispatchUpdatesTo(it)
+//
+//                // Find selected account and scroll to it
+//                val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+//                bottomSheetContentLayout.instancesRecyclerView.scrollToPosition(selectedIndex)
+//            }
+//        }
+//
+//        with(bottomSheetContentLayout) {
+//            displayNameTextView.text = state.currentUser.displayName
+//            usernameTextView.text = state.currentUser.fullAcct(instanceModule.provideInstanceName())
+//
+//            // Find selected account and scroll to it
+//            val selectedIndex = state.allAccounts.indexOfFirst { it.accountCreatedAt == state.currentUser.accountCreatedAt }
+//            instancesRecyclerView.scrollToPosition(selectedIndex)
+//
+//            addAccountButton.onClick {
+//                collapseBottomSheet()
+//                startActivity<JoinInstanceActivity>()
+//            }
+//
+//            profileCell.onClick {
+//                collapseBottomSheet()
+//                childRouter.pushController(
+//                        RouterTransaction
+//                                .with(ProfileController.newInstance(account = state.currentUser, isMe = true))
+//                                .pushChangeHandler(FadeChangeHandler())
+//                                .popChangeHandler(FadeChangeHandler()))
+//            }
+//        }
 
     }
 
@@ -690,7 +689,7 @@ class InstanceController(args: Bundle) : BaseController(args),
     /**
      * Simple outline provider for bottom navigation 
      */
-    private class BottomNavOutlineProvider: ViewOutlineProvider() {
+    class BottomNavOutlineProvider: ViewOutlineProvider() {
 
         override fun getOutline(view: View?, outline: Outline?) {
             outline?.setRoundRect(0,0, view!!.width, (view.height + view.context.dip(12)), view.context.dip(12).toFloat())

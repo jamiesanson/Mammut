@@ -17,7 +17,10 @@ class BottomNavigationViewModel @Inject constructor(
         registrationRepository: RegistrationRepository,
         @InstanceScope
         @Named("instance_access_token")
-        private val instanceAccessToken: String
+        private val instanceAccessToken: String,
+        @InstanceScope
+        @Named("instance_name")
+        private val instanceName: String
 ) : ViewModel() {
 
     val viewState: LiveData<BottomNavigationViewState> = Transformations
@@ -25,6 +28,7 @@ class BottomNavigationViewModel @Inject constructor(
 
     private fun produceViewState(registrations: List<InstanceRegistration>): BottomNavigationViewState =
             BottomNavigationViewState(
+                    instanceName = instanceName,
                     currentUser = registrations
                             .first { it.accessToken?.accessToken == instanceAccessToken }
                             .account!!,

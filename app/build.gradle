@@ -10,6 +10,10 @@ buildscript {
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
         classpath 'com.google.android.gms:oss-licenses-plugin:0.9.4'
+
+        // TODO - move this
+        def nav_version = "2.3.0-alpha04"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
 
@@ -17,6 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -60,6 +65,10 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 repositories {
@@ -93,7 +102,21 @@ dependencies {
     api rootProject.ext.randux
 
     api rootProject.ext.lifecycle
+    api rootProject.ext.lifecycleKtx
     api rootProject.ext.lifecycleRx
+
+    api rootProject.ext.viewPager2
+
+    // TODO - Move this out of here
+    def nav_version = "2.3.0-alpha04"
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     api rootProject.ext.anko
 

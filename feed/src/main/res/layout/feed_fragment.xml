@@ -38,6 +38,7 @@
         app:iconGravity="start"
         app:iconTint="?attr/colorControlNormal"
         app:iconTintMode="src_in"
+        android:translationY="-64dp"
         android:textColor="?attr/colorControlNormal"
         android:paddingEnd="16dp"
         android:paddingStart="8dp"

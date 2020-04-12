@@ -23,7 +23,7 @@ import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.android.extensions.CacheImplementation
 import kotlinx.android.extensions.ContainerOptions
-import kotlinx.android.synthetic.main.controller_multi_instance.*
+import kotlinx.android.synthetic.main.multi_instance_controller.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.dip
@@ -45,7 +45,7 @@ class MultiInstanceController : BaseController() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-            inflater.inflate(R.layout.controller_multi_instance, container, false)
+            inflater.inflate(R.layout.multi_instance_controller, container, false)
 
     override fun onAttach(view: View) {
         super.onAttach(view)

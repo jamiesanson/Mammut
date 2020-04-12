@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navGraph="@navigation/nav_graph" />
+
+    <io.github.koss.mammut.component.widget.InstanceBottomNavigationView
+        android:id="@+id/bottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:src="@drawable/ic_add_black_24dp"
+        android:tint="?attr/colorControlNormal"
+        android:tintMode="src_in"
+        android:backgroundTint="?attr/colorAccent"
+        android:backgroundTintMode="src_in"
+        app:layout_anchor="@id/bottomSheet"
+        app:layout_anchorGravity="end|top"
+        app:useCompatPadding="true" />
+
+    <View
+        android:id="@+id/bottomNavigationDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="?colorControlNormalTransparent"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <View
+        android:id="@+id/fullScreenPhotoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorPrimaryTransparency"
+        android:elevation="16dp"
+        android:visibility="gone" />
+
+    <com.alexvasilkov.gestures.views.GestureImageView
+        android:id="@+id/fullScreenGestureImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -51,6 +51,7 @@
 
         <activity
             android:name=".feature.instance.MultiInstanceActivity"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Disable the WorkManagerInitializer such that we can use our own worker factory -->

@@ -36,10 +36,14 @@ ext {
     // Lifecycle
     def lifecycle_version = "2.2.0"
     lifecycle = "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    lifecycleJava8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    lifecycleKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     lifecycleRx = "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
     lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
-
     viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+
+    // ViewPager2
+    viewPager2 = "androidx.viewpager2:viewpager2:1.0.0"
 
     // Anko
     anko = "org.jetbrains.anko:anko:0.10.8"

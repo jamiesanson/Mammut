@@ -46,8 +46,8 @@ import io.github.koss.mammut.feed.ui.view.NetworkIndicator
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
 import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.controller_feed.*
-import kotlinx.android.synthetic.main.controller_feed.view.*
+import kotlinx.android.synthetic.main.feed_fragment.*
+import kotlinx.android.synthetic.main.feed_fragment.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -103,7 +103,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-            inflater.inflate(R.layout.controller_feed, container, false)
+            inflater.inflate(R.layout.feed_fragment, container, false)
 
     override fun initialise(savedInstanceState: Bundle?) {
         super.initialise(savedInstanceState)

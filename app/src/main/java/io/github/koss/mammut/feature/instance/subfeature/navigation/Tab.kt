@@ -7,11 +7,11 @@ import kotlinx.android.parcel.Parcelize
 
 sealed class Tab(@IdRes val menuItemId: Int): Parcelable {
     @Parcelize
-    object Home: Tab(menuItemId = R.id.homeDestination)
+    object Home: Tab(menuItemId = R.id.home)
     @Parcelize
-    object Local: Tab(menuItemId = R.id.localTimelineDestination)
+    object Local: Tab(menuItemId = R.id.localTimeline)
     @Parcelize
-    object Federated: Tab(menuItemId = R.id.federatedTimelineDestination)
+    object Federated: Tab(menuItemId = R.id.federatedTimeline)
     @Parcelize
-    object Notification: Tab(menuItemId = R.id.notificationDestination)
+    object Notification: Tab(menuItemId = R.id.notifications)
 }

@@ -51,6 +51,7 @@ dependencies {
     implementation rootProject.ext.rxKotlin
 
     implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleJava8
     implementation rootProject.ext.lifecycleRx
 
     implementation rootProject.ext.anko

@@ -81,7 +81,7 @@ class RetentionViewModel(
 /**
  * Extension properties for ease of use
  */
-fun <T> Fragment.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
+fun <T> Fragment.retained(key: () -> String = { "" }, valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, key, valInitializer)
 
 fun <T> AppCompatActivity.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
 
