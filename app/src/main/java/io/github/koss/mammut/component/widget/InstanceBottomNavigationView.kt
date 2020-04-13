@@ -4,16 +4,12 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -35,7 +31,7 @@ import io.github.koss.mammut.base.util.behaviour
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.databinding.InstanceBottomNavigationViewBinding
-import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewState
+import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
@@ -53,7 +49,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private var peekInsetAddition: Int = 0
     private var peekJob: Job = Job()
 
-    private var currentState: BottomNavigationViewState? = null
+    private var currentState: InstanceState? = null
     private var initialised: Boolean = false
 
     var onNavigationClickListener: OnNavigationClickListener? = null
@@ -153,7 +149,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                 ?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    fun setState(state: BottomNavigationViewState) {
+    fun setState(state: InstanceState) {
         currentState = state
 
         if (initialised) {
@@ -293,12 +289,12 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    private fun renderBottomNavigationContent(state: BottomNavigationViewState) {
+    private fun renderBottomNavigationContent(state: InstanceState) {
         // Load Account
         @ColorInt val placeholderColor = colorAttr(R.attr.colorOnSurface)
 
         GlideApp.with(this)
-                .load(state.currentUser.avatar)
+                .load(state.currentUser!!.avatar)
                 .thumbnail(
                         GlideApp.with(this)
                                 .load(ColorDrawable(placeholderColor))

@@ -3,12 +3,16 @@ package io.github.koss.mammut.data.database.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.github.koss.mammut.data.database.entities.InstanceRegistrationEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface InstanceRegistrationDao {
 
     @Query("SELECT * FROM instanceregistrationentity")
     fun getAllRegistrations(): List<InstanceRegistrationEntity>
+
+    @Query("SELECT * FROM instanceregistrationentity")
+    fun getAllRegistrationsFlow(): Flow<List<InstanceRegistrationEntity>>
 
     @Query("SELECT * FROM instanceregistrationentity")
     fun getAllRegistrationsLive(): LiveData<List<InstanceRegistrationEntity>>

@@ -33,6 +33,7 @@ dependencies {
 
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
+    implementation rootProject.ext.coroutinesReactive
 
     implementation rootProject.ext.constraintLayout
 

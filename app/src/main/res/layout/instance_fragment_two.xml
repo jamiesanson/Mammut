@@ -19,7 +19,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:nestedScrollingEnabled="false"
-        app:cardElevation="12dp"
+        app:cardElevation="8dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -75,5 +75,62 @@
         android:layout_height="match_parent"
         android:elevation="16dp"
         android:visibility="gone" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/feedChooserCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_gravity="center|top">
+
+        <LinearLayout
+            android:id="@+id/feedChooserCardContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="Choose your feed type"
+                android:textAppearance="?textAppearanceHeadline6"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <include
+                android:id="@+id/homeFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+            <include
+                android:id="@+id/localFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+            <include
+                android:id="@+id/federatedFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <View
+        android:id="@+id/feedTypeDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="?colorControlNormalTransparent"
+        android:clickable="true"
+        android:focusable="true" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

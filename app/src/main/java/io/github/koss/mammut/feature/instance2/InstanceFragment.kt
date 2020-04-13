@@ -9,27 +9,37 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
-import io.github.koss.mammut.base.navigation.NavigationEvent
-import io.github.koss.mammut.base.navigation.NavigationEventBus
+import io.github.koss.mammut.base.navigation.Event
 import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.component.widget.InstanceBottomNavigationView
-import io.github.koss.mammut.dagger.application.ApplicationScope
-import io.github.koss.mammut.data.models.domain.FeedType
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.databinding.InstanceFragmentTwoBinding
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.MultiInstanceFragment
-import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewModel
+import io.github.koss.mammut.feature.instance2.presentation.InstanceViewModel
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instance2.presentation.navigation.NavigationEvent
+import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledDown
+import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledUp
+import io.github.koss.mammut.feature.instance2.presentation.navigation.UserPeekRequested
+import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
+import io.github.koss.mammut.feature.instance2.view.*
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 const val ARG_INSTANCE_NAME = "arg_instance_name"
@@ -39,7 +49,7 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
     private val binding by viewLifecycleLazy { InstanceFragmentTwoBinding.bind(requireView()) }
 
-    private val component: InstanceComponent  by retained(key = { requireArguments().getString(ARG_AUTH_CODE)!! }) {
+    private val component: InstanceComponent by retained(key = { requireArguments().getString(ARG_AUTH_CODE)!! }) {
         (context as AppCompatActivity).applicationComponent
                 .plus(instanceModule)
     }
@@ -58,23 +68,25 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
     @ApplicationScope
     lateinit var registrationRepository: RegistrationRepository
 
-    @Inject
-    @ApplicationScope
-    lateinit var navigationEventBus: NavigationEventBus
+    private lateinit var instanceViewModel: InstanceViewModel
 
-    private lateinit var bottomNavigationViewModel: BottomNavigationViewModel
+    private var hideIndicatorJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         component.inject(this)
 
-        bottomNavigationViewModel = ViewModelProvider(activity as AppCompatActivity, viewModelFactory)
-                .get(component.accessToken(), BottomNavigationViewModel::class.java)
+        instanceViewModel = ViewModelProvider(activity as AppCompatActivity, viewModelFactory)
+                .get(component.accessToken(), InstanceViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupNavigation()
+
+        instanceViewModel.state.observe(viewLifecycleOwner, ::onStateChanged)
+        instanceViewModel.navigationEvents.observe(viewLifecycleOwner, ::onNavigationEvent)
     }
 
     override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
@@ -93,23 +105,27 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.feed,
+                R.id.feed -> {
+                    binding.bottomSheet.collapse()
+                    binding.feedTypeButton.isVisible = true
+                }
                 R.id.search,
-                R.id.notifications -> binding.bottomSheet.collapse()
+                R.id.notifications -> {
+                    binding.bottomSheet.collapse()
+                    binding.feedTypeButton.isVisible = false
+                    binding.feedChooserCard.isVisible = false
+                }
             }
         }
 
-        bottomNavigationViewModel.viewState.observe(viewLifecycleOwner) {
-            binding.bottomSheet.setState(it)
-        }
 
-        with (binding.bottomSheet) {
-            onNavigationClickListener = object: InstanceBottomNavigationView.OnNavigationClickListener {
+        with(binding.bottomSheet) {
+            onNavigationClickListener = object : InstanceBottomNavigationView.OnNavigationClickListener {
                 override fun onNavigationClicked(destination: InstanceBottomNavigationView.NavigationDestination) =
                         onSheetNavigationItemClicked(destination)
             }
 
-            onSheetScrollListener = object: InstanceBottomNavigationView.OnSheetScrollListener {
+            onSheetScrollListener = object : InstanceBottomNavigationView.OnSheetScrollListener {
                 override fun onScrolled(proportion: Float) {
                     when (proportion) {
                         0f -> {
@@ -125,7 +141,7 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
                 }
             }
 
-            onInstanceChangeListener = object: InstanceBottomNavigationView.OnInstanceChangeListener {
+            onInstanceChangeListener = object : InstanceBottomNavigationView.OnInstanceChangeListener {
                 override fun onInstanceChanged(index: Int) = onInstanceIndexSelected(index)
             }
         }
@@ -134,17 +150,44 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
             binding.bottomSheet.expand()
         }
 
-        // TODO - Set up feed switching
-        var count = 0
         binding.feedTypeButton.setOnClickListener {
-            if (count.rem(2) == 0) {
-                navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(FeedType.Local))
-                binding.feedTypeButton.text = "Local feed"
-            } else {
-                navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(FeedType.Home))
-                binding.feedTypeButton.text = "Home feed"
-            }
-            count++
+            binding.openChooser()
+        }
+
+        binding.feedTypeDim.setOnClickListener {
+            binding.closeChooser()
+        }
+
+        binding.feedChooserCardContent.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        binding.showFeedTypeButton(animate = false)
+        hideIndicatorJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(5000L)
+            binding.hideFeedTypeButton()
+        }
+    }
+
+    private fun onStateChanged(state: InstanceState) {
+        // Update the bottom sheet
+        binding.bottomSheet.setState(state)
+
+        // Configure feed type button
+        binding.bindFeedTypeButton(state.selectedFeedType)
+
+        // Setup chooser
+        binding.setupChooser(selectedFeedType = state.selectedFeedType) {
+            instanceViewModel.changeFeedType(it)
+        }
+    }
+
+    private fun onNavigationEvent(event: Event<NavigationEvent>) {
+        when (event.getContentIfNotHandled()) {
+            null -> return
+            UserPeekRequested -> binding.bottomSheet.peekCurrentUser()
+            ScrolledUp -> binding.showFeedTypeButton()
+            ScrolledDown -> binding.hideFeedTypeButton()
         }
     }
 
@@ -153,7 +196,8 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
             InstanceBottomNavigationView.NavigationDestination.Settings,
             InstanceBottomNavigationView.NavigationDestination.PendingWork,
             InstanceBottomNavigationView.NavigationDestination.AboutApp,
-            InstanceBottomNavigationView.NavigationDestination.Profile -> {} // TODO - implement navigation
+            InstanceBottomNavigationView.NavigationDestination.Profile -> {
+            } // TODO - implement navigation
             InstanceBottomNavigationView.NavigationDestination.JoinInstance -> {
                 startActivity(Intent(context, JoinInstanceActivity::class.java))
             }

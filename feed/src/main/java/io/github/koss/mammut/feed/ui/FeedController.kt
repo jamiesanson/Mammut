@@ -127,10 +127,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
 
         NetworkIndicator().attach(view as ViewGroup, this)
 
-        swipeRefreshLayout.onRefresh {
-            viewModel.reload()
-        }
-
         recyclerView?.doOnApplyWindowInsets { view, insets, _ ->
             view.updatePadding(top = insets.systemWindowInsetTop)
         }
@@ -155,7 +151,6 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         // If we're scrolled to the top reload else scroll up
         if (recyclerView?.computeVerticalScrollOffset() == 0) {
             // Show the swipe to refresh loading indicator
-            swipeRefreshLayout.isRefreshing = true
             viewModel.reload()
         } else {
             recyclerView?.smoothScrollToPosition(0)
@@ -236,9 +231,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun setupSwipeToRefresh() {
-        swipeRefreshLayout.onRefresh {
-            viewModel.reload()
-        }
+
     }
 
     private fun processState(state: FeedState) {
@@ -271,10 +264,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun showLoadingAll() {
-        // Only show the full progress bar if the swipe refresh layout isn't refreshing
-        if (!swipeRefreshLayout.isRefreshing) {
-            progressBar.isVisible = true
-        }
+
         bottomLoadingIndicator.isVisible = false
         topLoadingIndicator.isVisible = false
     }
@@ -286,11 +276,8 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         topLoadingIndicator.isVisible = state.loadingAtFront
         bottomLoadingIndicator.isVisible = state.loadingAtEnd
 
-        swipeRefreshLayout.isRefreshing = false
 
         progressBar.isVisible = false
-
-        swipeRefreshLayout.isRefreshing = false
 
         (recyclerView?.adapter as? FeedAdapter)?.submitList(state.items)
         recyclerView?.doOnLayout {

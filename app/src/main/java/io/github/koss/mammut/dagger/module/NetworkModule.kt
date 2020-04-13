@@ -3,7 +3,7 @@ package io.github.koss.mammut.dagger.module
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import okhttp3.OkHttpClient
 

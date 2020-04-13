@@ -2,6 +2,7 @@ package io.github.koss.mammut.dagger.application
 
 import dagger.Component
 import io.github.koss.mammut.MammutApplication
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.dagger.module.ApplicationModule
 import io.github.koss.mammut.dagger.module.NetworkModule
 import io.github.koss.mammut.dagger.module.RepositoryModule

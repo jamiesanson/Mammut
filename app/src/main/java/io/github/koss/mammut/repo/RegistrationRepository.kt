@@ -3,13 +3,15 @@ package io.github.koss.mammut.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import io.github.koss.mammut.base.util.filterElements
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.converters.toNetworkModel
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.models.InstanceRegistration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,6 +38,11 @@ class RegistrationRepository @Inject constructor(
     suspend fun hasRegistrations(): Boolean = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
 
     suspend fun getAllRegistrations(): List<InstanceRegistration> = database.instanceRegistrationDao().getAllRegistrations().map { it.toNetworkModel() }
+
+    fun getAllRegistrationsFlow(): Flow<List<InstanceRegistration>> =
+            database.instanceRegistrationDao()
+                    .getAllRegistrationsFlow()
+                    .map { list -> list.map { it.toNetworkModel() }}
 
     fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toNetworkModel() } }
 

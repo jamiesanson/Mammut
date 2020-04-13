@@ -12,9 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
+import io.github.koss.mammut.base.navigation.Direction
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.util.findSubcomponentFactory
@@ -67,10 +70,12 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     lateinit var accessToken: String
 
     @Inject
+    @ApplicationScope
     lateinit var navigationBus: NavigationEventBus
 
-    private val uniqueId: String get() =
-        "$accessToken$feedType"
+    private val uniqueId: String
+        get() =
+            "$accessToken$feedType"
 
     private val binding by viewLifecycleLazy { FeedFragmentBinding.bind(requireView()) }
 
@@ -107,16 +112,15 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        setupSwipeToRefresh()
         handleInsets()
 
         viewModel.state.observe(viewLifecycleOwner, stateObserver)
         viewModel.event.observe(viewLifecycleOwner, eventObserver)
 
         navigationBus.events.observe(viewLifecycleOwner, Observer {
-            when (val incomingEvent = it.getContentIfNotHandled()) {
+            when (it.peekContent()) {
                 is NavigationEvent.Feed.TypeChanged ->
-                    swapFeedType(incomingEvent.newFeedType)
+                    swapFeedType((it.getContentIfNotHandled() as NavigationEvent.Feed.TypeChanged).newFeedType)
             }
         })
     }
@@ -171,17 +175,30 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var cumulativeScrollDyBetweenSettles = 0
+
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 updateBadgeCount()
+
+                // TODO - This needs tidying up
+                if (newState == SCROLL_STATE_SETTLING) {
+                    val direction = if (cumulativeScrollDyBetweenSettles > 0) {
+                        Direction.Down
+                    } else {
+                        Direction.Up
+                    }
+
+                    navigationBus.sendEvent(NavigationEvent.Feed.ScrollStarted(direction))
+                    cumulativeScrollDyBetweenSettles = 0
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                cumulativeScrollDyBetweenSettles += dy
             }
         })
-    }
-
-    private fun setupSwipeToRefresh() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.reload()
-        }
     }
 
     private fun handleInsets() {
@@ -217,9 +234,6 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     private fun showLoadingAll() {
         // Only show the full progress bar if the swipe refresh layout isn't refreshing
-        if (!binding.swipeRefreshLayout.isRefreshing) {
-            binding.progressBar.isVisible = true
-        }
         binding.bottomLoadingIndicator.isVisible = false
         binding.topLoadingIndicator.isVisible = false
     }
@@ -229,8 +243,6 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.bottomLoadingIndicator.isVisible = state.loadingAtEnd
 
         binding.progressBar.isVisible = false
-
-        binding.swipeRefreshLayout.isRefreshing = false
 
         (binding.recyclerView.adapter as? FeedAdapter)?.submitList(state.items)
 

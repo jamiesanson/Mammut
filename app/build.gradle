@@ -105,6 +105,7 @@ dependencies {
     api rootProject.ext.lifecycle
     api rootProject.ext.lifecycleKtx
     api rootProject.ext.lifecycleRx
+    api rootProject.ext.lifecycleLivedataKtx
 
     api rootProject.ext.viewPager2
 

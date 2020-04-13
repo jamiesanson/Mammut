@@ -5,7 +5,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.dagger.worker.MammutWorkerFactory
 import io.github.koss.mammut.dagger.worker.WorkerKey
 import io.github.koss.mammut.data.extensions.ClientBuilder

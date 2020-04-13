@@ -69,4 +69,10 @@
     <string name="dark_mode_follow_system_description">Follow night mode system preference</string>
     <string name="search">Search</string>
     <string name="feed">Feed</string>
+    <string name="home_feed_title">Home Feed</string>
+    <string name="home_feed_subtitle">A timeline of people you follow</string>
+    <string name="local_feed_title">Local Feed</string>
+    <string name="local_feed_subtitle">A timeline of statuses from this instance</string>
+    <string name="federared_feed_title">Federated Feed</string>
+    <string name="federated_feed_subtitle">A timeline including statuses from other instances</string>
 </resources>

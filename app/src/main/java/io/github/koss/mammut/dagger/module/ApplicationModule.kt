@@ -7,11 +7,12 @@ import dagger.Provides
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.themes.ThemeConfig
 import io.github.koss.mammut.base.themes.ThemeEngine
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.MammutDatabaseInitialiser
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feed.ui.view.NetworkIndicator
+import javax.inject.Singleton
 
 @Module
 class ApplicationModule(private val appContext: Context) {
