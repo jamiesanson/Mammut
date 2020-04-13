@@ -4,7 +4,7 @@ import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Range
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.data.extensions.run
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.paging.network.*
 import kotlinx.coroutines.coroutineScope
 

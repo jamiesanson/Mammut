@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import dagger.Module
 import dagger.Provides
+import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.themes.ThemeConfig
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.dagger.application.ApplicationScope
@@ -51,4 +52,9 @@ class ApplicationModule(private val appContext: Context) {
     @ApplicationScope
     fun provideNetworkIndicator(): NetworkIndicator =
             NetworkIndicator()
+
+    @Provides
+    @ApplicationScope
+    fun provideNavigationEventBus(): NavigationEventBus =
+            NavigationEventBus()
 }

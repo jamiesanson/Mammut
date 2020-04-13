@@ -2,25 +2,21 @@ package io.github.koss.mammut.feed.ui
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
+import io.github.koss.mammut.base.navigation.NavigationEvent
+import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.Account
@@ -29,7 +25,7 @@ import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.databinding.FeedFragmentBinding
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.presentation.FeedViewModel
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
 import io.github.koss.mammut.feed.presentation.event.ItemStreamed
@@ -37,28 +33,14 @@ import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.Loaded
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.ui.list.FeedAdapter
-import io.github.koss.mammut.feed.ui.view.NetworkIndicator
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jetbrains.anko.support.v4.dip
 import javax.inject.Inject
 import javax.inject.Named
 
 // This is due to a limitation of the navigation library, allowing us to use default parcelable args
 class HomeFeedFragment : FeedFragment() {
     override var feedType: FeedType = FeedType.Home
-}
-
-class LocalFeedFragment : FeedFragment() {
-    override var feedType: FeedType = FeedType.Local
-}
-
-class FederatedFeedFragment : FeedFragment() {
-    override var feedType: FeedType = FeedType.Federated
 }
 
 /**
@@ -72,12 +54,6 @@ class FederatedFeedFragment : FeedFragment() {
  */
 open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
-    private val binding by viewLifecycleLazy { FeedFragmentBinding.bind(requireView()) }
-
-    protected open lateinit var feedType: FeedType
-
-    private lateinit var viewModel: FeedViewModel
-
     @Inject
     @FeedScope
     lateinit var factory: MammutViewModelFactory
@@ -90,26 +66,41 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     @Named("instance_access_token")
     lateinit var accessToken: String
 
-    private val uniqueId: String by lazy {
+    @Inject
+    lateinit var navigationBus: NavigationEventBus
+
+    private val uniqueId: String get() =
         "$accessToken$feedType"
-    }
 
-    private val feedModule: FeedModule by lazy {
-        FeedModule(feedType)
-    }
+    private val binding by viewLifecycleLazy { FeedFragmentBinding.bind(requireView()) }
 
-    private val tootButtonHidden: Boolean
-        get() = binding.newTootButton.translationY != 0f
+    private var currentOffScreenCount: Int = 0
+    private var pendingStreamItem: Boolean = false
+
+    private val stateObserver = Observer<FeedState> { processState(it) }
+    private val eventObserver = Observer<FeedEvent> { handleEvent(it) }
+
+    protected open lateinit var feedType: FeedType
+
+    private lateinit var viewModel: FeedViewModel
+
+    private var componentCache = mutableMapOf<FeedType, FeedComponent>()
+
+    private fun retrieveComponent(feedType: FeedType): FeedComponent =
+            when (val cachedComponent = componentCache[feedType]) {
+                null -> {
+                    findSubcomponentFactory()
+                            .buildSubcomponent<FeedModule, FeedComponent>(FeedModule(feedType))
+                            .also {
+                                componentCache[feedType] = it
+                            }
+                }
+                else -> cachedComponent
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        findSubcomponentFactory()
-                .buildSubcomponent<FeedModule, FeedComponent>(feedModule)
-                .inject(this)
-
-        viewModel = ViewModelProvider(context as AppCompatActivity, factory)
-                .get(uniqueId, FeedViewModel::class.java)
+        initialiseDependencies()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,15 +110,55 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         setupSwipeToRefresh()
         handleInsets()
 
-        viewModel.state.observe(viewLifecycleOwner, Observer {
-            processState(it)
-        })
-        viewModel.event.observe(viewLifecycleOwner, Observer {
-            handleEvent(it)
-        })
+        viewModel.state.observe(viewLifecycleOwner, stateObserver)
+        viewModel.event.observe(viewLifecycleOwner, eventObserver)
 
-        // Attach the network indicator TODO - Do this more elegantly
-        // NetworkIndicator().attach(view as ViewGroup, viewLifecycleOwner)
+        navigationBus.events.observe(viewLifecycleOwner, Observer {
+            when (val incomingEvent = it.getContentIfNotHandled()) {
+                is NavigationEvent.Feed.TypeChanged ->
+                    swapFeedType(incomingEvent.newFeedType)
+            }
+        })
+    }
+
+    private fun initialiseDependencies() {
+        retrieveComponent(feedType)
+                .inject(this)
+
+        viewModel = ViewModelProvider(context as AppCompatActivity, factory)
+                .get(uniqueId, FeedViewModel::class.java)
+    }
+
+    private fun swapFeedType(newFeedType: FeedType) {
+        // Remove observers
+        viewModel.state.removeObserver(stateObserver)
+        viewModel.event.removeObserver(eventObserver)
+
+        // Clear adapter
+        (binding.recyclerView.adapter as FeedAdapter)
+                .submitList(emptyList())
+
+        showLoadingAll()
+
+        // Swap dependencies
+        feedType = newFeedType
+        initialiseDependencies()
+
+        // Re-add observers
+        viewModel.state.observe(viewLifecycleOwner, stateObserver)
+        viewModel.event.observe(viewLifecycleOwner, eventObserver)
+    }
+
+    private fun updateBadgeCount() {
+        val newCount = (binding.recyclerView.layoutManager as LinearLayoutManager)
+                .findFirstCompletelyVisibleItemPosition()
+
+        if (newCount == currentOffScreenCount) return
+
+        currentOffScreenCount = newCount
+        navigationBus.sendEvent(NavigationEvent.Feed.OffscreenCountChanged(
+                newCount = currentOffScreenCount
+        ))
     }
 
     private fun setupRecyclerView() {
@@ -142,12 +173,7 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                // If we've scrolled to the top of the recyclerView, hide the new toots indicator
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
-                    if (!tootButtonHidden) {
-                        hideNewTootsIndicator()
-                    }
-                }
+                updateBadgeCount()
             }
         })
     }
@@ -162,12 +188,6 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.recyclerView.doOnApplyWindowInsets { view, insets, _ ->
             view.updatePadding(top = insets.systemWindowInsetTop)
         }
-
-        binding.newTootButton.doOnApplyWindowInsets { view, insets, _ ->
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.systemWindowInsetTop
-            }
-        }
     }
 
     private fun processState(state: FeedState) {
@@ -179,26 +199,20 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     private fun handleEvent(event: FeedEvent) {
         when (event) {
-            ItemStreamed -> onItemStreamed()
+            ItemStreamed -> pendingStreamItem = true
         }
     }
 
     private fun onItemStreamed() {
         if (binding.recyclerView.isNearTop()) {
-            // Wait a little while for the insert to occur
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                delay(100)
-                withContext(Dispatchers.Main) {
-                    if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                        binding.recyclerView.smoothScrollToPosition(0)
-                    }
-                }
+            binding.recyclerView.doOnNextLayout {
+                (it as RecyclerView).smoothScrollToPosition(0)
             }
         } else {
-            if (tootButtonHidden) {
-                showNewTootsIndicator()
-            }
+            updateBadgeCount()
         }
+
+        pendingStreamItem = false
     }
 
     private fun showLoadingAll() {
@@ -214,46 +228,14 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.topLoadingIndicator.isVisible = state.loadingAtFront
         binding.bottomLoadingIndicator.isVisible = state.loadingAtEnd
 
-        binding.swipeRefreshLayout.isRefreshing = false
-
         binding.progressBar.isVisible = false
 
         binding.swipeRefreshLayout.isRefreshing = false
 
         (binding.recyclerView.adapter as? FeedAdapter)?.submitList(state.items)
-        binding.recyclerView.doOnLayout {
-            if (state.initialPosition > 0 || state.initialPosition < state.items.size) {
-                binding.recyclerView.scrollToPosition(state.initialPosition)
-            }
-        }
-    }
 
-    private fun showNewTootsIndicator(animate: Boolean = true) {
-        if (animate) {
-            binding.newTootButton.animate()
-                    .translationY(0F)
-                    .setInterpolator(OvershootInterpolator())
-                    .setDuration(300L)
-                    .start()
-        } else {
-            binding.newTootButton.translationY = 0F
-        }
-
-        binding.newTootButton.setOnClickListener {
-            hideNewTootsIndicator()
-            binding.recyclerView.scrollToPosition(0)
-        }
-    }
-
-    private fun hideNewTootsIndicator(animate: Boolean = true) {
-        if (animate) {
-            binding.newTootButton.animate()
-                    .translationY(-(binding.newTootButton.y + binding.newTootButton.height + dip(50)))
-                    .setInterpolator(AccelerateInterpolator())
-                    .setDuration(150L)
-                    .start()
-        } else {
-            binding.newTootButton.translationY = -(binding.newTootButton.y + binding.newTootButton.height + dip(50))
+        if (pendingStreamItem) {
+            onItemStreamed()
         }
     }
 

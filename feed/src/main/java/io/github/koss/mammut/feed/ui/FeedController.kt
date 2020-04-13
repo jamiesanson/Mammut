@@ -31,10 +31,10 @@ import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.Status
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
-import io.github.koss.mammut.feed.domain.FeedType
 import io.github.koss.mammut.feed.presentation.FeedViewModel
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
 import io.github.koss.mammut.feed.presentation.event.ItemStreamed
@@ -91,7 +91,7 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private val tootButtonHidden: Boolean
-        get() = newTootButton?.translationY != 0f
+        get() = false
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
@@ -134,12 +134,12 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
         recyclerView?.doOnApplyWindowInsets { view, insets, _ ->
             view.updatePadding(top = insets.systemWindowInsetTop)
         }
-
-        newTootButton?.doOnApplyWindowInsets { view, insets, _ ->
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.systemWindowInsetTop
-            }
-        }
+//
+//        newTootButton?.doOnApplyWindowInsets { view, insets, _ ->
+//            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+//                topMargin = insets.systemWindowInsetTop
+//            }
+//        }
 
         viewModel.state.observe(this) {
             containerView ?: return@observe
@@ -228,9 +228,9 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
             
             // If we've scrolled to the top of the recyclerView, hide the new toots indicator
             if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.isNearTop()) {
-                if (newTootButton.translationY == 0F) {
-                    hideNewTootsIndicator()
-                }
+//                if (newTootButton.translationY == 0F) {
+//                    hideNewTootsIndicator()
+//                }
             }
         }
     }
@@ -301,32 +301,32 @@ class FeedController(args: Bundle) : BaseController(args), ReselectListener, Fee
     }
 
     private fun showNewTootsIndicator(animate: Boolean = true) {
-        if (animate) {
-            newTootButton.animate()
-                .translationY(0F)
-                .setInterpolator(OvershootInterpolator())
-                .setDuration(300L)
-                .start()
-        } else {
-            newTootButton.translationY = 0F
-        }
-
-        newTootButton.onClick {
-            hideNewTootsIndicator()
-            recyclerView?.scrollToPosition(0)
-        }
+//        if (animate) {
+//            newTootButton.animate()
+//                .translationY(0F)
+//                .setInterpolator(OvershootInterpolator())
+//                .setDuration(300L)
+//                .start()
+//        } else {
+//            newTootButton.translationY = 0F
+//        }
+//
+//        newTootButton.onClick {
+//            hideNewTootsIndicator()
+//            recyclerView?.scrollToPosition(0)
+//        }
     }
 
     private fun hideNewTootsIndicator(animate: Boolean = true) {
-        if (animate) {
-            newTootButton.animate()
-                .translationY(-(newTootButton.y + newTootButton.height))
-                .setInterpolator(AccelerateInterpolator())
-                .setDuration(150L)
-                .start()
-        } else {
-            newTootButton.translationY = -(newTootButton.y + newTootButton.height)
-        }
+//        if (animate) {
+//            newTootButton.animate()
+//                .translationY(-(newTootButton.y + newTootButton.height))
+//                .setInterpolator(AccelerateInterpolator())
+//                .setDuration(150L)
+//                .start()
+//        } else {
+//            newTootButton.translationY = -(newTootButton.y + newTootButton.height)
+//        }
     }
 
     private fun RecyclerView.isNearTop(): Boolean =

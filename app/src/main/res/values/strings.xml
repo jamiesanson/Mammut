@@ -67,4 +67,6 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="dark_mode_follow_system">Dark Mode - Follow System</string>
     <string name="dark_mode_follow_system_description">Follow night mode system preference</string>
+    <string name="search">Search</string>
+    <string name="feed">Feed</string>
 </resources>

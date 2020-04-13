@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -34,6 +35,22 @@
         app:layout_anchor="@id/bottomSheet"
         app:layout_anchorGravity="end|top"
         app:useCompatPadding="true" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/feedTypeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="56dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:textAllCaps="false"
+        android:textAppearance="?textAppearanceBody1"
+        app:cornerRadius="48dp"
+        app:iconGravity="start"
+        tools:icon="@drawable/ic_home_black_24dp"
+        tools:text="Home feed" />
 
     <View
         android:id="@+id/bottomNavigationDim"

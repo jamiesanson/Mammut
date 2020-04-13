@@ -13,23 +13,27 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
+import io.github.koss.mammut.base.navigation.NavigationEvent
+import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.component.widget.InstanceBottomNavigationView
 import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.databinding.InstanceFragmentTwoBinding
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.MultiInstanceFragment
 import io.github.koss.mammut.feature.instance.bottomnav.BottomNavigationViewModel
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import javax.inject.Inject
+
+const val ARG_INSTANCE_NAME = "arg_instance_name"
+const val ARG_AUTH_CODE = "arg_auth_code"
 
 class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentFactory {
 
@@ -53,6 +57,10 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
     @Inject
     @ApplicationScope
     lateinit var registrationRepository: RegistrationRepository
+
+    @Inject
+    @ApplicationScope
+    lateinit var navigationEventBus: NavigationEventBus
 
     private lateinit var bottomNavigationViewModel: BottomNavigationViewModel
 
@@ -85,10 +93,9 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.home,
-                    R.id.localTimeline,
-                    R.id.federatedTimeline,
-                    R.id.notifications -> binding.bottomSheet.collapse()
+                R.id.feed,
+                R.id.search,
+                R.id.notifications -> binding.bottomSheet.collapse()
             }
         }
 
@@ -126,6 +133,19 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
         binding.addButton.setOnClickListener {
             binding.bottomSheet.expand()
         }
+
+        // TODO - Set up feed switching
+        var count = 0
+        binding.feedTypeButton.setOnClickListener {
+            if (count.rem(2) == 0) {
+                navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(FeedType.Local))
+                binding.feedTypeButton.text = "Local feed"
+            } else {
+                navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(FeedType.Home))
+                binding.feedTypeButton.text = "Home feed"
+            }
+            count++
+        }
     }
 
     private fun onSheetNavigationItemClicked(destination: InstanceBottomNavigationView.NavigationDestination) {
@@ -142,9 +162,5 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
     private fun onInstanceIndexSelected(index: Int) {
         (parentFragment as MultiInstanceFragment).requestPageSelection(index)
-    }
-
-    fun peekCurrentUser() {
-        binding.bottomSheet.peekCurrentUser()
     }
 }

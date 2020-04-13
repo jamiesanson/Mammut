@@ -18,7 +18,6 @@ import androidx.core.view.*
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionManager
 import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -31,15 +30,12 @@ import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
-import io.github.koss.mammut.extension.instanceComponent
 import io.github.koss.mammut.base.navigation.FullScreenPhotoHandler
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.comingSoon
 import io.github.koss.mammut.base.util.observe
-import io.github.koss.mammut.feed.domain.FeedType
-import io.github.koss.mammut.feed.ui.FeedController
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import kotlinx.android.extensions.CacheImplementation
@@ -73,9 +69,9 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         router.getControllerWithTag("")
-        instanceComponent()
-            .plus(profileModule)
-            .inject(this)
+//        instanceComponent()
+//            .plus(profileModule)
+//            .inject(this)
 
         viewModel = ViewModelProviders.of(context as AppCompatActivity, viewModelFactory).get(key, ProfileViewModel::class.java)
     }
@@ -160,25 +156,25 @@ class ProfileController(args: Bundle) : BaseController(args), FullScreenPhotoHan
 
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
-                    val controller = when (position) {
-                        0 -> FeedController.newInstance(
-                            type = FeedType.AccountToots(
-                                accountId = account.accountId,
-                                withReplies = false
-                            ),
-                            accessToken = instanceComponent().accessToken()
-                        )
-                        1 -> FeedController.newInstance(
-                            type = FeedType.AccountToots(
-                                accountId = account.accountId,
-                                withReplies = true
-                            ),
-                            accessToken = instanceComponent().accessToken()
-                        )
-                        else -> return
-                    }
-
-                    router.setRoot(RouterTransaction.with(controller))
+//                    val controller = when (position) {
+//                        0 -> FeedController.newInstance(
+//                            type = FeedType.AccountToots(
+//                                accountId = account.accountId,
+//                                withReplies = false
+//                            ),
+//                            accessToken = instanceComponent().accessToken()
+//                        )
+//                        1 -> FeedController.newInstance(
+//                            type = FeedType.AccountToots(
+//                                accountId = account.accountId,
+//                                withReplies = true
+//                            ),
+//                            accessToken = instanceComponent().accessToken()
+//                        )
+//                        else -> return
+//                    }
+//
+//                    router.setRoot(RouterTransaction.with(controller))
                 }
             }
 

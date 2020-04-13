@@ -3,21 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/home"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/home"
+        android:id="@+id/feed"
+        android:icon="@drawable/ic_view_list_black_24dp"
+        android:title="@string/feed"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/localTimeline"
-        android:icon="@drawable/ic_people_black_24dp"
-        android:title="@string/local"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/federatedTimeline"
-        android:icon="@drawable/ic_public_black_24dp"
-        android:title="@string/federated"
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/search"
         app:showAsAction="ifRoom" />
 
     <item

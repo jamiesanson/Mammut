@@ -16,7 +16,7 @@
 
 
         <activity android:name=".feature.joininstance.JoinInstanceActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

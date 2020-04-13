@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.repository.TootRepository
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.paging.local.DefaultFeedLocalSource
 import io.github.koss.mammut.feed.domain.paging.network.DefaultFeedNetworkSource

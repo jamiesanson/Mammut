@@ -88,6 +88,7 @@ dependencies {
     api project(":data")
     api project(":emoji")
     api project(":notifications")
+    api project(":search")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore

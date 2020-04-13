@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseController
@@ -16,9 +14,6 @@ import io.github.koss.mammut.base.util.awaitFirst
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
-import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.android.extensions.CacheImplementation
@@ -92,10 +87,10 @@ class MultiInstanceController : BaseController() {
         viewPager.onPageChangeListener {
             onPageSelected { index ->
                 val router = pagerAdapter.getRouter(index) ?: return@onPageSelected
-
-                if (router.backstackSize == 1) {
-                    (router.backstack[0].controller() as? InstanceController?)?.peekCurrentUser()
-                }
+//
+//                if (router.backstackSize == 1) {
+//                    (router.backstack[0].controller() as? InstanceController?)?.peekCurrentUser()
+//                }
             }
         }
     }
@@ -112,12 +107,12 @@ class MultiInstanceController : BaseController() {
 
         override fun configureRouter(router: Router, position: Int) {
             if (!router.hasRootController()) {
-                val controller = InstanceController(args = bundleOf(
-                        ARG_AUTH_CODE to registrations[position].accessToken?.accessToken,
-                        ARG_INSTANCE_NAME to registrations[position].instanceName))
-
-                router.setRoot(RouterTransaction
-                        .with(controller))
+//                val controller = InstanceController(args = bundleOf(
+//                        ARG_AUTH_CODE to registrations[position].accessToken?.accessToken,
+//                        ARG_INSTANCE_NAME to registrations[position].instanceName))
+//
+//                router.setRoot(RouterTransaction
+//                        .with(controller))
             }
         }
 

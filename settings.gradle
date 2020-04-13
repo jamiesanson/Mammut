@@ -1,1 +1,2 @@
 include ':app', ':instances', ':toot', ':data', ':base', ':notifications', ':paging', ':feed', ':emoji'
+include ':search'

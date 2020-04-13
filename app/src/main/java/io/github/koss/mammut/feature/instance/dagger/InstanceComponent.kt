@@ -3,7 +3,6 @@ package io.github.koss.mammut.feature.instance.dagger
 import dagger.Subcomponent
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileComponent
-import io.github.koss.mammut.feature.instance.subfeature.navigation.InstanceController
 import io.github.koss.mammut.feature.instance.subfeature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.instance2.InstanceFragment
 import io.github.koss.mammut.feature.settings.dagger.SettingsComponent
@@ -20,7 +19,6 @@ import javax.inject.Named
 @Subcomponent(modules = [ InstanceModule::class ])
 interface InstanceComponent {
 
-    fun inject(instanceController: InstanceController)
     fun inject(instanceController: InstanceFragment)
 
     fun plus(feedModule: FeedModule): FeedComponent

@@ -17,8 +17,8 @@ import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.databinding.MultiInstanceFragmentBinding
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_AUTH_CODE
-import io.github.koss.mammut.feature.instance.subfeature.navigation.ARG_INSTANCE_NAME
+import io.github.koss.mammut.feature.instance2.ARG_AUTH_CODE
+import io.github.koss.mammut.feature.instance2.ARG_INSTANCE_NAME
 import io.github.koss.mammut.feature.instance2.InstanceFragment
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -87,10 +87,7 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
         binding.viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                val currentFragment = childFragmentManager.fragments
-                        .find { it.isResumed } as? InstanceFragment
 
-                currentFragment?.peekCurrentUser()
             }
         })
     }

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.preferences.PreferencesRepository
 import io.github.koss.mammut.feed.presentation.event.FeedEvent

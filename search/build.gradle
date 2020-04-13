@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(":base")
+    implementation project(":data")
+
+    implementation rootProject.ext.kotlinRuntime
+    implementation rootProject.ext.ktx
+
+    implementation rootProject.ext.appCompat
+    implementation rootProject.ext.constraintLayout
+
+    implementation rootProject.ext.material
+
+    implementation rootProject.ext.coroutinesCore
+    implementation rootProject.ext.coroutinesAndroid
+
+    implementation rootProject.ext.dagger
+    kapt rootProject.ext.daggerCompiler
+
+    implementation rootProject.ext.mastodon4j
+
+    implementation rootProject.ext.lifecycle
+    implementation rootProject.ext.lifecycleRx
+
+    implementation rootProject.ext.anko
+
+    implementation rootProject.ext.glide
+}
+
+androidExtensions {
+    experimental = true
+}
