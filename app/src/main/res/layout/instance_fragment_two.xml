@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/navHostFragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
@@ -50,7 +50,8 @@
         app:cornerRadius="48dp"
         app:iconGravity="start"
         tools:icon="@drawable/ic_home_black_24dp"
-        tools:text="Home feed" />
+        tools:text="Home feed"
+        app:layout_behavior="io.github.koss.mammut.feature.instance2.view.HideTopViewOnScrollBehavior"/>
 
     <View
         android:id="@+id/bottomNavigationDim"
@@ -82,6 +83,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="18dp"
+        app:cardCornerRadius="0dp"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_gravity="center|top">
@@ -96,7 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="Choose your feed type"
+                android:text="What do you want to see?"
                 android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintVertical_bias="0.0"
                 app:layout_constraintBottom_toBottomOf="parent"

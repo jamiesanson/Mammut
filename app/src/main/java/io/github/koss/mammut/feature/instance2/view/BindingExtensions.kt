@@ -43,7 +43,7 @@ fun InstanceFragmentTwoBinding.setupChooser(
 
     with(federatedFeedTypeCell) {
         iconImageView.setImageResource(R.drawable.ic_public_black_24dp)
-        titleTextView.setText(R.string.federared_feed_title)
+        titleTextView.setText(R.string.federated_feed_title)
         subtitleTextView.setText(R.string.federated_feed_subtitle)
         selectedImageView.isVisible = selectedFeedType == FeedType.Federated
         root.setOnClickListener {
@@ -101,7 +101,7 @@ fun InstanceFragmentTwoBinding.bindFeedTypeButton(feedType: FeedType) {
             }
             FeedType.Federated -> {
                 setIconResource(R.drawable.ic_public_black_24dp)
-                setText(R.string.federared_feed_title)
+                setText(R.string.federated_feed_title)
             }
         }
     }

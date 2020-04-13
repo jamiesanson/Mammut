@@ -12,3 +12,7 @@ data class OnRegistrationsLoaded(
 data class OnFeedTypeChanged(
         val newFeedType: FeedType
 ) : InstanceAction()
+
+data class OnOffscreenItemCountChanged(
+        val newCount: Int
+) : InstanceAction()

@@ -12,12 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
-import io.github.koss.mammut.base.navigation.Direction
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.util.findSubcomponentFactory
@@ -175,28 +173,13 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            private var cumulativeScrollDyBetweenSettles = 0
-
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                updateBadgeCount()
 
-                // TODO - This needs tidying up
-                if (newState == SCROLL_STATE_SETTLING) {
-                    val direction = if (cumulativeScrollDyBetweenSettles > 0) {
-                        Direction.Down
-                    } else {
-                        Direction.Up
-                    }
-
-                    navigationBus.sendEvent(NavigationEvent.Feed.ScrollStarted(direction))
-                    cumulativeScrollDyBetweenSettles = 0
+                if ((binding.recyclerView.layoutManager as LinearLayoutManager)
+                        .findFirstCompletelyVisibleItemPosition() == 0) {
+                    updateBadgeCount()
                 }
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                cumulativeScrollDyBetweenSettles += dy
             }
         })
     }

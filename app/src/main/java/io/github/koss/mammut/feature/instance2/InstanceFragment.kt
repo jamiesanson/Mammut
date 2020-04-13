@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -27,8 +28,6 @@ import io.github.koss.mammut.feature.instance2.presentation.InstanceViewModel
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.instance2.presentation.navigation.NavigationEvent
-import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledDown
-import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledUp
 import io.github.koss.mammut.feature.instance2.presentation.navigation.UserPeekRequested
 import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
 import io.github.koss.mammut.feature.instance2.view.*
@@ -37,7 +36,7 @@ import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -70,8 +69,6 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
     private lateinit var instanceViewModel: InstanceViewModel
 
-    private var hideIndicatorJob: Job? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         component.inject(this)
@@ -84,19 +81,30 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
         super.onViewCreated(view, savedInstanceState)
 
         setupNavigation()
+        setupView()
 
         instanceViewModel.state.observe(viewLifecycleOwner, ::onStateChanged)
         instanceViewModel.navigationEvents.observe(viewLifecycleOwner, ::onNavigationEvent)
     }
 
-    override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
-        @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
-        return when (module) {
-            is ComposeTootModule -> component.plus(module)
-            is NotificationsModule -> component.plus(module)
-            is FeedModule -> component.plus(module)
-            else -> throw IllegalArgumentException("Unknown module type")
-        } as Subcomponent
+    private fun setupView() {
+        binding.addButton.setOnClickListener {
+            binding.bottomSheet.expand()
+        }
+
+        binding.feedTypeButton.setOnClickListener {
+            binding.openChooser()
+        }
+
+        binding.feedTypeDim.setOnClickListener {
+            binding.closeChooser()
+        }
+
+        binding.feedChooserCardContent.doOnApplyWindowInsets { view, insets, initialState ->
+            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
+        }
+
+        hideFeedIndicatorDelayed()
     }
 
     private fun setupNavigation() {
@@ -146,27 +154,6 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
             }
         }
 
-        binding.addButton.setOnClickListener {
-            binding.bottomSheet.expand()
-        }
-
-        binding.feedTypeButton.setOnClickListener {
-            binding.openChooser()
-        }
-
-        binding.feedTypeDim.setOnClickListener {
-            binding.closeChooser()
-        }
-
-        binding.feedChooserCardContent.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
-
-        binding.showFeedTypeButton(animate = false)
-        hideIndicatorJob = viewLifecycleOwner.lifecycleScope.launch {
-            delay(5000L)
-            binding.hideFeedTypeButton()
-        }
     }
 
     private fun onStateChanged(state: InstanceState) {
@@ -179,6 +166,15 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
         // Setup chooser
         binding.setupChooser(selectedFeedType = state.selectedFeedType) {
             instanceViewModel.changeFeedType(it)
+
+            // Hide the feed chooser
+            hideFeedIndicatorDelayed()
+        }
+
+        if (state.offscreenItemCount == 0) {
+            binding.bottomSheet.navigationView.removeBadge(R.id.feed)
+        } else {
+            binding.bottomSheet.navigationView.getOrCreateBadge(R.id.feed)
         }
     }
 
@@ -186,8 +182,6 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
         when (event.getContentIfNotHandled()) {
             null -> return
             UserPeekRequested -> binding.bottomSheet.peekCurrentUser()
-            ScrolledUp -> binding.showFeedTypeButton()
-            ScrolledDown -> binding.hideFeedTypeButton()
         }
     }
 
@@ -206,5 +200,26 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
 
     private fun onInstanceIndexSelected(index: Int) {
         (parentFragment as MultiInstanceFragment).requestPageSelection(index)
+    }
+
+    private fun hideFeedIndicatorDelayed() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            delay(5000L)
+
+            // Hide the view if not already
+            val parameters = binding.feedTypeButton.layoutParams as CoordinatorLayout.LayoutParams
+            val behavior = parameters.behavior as HideTopViewOnScrollBehavior<View>
+            behavior.hideView(binding.feedTypeButton)
+        }
+    }
+
+    override fun <Module, Subcomponent> buildSubcomponent(module: Module): Subcomponent {
+        @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
+        return when (module) {
+            is ComposeTootModule -> component.plus(module)
+            is NotificationsModule -> component.plus(module)
+            is FeedModule -> component.plus(module)
+            else -> throw IllegalArgumentException("Unknown module type")
+        } as Subcomponent
     }
 }

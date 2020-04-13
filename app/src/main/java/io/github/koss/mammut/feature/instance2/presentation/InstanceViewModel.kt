@@ -2,19 +2,13 @@ package io.github.koss.mammut.feature.instance2.presentation
 
 import androidx.lifecycle.*
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
-import io.github.koss.mammut.base.navigation.Direction
 import io.github.koss.mammut.base.navigation.Event
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.models.domain.FeedType
-import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledDown
-import io.github.koss.mammut.feature.instance2.presentation.navigation.ScrolledUp
 import io.github.koss.mammut.feature.instance2.presentation.navigation.UserPeekRequested
-import io.github.koss.mammut.feature.instance2.presentation.state.InstanceReducer
-import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
-import io.github.koss.mammut.feature.instance2.presentation.state.OnFeedTypeChanged
-import io.github.koss.mammut.feature.instance2.presentation.state.OnRegistrationsLoaded
+import io.github.koss.mammut.feature.instance2.presentation.state.*
 import io.github.koss.mammut.feature.instance2.presentation.navigation.NavigationEvent as InstanceNavigationEvent
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.randux.createStore
@@ -71,9 +65,9 @@ class InstanceViewModel @Inject constructor(
                     event.getContentIfNotHandled() // Handle the event
                     (navigationEvents as MutableLiveData).postValue(Event(UserPeekRequested))
                 }
-                is NavigationEvent.Feed.ScrollStarted -> {
-                    event.getContentIfNotHandled() // Handle the event
-                    (navigationEvents as MutableLiveData).postValue(Event(if (contents.direction == Direction.Up) ScrolledUp else ScrolledDown))
+                is NavigationEvent.Feed.OffscreenCountChanged -> {
+                    event.getContentIfNotHandled()
+                    store.dispatch(OnOffscreenItemCountChanged(contents.newCount))
                 }
             }
         }

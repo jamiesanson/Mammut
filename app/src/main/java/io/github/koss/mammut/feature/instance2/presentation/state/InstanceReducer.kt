@@ -26,7 +26,8 @@ class InstanceReducer : Reducer {
                         when (incomingAction.newFeedType) {
                             FeedType.Home,
                             FeedType.Local,
-                            FeedType.Federated -> { /* no-op, these are supported */ }
+                            FeedType.Federated -> { /* no-op, these are supported */
+                            }
                             else -> throw IllegalArgumentException("Switching to feed type ${incomingAction.newFeedType} not supported")
                         }
 
@@ -34,9 +35,13 @@ class InstanceReducer : Reducer {
                                 selectedFeedType = incomingAction.newFeedType
                         )
                     }
+                    is OnOffscreenItemCountChanged -> {
+                        return@let state.copy(
+                                offscreenItemCount = incomingAction.newCount
+                        )
+                    }
                 }
 
                 return@let null
             } ?: currentState
-
 }
