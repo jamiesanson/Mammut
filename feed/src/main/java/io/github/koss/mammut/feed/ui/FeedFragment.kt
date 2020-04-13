@@ -118,7 +118,9 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         navigationBus.events.observe(viewLifecycleOwner, Observer {
             when (it.peekContent()) {
                 is NavigationEvent.Feed.TypeChanged ->
-                    swapFeedType((it.getContentIfNotHandled() as NavigationEvent.Feed.TypeChanged).newFeedType)
+                    if (!it.hasBeenHandled) {
+                        swapFeedType((it.getContentIfNotHandled() as NavigationEvent.Feed.TypeChanged).newFeedType)
+                    }
             }
         })
     }
@@ -216,7 +218,7 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     }
 
     private fun showLoadingAll() {
-        // Only show the full progress bar if the swipe refresh layout isn't refreshing
+        binding.progressBar.isVisible = true
         binding.bottomLoadingIndicator.isVisible = false
         binding.topLoadingIndicator.isVisible = false
     }

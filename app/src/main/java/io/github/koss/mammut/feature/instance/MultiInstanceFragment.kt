@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.navigation.NavigationEvent
+import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.util.awaitFirst
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.InstanceRegistration
@@ -23,6 +25,7 @@ import io.github.koss.mammut.feature.instance2.InstanceFragment
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +36,9 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
+
+    @Inject
+    lateinit var navigationEventBus: NavigationEventBus
 
     private val binding by viewLifecycleLazy { MultiInstanceFragmentBinding.bind(requireView()) }
 
@@ -54,7 +60,6 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
     }
 
     fun unlockViewPager() {
-
         // Only properly unlock the ViewPager if enabled.
         if (preferencesRepository.swipingBetweenInstancesEnabled) {
             binding.viewPager.isUserInputEnabled = true
@@ -63,6 +68,11 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
 
     fun requestPageSelection(index: Int) {
         binding.viewPager.setCurrentItem(index, true)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(100L)
+            navigationEventBus.sendEvent(NavigationEvent.Instance.Changed((binding.viewPager.adapter as InstancePagerAdapter).registrations[index]))
+        }
     }
 
     fun onBackPressed(): Boolean = findNavController().popBackStack()
