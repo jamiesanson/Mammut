@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.retained
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.component.widget.InstanceBottomNavigationView
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.databinding.InstanceFragmentTwoBinding
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.MultiInstanceFragment
@@ -36,6 +38,7 @@ import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
 import io.github.koss.mammut.feature.instance2.view.*
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import io.github.koss.mammut.feed.dagger.FeedModule
+import io.github.koss.mammut.feed.presentation.FeedTypeProvider
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
@@ -47,7 +50,7 @@ import javax.inject.Inject
 const val ARG_INSTANCE_NAME = "arg_instance_name"
 const val ARG_AUTH_CODE = "arg_auth_code"
 
-class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentFactory {
+class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentFactory, FeedTypeProvider {
 
     private val binding by viewLifecycleLazy { InstanceFragmentTwoBinding.bind(requireView()) }
 
@@ -71,6 +74,9 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
     lateinit var registrationRepository: RegistrationRepository
 
     private lateinit var instanceViewModel: InstanceViewModel
+
+    override val currentFeedType: FeedType?
+        get() = instanceViewModel.state.value?.selectedFeedType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,6 +181,16 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
     private fun onStateChanged(state: InstanceState) {
         // Update the bottom sheet
         binding.bottomSheet.setState(state)
+
+        binding.bottomSheet.navigationView.menu.forEach {
+            if (it.itemId == R.id.feed) {
+                when (state.selectedFeedType) {
+                    FeedType.Home -> it.title = getString(R.string.home_feed_label)
+                    FeedType.Local -> it.title = getString(R.string.local_feed_label)
+                    FeedType.Federated -> it.title = getString(R.string.federated_feed_label)
+                }
+            }
+        }
 
         // Configure feed type button
         binding.bindFeedTypeButton(state.selectedFeedType)

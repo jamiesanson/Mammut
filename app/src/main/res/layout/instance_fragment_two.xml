@@ -47,7 +47,7 @@
         android:paddingEnd="16dp"
         android:textAllCaps="false"
         android:textAppearance="?textAppearanceBody1"
-        app:cornerRadius="48dp"
+        app:cornerRadius="24dp"
         app:iconGravity="start"
         tools:icon="@drawable/ic_home_black_24dp"
         tools:text="Home feed"

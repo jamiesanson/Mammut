@@ -75,4 +75,7 @@
     <string name="local_feed_subtitle">Users in this instance</string>
     <string name="federated_feed_title">Federated Timeline</string>
     <string name="federated_feed_subtitle">Users from this instance and others</string>
+    <string name="home_feed_label">Feed - Home</string>
+    <string name="local_feed_label">Feed - Local</string>
+    <string name="federated_feed_label">Feed - Federated</string>
 </resources>

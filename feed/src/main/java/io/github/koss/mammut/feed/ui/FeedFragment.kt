@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.internal.InstanceFactory
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.FeedScope
@@ -28,6 +29,7 @@ import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.databinding.FeedFragmentBinding
 import io.github.koss.mammut.data.models.domain.FeedType
+import io.github.koss.mammut.feed.presentation.FeedTypeProvider
 import io.github.koss.mammut.feed.presentation.FeedViewModel
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
 import io.github.koss.mammut.feed.presentation.event.ItemStreamed
@@ -104,6 +106,12 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // In the case we're running within the Instance Fragment at the root, try restore the feed type from it
+        (parentFragment?.parentFragment as? FeedTypeProvider)?.currentFeedType?.let {
+            feedType = it
+        }
+
         initialiseDependencies()
     }
 
