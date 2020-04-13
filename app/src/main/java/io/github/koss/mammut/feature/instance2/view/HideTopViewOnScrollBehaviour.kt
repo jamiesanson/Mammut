@@ -29,6 +29,7 @@ class HideTopViewOnScrollBehavior<V : View> @JvmOverloads constructor(
     private var currentState = STATE_SCROLLED_DOWN
     private var additionalHiddenOffsetY = 0
     private var currentAnimator: ViewPropertyAnimator? = null
+    private var rehideAnimator: ViewPropertyAnimator? = null
 
     override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
         val paramsCompat = child.layoutParams as MarginLayoutParams
@@ -98,8 +99,12 @@ class HideTopViewOnScrollBehavior<V : View> @JvmOverloads constructor(
             child.clearAnimation()
         }
         currentState = STATE_SCROLLED_UP
-        animateChildTo(
-                child, -(height + additionalHiddenOffsetY), ENTER_ANIMATION_DURATION.toLong(), AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR)
+        currentAnimator = animateChildTo(
+                child, -(height + additionalHiddenOffsetY), EXIT_ANIMATION_DURATION.toLong(), AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR) {
+            currentAnimator = null
+        }
+
+        rehideAnimator?.cancel()
     }
 
     /**
@@ -115,24 +120,35 @@ class HideTopViewOnScrollBehavior<V : View> @JvmOverloads constructor(
             child.clearAnimation()
         }
         currentState = STATE_SCROLLED_DOWN
-        animateChildTo(
+        currentAnimator = animateChildTo(
                 child,
                 0,
-                EXIT_ANIMATION_DURATION.toLong(),
-                AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                ENTER_ANIMATION_DURATION.toLong(),
+                AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR) {
+            currentAnimator = null
+
+            // Re-hide the child in x amount of time if not cancelled prior
+            rehideAnimator = animateChildTo(
+                    child, -(height + additionalHiddenOffsetY), EXIT_ANIMATION_DURATION.toLong(), AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR, startDelay = 5000L) {
+                rehideAnimator = null
+            }
+        }
+
+
     }
 
     private fun animateChildTo(
-            child: V, targetY: Int, duration: Long, interpolator: TimeInterpolator) {
-        currentAnimator = child
+            child: V, targetY: Int, duration: Long, interpolator: TimeInterpolator, startDelay: Long = 0L, onEnd: () -> Unit): ViewPropertyAnimator {
+        return child
                 .animate()
                 .translationY(targetY.toFloat())
                 .setInterpolator(interpolator)
                 .setDuration(duration)
+                .setStartDelay(startDelay)
                 .setListener(
                         object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator) {
-                                currentAnimator = null
+                                onEnd()
                             }
                         })
     }
