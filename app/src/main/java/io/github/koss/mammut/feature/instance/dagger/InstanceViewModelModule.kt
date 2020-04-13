@@ -15,7 +15,7 @@ abstract class InstanceViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(InstanceViewModel::class)
-    abstract fun bindBottomNavigationViewModel(viewModel: InstanceViewModel): ViewModel
+    abstract fun bindInstanceViewModel(viewModel: InstanceViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: MammutViewModelFactory): ViewModelProvider.Factory

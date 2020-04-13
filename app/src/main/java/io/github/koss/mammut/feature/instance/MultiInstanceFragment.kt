@@ -93,13 +93,6 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
         val pagerAdapter = InstancePagerAdapter(this).apply { this.registrations = registrations }
 
         binding.viewPager.adapter = pagerAdapter
-
-        binding.viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-
-            }
-        })
     }
 
     @SuppressLint("WrongConstant")

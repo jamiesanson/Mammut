@@ -6,6 +6,7 @@ import io.github.koss.mammut.base.navigation.Event
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
+import io.github.koss.mammut.base.navigation.Tab
 import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feature.instance2.presentation.navigation.UserPeekRequested
 import io.github.koss.mammut.feature.instance2.presentation.state.*
@@ -65,7 +66,7 @@ class InstanceViewModel @Inject constructor(
                     event.getContentIfNotHandled() // Handle the event
                     (navigationEvents as MutableLiveData).postValue(Event(UserPeekRequested))
                 }
-                is NavigationEvent.Feed.OffscreenCountChanged -> {
+                is NavigationEvent.Feed.OffscreenCountChanged -> if (contents.targetInstanceToken == instanceAccessToken) {
                     event.getContentIfNotHandled()
                     store.dispatch(OnOffscreenItemCountChanged(contents.newCount))
                 }
@@ -81,7 +82,11 @@ class InstanceViewModel @Inject constructor(
     }
 
     fun changeFeedType(newFeedType: FeedType) {
-        navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(newFeedType))
+        navigationEventBus.sendEvent(NavigationEvent.Feed.TypeChanged(newFeedType = newFeedType, targetInstanceToken = instanceAccessToken))
         store.dispatch(OnFeedTypeChanged(newFeedType))
+    }
+
+    fun reselectTab(tab: Tab) {
+        navigationEventBus.sendEvent(NavigationEvent.Instance.TabReselected(tab))
     }
 }

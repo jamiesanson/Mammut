@@ -3,18 +3,24 @@ package io.github.koss.mammut.base.navigation
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.data.models.domain.FeedType
 
+// TODO - This whole file could do with a better solution
+enum class Tab {
+    Feed,
+    Search,
+    Notifications
+}
+
 sealed class NavigationEvent {
     sealed class Feed {
-        data class TypeChanged(val newFeedType: FeedType): NavigationEvent()
-        data class OffscreenCountChanged(val newCount: Int): NavigationEvent()
+        data class TypeChanged(val targetInstanceToken: String, val newFeedType: FeedType): NavigationEvent()
+        data class OffscreenCountChanged(val targetInstanceToken: String, val newCount: Int): NavigationEvent()
     }
 
     sealed class Instance {
         data class Changed(val newInstance: InstanceRegistration): NavigationEvent()
+        data class TabReselected(val tab: Tab): NavigationEvent()
     }
 }
-
-
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.

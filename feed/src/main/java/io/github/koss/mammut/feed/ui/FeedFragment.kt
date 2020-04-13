@@ -18,6 +18,7 @@ import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
+import io.github.koss.mammut.base.navigation.Tab
 import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.Account
@@ -116,11 +117,17 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         viewModel.event.observe(viewLifecycleOwner, eventObserver)
 
         navigationBus.events.observe(viewLifecycleOwner, Observer {
-            when (it.peekContent()) {
+            when (val content = it.peekContent()) {
                 is NavigationEvent.Feed.TypeChanged ->
-                    if (!it.hasBeenHandled) {
+                    if (!it.hasBeenHandled && content.targetInstanceToken == accessToken) {
                         swapFeedType((it.getContentIfNotHandled() as NavigationEvent.Feed.TypeChanged).newFeedType)
                     }
+                is NavigationEvent.Instance.TabReselected -> {
+                    if (content.tab == Tab.Feed) {
+                        it.getContentIfNotHandled()
+                        onReselected()
+                    }
+                }
             }
         })
     }
@@ -137,10 +144,6 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         // Remove observers
         viewModel.state.removeObserver(stateObserver)
         viewModel.event.removeObserver(eventObserver)
-
-        // Clear adapter
-        (binding.recyclerView.adapter as FeedAdapter)
-                .submitList(emptyList())
 
         showLoadingAll()
 
@@ -161,7 +164,8 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
         currentOffScreenCount = newCount
         navigationBus.sendEvent(NavigationEvent.Feed.OffscreenCountChanged(
-                newCount = currentOffScreenCount
+                newCount = currentOffScreenCount,
+                targetInstanceToken = accessToken
         ))
     }
 
@@ -205,6 +209,17 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         }
     }
 
+    private fun onReselected() {
+        val firstVisibleItemPosition = (binding.recyclerView.layoutManager as LinearLayoutManager)
+                .findFirstCompletelyVisibleItemPosition()
+
+        if (firstVisibleItemPosition == 0) {
+            viewModel.reload()
+        } else {
+            binding.recyclerView.smoothScrollToPosition(0)
+        }
+    }
+
     private fun onItemStreamed() {
         if (binding.recyclerView.isNearTop()) {
             binding.recyclerView.doOnNextLayout {
@@ -221,6 +236,10 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
         binding.progressBar.isVisible = true
         binding.bottomLoadingIndicator.isVisible = false
         binding.topLoadingIndicator.isVisible = false
+
+        // Clear adapter
+        (binding.recyclerView.adapter as FeedAdapter)
+                .submitList(emptyList())
     }
 
     private fun showLoaded(state: Loaded) {

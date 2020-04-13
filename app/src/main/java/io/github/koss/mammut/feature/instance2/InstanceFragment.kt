@@ -6,27 +6,30 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
-import androidx.core.view.updatePadding
-import androidx.lifecycle.lifecycleScope
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.Event
-import io.github.koss.mammut.base.util.*
+import io.github.koss.mammut.base.navigation.Tab
+import io.github.koss.mammut.base.util.observe
+import io.github.koss.mammut.base.util.retained
+import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.component.widget.InstanceBottomNavigationView
-import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.databinding.InstanceFragmentTwoBinding
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.instance.MultiInstanceFragment
-import io.github.koss.mammut.feature.instance2.presentation.InstanceViewModel
 import io.github.koss.mammut.feature.instance.dagger.InstanceComponent
 import io.github.koss.mammut.feature.instance.dagger.InstanceModule
+import io.github.koss.mammut.feature.instance2.presentation.InstanceViewModel
 import io.github.koss.mammut.feature.instance2.presentation.navigation.NavigationEvent
 import io.github.koss.mammut.feature.instance2.presentation.navigation.UserPeekRequested
 import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
@@ -110,6 +113,19 @@ class InstanceFragment : Fragment(R.layout.instance_fragment_two), SubcomponentF
     private fun setupNavigation() {
         val navController = childFragmentManager.findFragmentById(R.id.navHostFragment)!!.findNavController()
         NavigationUI.setupWithNavController(binding.bottomSheet.navigationView, navController)
+
+        binding.bottomSheet.navigationView.setOnNavigationItemReselectedListener { item ->
+            if (item.itemId == navController.currentBackStackEntry?.destination?.id) {
+                val tab = when (item.itemId) {
+                    R.id.feed -> Tab.Feed
+                    R.id.search -> Tab.Search
+                    R.id.notifications -> Tab.Notifications
+                    else -> throw IllegalArgumentException("Unknown menu item $item")
+                }
+
+                instanceViewModel.reselectTab(tab)
+            }
+        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
