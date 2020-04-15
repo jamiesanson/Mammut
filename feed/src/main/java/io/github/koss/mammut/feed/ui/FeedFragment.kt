@@ -13,8 +13,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.internal.InstanceFactory
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
@@ -182,20 +184,32 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerView.adapter = FeedAdapter(
-                viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
-                feedCallbacks = this,
-                pagingRelay = pagingRelay
-        )
+        val type = feedType
+        if (type is FeedType.AccountToots && type.onlyMedia) {
+            binding.recyclerView.adapter = FeedAdapter(
+                    viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
+                    feedCallbacks = this,
+                    pagingRelay = pagingRelay,
+                    displayOnlyMedia = true
+            )
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        } else {
+            binding.recyclerView.adapter = FeedAdapter(
+                    viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
+                    feedCallbacks = this,
+                    pagingRelay = pagingRelay
+            )
+
+            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        }
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if ((binding.recyclerView.layoutManager as LinearLayoutManager)
-                        .findFirstCompletelyVisibleItemPosition() == 0) {
+                if ((binding.recyclerView.layoutManager as? LinearLayoutManager)
+                        ?.findFirstCompletelyVisibleItemPosition() == 0) {
                     updateBadgeCount()
                 }
             }

@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import io.github.koss.mammut.base.BaseController
 import kotlin.reflect.KProperty
 
 /**
@@ -84,6 +83,3 @@ class RetentionViewModel(
 fun <T> Fragment.retained(key: () -> String = { "" }, valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, key, valInitializer)
 
 fun <T> AppCompatActivity.retained(valInitializer: (() -> T)? = null) = RetentionDelegate({ this }, { null }, valInitializer)
-
-// Controller stuff
-fun <T> BaseController.retained(key: () -> String = { "" }, valInitializer: (() -> T)) = RetentionDelegate({ activity as ViewModelStoreOwner }, key, valInitializer)

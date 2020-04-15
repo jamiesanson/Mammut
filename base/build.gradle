@@ -33,13 +33,8 @@ dependencies {
 
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
-    implementation rootProject.ext.coroutinesReactive
 
     implementation rootProject.ext.constraintLayout
-
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
 
     implementation rootProject.ext.glide
     implementation rootProject.ext.glideTransformations
@@ -47,13 +42,8 @@ dependencies {
 
     implementation rootProject.ext.mastodon4j
 
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxKotlin
-
     implementation rootProject.ext.lifecycle
     implementation rootProject.ext.lifecycleJava8
-    implementation rootProject.ext.lifecycleRx
 
     implementation rootProject.ext.anko
 

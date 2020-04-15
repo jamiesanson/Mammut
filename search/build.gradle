@@ -44,7 +44,6 @@ dependencies {
     implementation rootProject.ext.mastodon4j
 
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
 
     implementation rootProject.ext.anko
 

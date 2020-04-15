@@ -57,7 +57,8 @@ sealed class FeedType(
     @Parcelize
     data class AccountToots(
             val accountId: Long,
-            val withReplies: Boolean
+            val withReplies: Boolean,
+            val onlyMedia: Boolean
     ) : FeedType("${KEY_ACCOUNT_FEED}_${accountId}_$withReplies", false) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? = null
 
@@ -65,7 +66,7 @@ sealed class FeedType(
             return {
                 Accounts(client).getStatuses(
                         accountId = accountId,
-                        onlyMedia = false,
+                        onlyMedia = onlyMedia,
                         excludeReplies = !withReplies,
                         pinned = false,
                         range = it

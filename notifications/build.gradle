@@ -19,6 +19,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -38,21 +42,12 @@ dependencies {
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
-
     implementation rootProject.ext.dagger
     kapt rootProject.ext.daggerCompiler
 
     implementation rootProject.ext.mastodon4j
 
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxKotlin
-
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
 
     implementation rootProject.ext.anko
 

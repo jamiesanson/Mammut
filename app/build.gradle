@@ -104,7 +104,6 @@ dependencies {
 
     api rootProject.ext.lifecycle
     api rootProject.ext.lifecycleKtx
-    api rootProject.ext.lifecycleRx
     api rootProject.ext.lifecycleLivedataKtx
 
     api rootProject.ext.viewPager2
@@ -124,10 +123,6 @@ dependencies {
 
     api rootProject.ext.material
 
-    api rootProject.ext.rxJava
-    api rootProject.ext.rxAndroid
-    api rootProject.ext.rxKotlin
-
     api rootProject.ext.mastodon4j
 
     api rootProject.ext.room
@@ -141,10 +136,6 @@ dependencies {
     kapt rootProject.ext.glideCompiler
 
     api rootProject.ext.threetenabp
-
-    api rootProject.ext.conductor
-    api rootProject.ext.conductorArchLifecycle
-    api rootProject.ext.conductorSupport
 
     api(rootProject.ext.crashlytics) {
         transitive = true

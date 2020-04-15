@@ -30,7 +30,6 @@ import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.databinding.ProfileFragmentBinding
-import io.github.koss.mammut.feature.media.MediaFragment
 import io.github.koss.mammut.feature.profile.dagger.ProfileComponent
 import io.github.koss.mammut.feature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.profile.domain.FollowState
@@ -127,17 +126,23 @@ class ProfileFragment: Fragment(R.layout.profile_fragment) {
                     0 -> FeedFragment().apply {
                         arguments = FeedFragmentArgs(feedType = FeedType.AccountToots(
                                 accountId = account.accountId,
-                                withReplies = false
+                                withReplies = false,
+                                onlyMedia = false
                         )).toBundle()
                     }
                     1 -> FeedFragment().apply {
                         arguments = FeedFragmentArgs(feedType = FeedType.AccountToots(
                                 accountId = account.accountId,
-                                withReplies = true
+                                withReplies = true,
+                                onlyMedia = false
                         )).toBundle()
                     }
-                    2 -> MediaFragment().apply {
-                        // TODO - Set the account ID as the arguments
+                    2 -> FeedFragment().apply {
+                        arguments = FeedFragmentArgs(feedType = FeedType.AccountToots(
+                                accountId = account.accountId,
+                                withReplies = false,
+                                onlyMedia = true
+                        )).toBundle()
                     }
                     else -> throw IndexOutOfBoundsException("Unknown page index $position")
                 }

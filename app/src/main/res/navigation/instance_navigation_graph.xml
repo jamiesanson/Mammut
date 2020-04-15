@@ -27,7 +27,7 @@
         android:id="@+id/notifications"
         android:name="io.github.koss.mammut.notifications.NotificationsFragment"
         android:label="NotificationsFragment"
-        tools:layout="@layout/controller_notifications" />
+        tools:layout="@layout/notification_fragment" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="io.github.koss.mammut.feature.profile.ProfileFragment"

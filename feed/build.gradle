@@ -78,11 +78,6 @@ dependencies {
 
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
-    implementation rootProject.ext.coroutinesReactive
-
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
 
     implementation rootProject.ext.dagger
     kapt rootProject.ext.daggerCompiler
