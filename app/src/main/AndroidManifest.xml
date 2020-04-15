@@ -50,7 +50,7 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
 
         <activity
-            android:name=".feature.instance.MultiInstanceActivity"
+            android:name=".feature.multiinstance.MultiInstanceActivity"
             android:configChanges="orientation"
             android:windowSoftInputMode="adjustResize" />
 

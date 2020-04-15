@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.koss.mammut.repo
 
 import android.content.Context

@@ -31,7 +31,7 @@ import io.github.koss.mammut.base.util.behaviour
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.databinding.InstanceBottomNavigationViewBinding
-import io.github.koss.mammut.feature.instance2.presentation.state.InstanceState
+import io.github.koss.mammut.feature.instance.presentation.state.InstanceState
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen

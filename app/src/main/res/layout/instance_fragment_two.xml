@@ -10,7 +10,7 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:navGraph="@navigation/nav_graph" />
+        app:navGraph="@navigation/instance_navigation_graph" />
 
     <io.github.koss.mammut.component.widget.InstanceBottomNavigationView
         android:id="@+id/bottomSheet"
@@ -51,7 +51,7 @@
         app:iconGravity="start"
         tools:icon="@drawable/ic_home_black_24dp"
         tools:text="Home feed"
-        app:layout_behavior="io.github.koss.mammut.feature.instance2.view.HideTopViewOnScrollBehavior"/>
+        app:layout_behavior="io.github.koss.mammut.component.widget.HideTopViewOnScrollBehavior"/>
 
     <View
         android:id="@+id/bottomNavigationDim"

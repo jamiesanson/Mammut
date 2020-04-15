@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.dagger
+package io.github.koss.mammut.feature.profile.dagger
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,16 +7,19 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.dagger.viewmodel.ViewModelKey
-import io.github.koss.mammut.feature.instance.presentation.InstanceViewModel
+import io.github.koss.mammut.base.dagger.scope.ProfileScope
+import io.github.koss.mammut.feature.profile.presentation.ProfileViewModel
 
 @Module
-abstract class InstanceViewModelModule {
+abstract class ProfileViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(InstanceViewModel::class)
-    abstract fun bindInstanceViewModel(viewModel: InstanceViewModel): ViewModel
+    @ProfileScope
+    @ViewModelKey(ProfileViewModel::class)
+    abstract fun bindProfileViewModel(viewModel: ProfileViewModel): ViewModel
 
     @Binds
+    @ProfileScope
     abstract fun bindViewModelFactory(factory: MammutViewModelFactory): ViewModelProvider.Factory
 }

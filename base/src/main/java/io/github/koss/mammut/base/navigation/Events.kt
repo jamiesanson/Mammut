@@ -20,6 +20,10 @@ sealed class NavigationEvent {
         data class Changed(val newInstance: InstanceRegistration): NavigationEvent()
         data class TabReselected(val tab: Tab): NavigationEvent()
     }
+
+    sealed class MultiInstance {
+        object BackPressed: NavigationEvent()
+    }
 }
 
 /**

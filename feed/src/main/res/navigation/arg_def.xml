@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/arg_def"
+    app:startDestination="@id/feedFragment">
+
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="io.github.koss.mammut.feed.ui.FeedFragment"
+        android:label="FeedFragment" >
+        <argument
+            android:name="feedType"
+            app:argType="io.github.koss.mammut.data.models.domain.FeedType"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>

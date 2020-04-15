@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.internal.InstanceFactory
@@ -42,11 +45,6 @@ import io.github.koss.paging.event.PagingRelay
 import javax.inject.Inject
 import javax.inject.Named
 
-// This is due to a limitation of the navigation library, allowing us to use default parcelable args
-class HomeFeedFragment : FeedFragment() {
-    override var feedType: FeedType = FeedType.Home
-}
-
 /**
  * This class is the Controller responsible for displaying a feed.
  *
@@ -56,7 +54,7 @@ class HomeFeedFragment : FeedFragment() {
  * * Don't show the loading indicator when at the top
  * * Position persistence
  */
-open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
+class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     @Inject
     @FeedScope
@@ -86,7 +84,13 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     private val stateObserver = Observer<FeedState> { processState(it) }
     private val eventObserver = Observer<FeedEvent> { handleEvent(it) }
 
-    protected open lateinit var feedType: FeedType
+    private val args by navArgs<FeedFragmentArgs>()
+
+    private var _feedType: FeedType? = null
+
+    private var feedType: FeedType
+        get() = _feedType ?: args.feedType ?: FeedType.Home
+        set(value) { _feedType = value }
 
     private lateinit var viewModel: FeedViewModel
 
@@ -270,7 +274,7 @@ open class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
 
     override fun onProfileClicked(account: Account) {
-        TODO("Not yet implemented")
+        findNavController().navigate("https://_mammut_/profile/${account.accountId}".toUri())
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {

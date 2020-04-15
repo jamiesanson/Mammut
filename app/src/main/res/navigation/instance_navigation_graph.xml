@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/feed">
+
+    <fragment
+        android:id="@+id/search"
+        android:name="io.github.koss.mammut.search.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/search_fragment" />
+
+    <fragment
+        android:id="@+id/feed"
+        android:name="io.github.koss.mammut.feed.ui.FeedFragment"
+        android:label="FeedFragment"
+        tools:layout="@layout/feed_fragment">
+        <argument
+            android:name="feedType"
+            android:defaultValue="@null"
+            app:argType="io.github.koss.mammut.data.models.domain.FeedType"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notifications"
+        android:name="io.github.koss.mammut.notifications.NotificationsFragment"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/controller_notifications" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="io.github.koss.mammut.feature.profile.ProfileFragment"
+        android:label="ProfileFragment">
+        <argument
+            android:name="accountId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <argument
+            android:name="isMe"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="https://_mammut_/profile/{accountId}" />
+    </fragment>
+</navigation>
