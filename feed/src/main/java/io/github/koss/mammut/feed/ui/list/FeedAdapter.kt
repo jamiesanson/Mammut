@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.presentation.model.BrokenTimelineModel
 import io.github.koss.mammut.feed.presentation.model.FeedModel

@@ -3,7 +3,6 @@ package io.github.koss.mammut.data.database.dao
 import androidx.room.*
 import io.github.koss.mammut.data.database.entities.feed.Status
 import kotlinx.coroutines.flow.Flow
-import org.reactivestreams.Publisher
 
 @Dao
 interface StatusDao {

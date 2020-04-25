@@ -9,10 +9,10 @@ buildscript {
     }
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
-        classpath 'com.google.android.gms:oss-licenses-plugin:0.9.4'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
 
         // TODO - move this
-        def nav_version = "2.3.0-alpha04"
+        def nav_version = "2.3.0-alpha05"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
@@ -66,8 +66,8 @@ android {
         abortOnError false
     }
 
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -109,7 +109,7 @@ dependencies {
     api rootProject.ext.viewPager2
 
     // TODO - Move this out of here
-    def nav_version = "2.3.0-alpha04"
+    def nav_version = "2.3.0-alpha05"
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"

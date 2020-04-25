@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -28,11 +28,10 @@ import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
-import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.util.FeedCallbacks
-import kotlinx.android.synthetic.main.media_view_holder.view.*
+import kotlinx.android.synthetic.main.media_view_holder.view.tootImageView
+import kotlinx.android.synthetic.main.profile_media_view_holder.view.*
 import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -54,19 +53,11 @@ class ProfileMediaViewHolder(
 
     private fun processAttachment(attachment: Attachment<*>) {
         with(itemView) {
-            val aspect = attachment.getThumbnailSpec()
-
-            with(ConstraintSet()) {
-                clone(constraintLayout)
-                setDimensionRatio(tootImageCardView.id, aspect.toString())
-                applyTo(constraintLayout)
-            }
 
             loadAttachment(attachment)
 
-            tootImageCardView.visibility = View.VISIBLE
 
-            tootImageCardView.onClick {
+            constraintLayout.setOnClickListener {
                 if (!sensitiveContentFrameLayout.isVisible) {
                     callbacks.onPhotoClicked(tootImageView, attachment.url)
                 }
@@ -123,29 +114,31 @@ class ProfileMediaViewHolder(
         itemView.tootImageView.visibility = View.VISIBLE
         itemView.playerView.visibility = View.GONE
 
-        // Resolve colors
-        val typedValue = TypedValue()
-        val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorSurface, typedValue, true)
-        @ColorInt val color = typedValue.data
+        itemView.constraintLayout.doOnLayout {
+            // Resolve colors
+            val typedValue = TypedValue()
+            val theme = itemView.context.theme!!
+            theme.resolveAttribute(R.attr.colorSurface, typedValue, true)
+            @ColorInt val color = typedValue.data
 
-        val requestManager = GlideApp.with(itemView)
+            val requestManager = GlideApp.with(itemView)
 
-        // Load attachment
-        requestManager
-                .load(photoAttachment.url)
-                .thumbnail(
-                        requestManager
-                                .load(photoAttachment.previewUrl)
-                                .thumbnail(
-                                        requestManager
-                                                .load(ColorDrawable(color))
-                                )
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                )
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(RequestOptions.bitmapTransform(FitCenter()))
-                .into(itemView.tootImageView)
+            // Load attachment
+            requestManager
+                    .load(photoAttachment.url)
+                    .thumbnail(
+                            requestManager
+                                    .load(photoAttachment.previewUrl)
+                                    .thumbnail(
+                                            requestManager
+                                                    .load(ColorDrawable(color))
+                                    )
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                    )
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .apply(RequestOptions.bitmapTransform(FitCenter()))
+                    .into(itemView.tootImageView)
+        }
     }
 
     private fun setupContentWarning(isSensitive: Boolean) {
@@ -197,8 +190,8 @@ class ProfileMediaViewHolder(
                 }
             }
 
-            sensitiveContentToggleButton.onClick { toggleContentWarningVisibility() }
-            sensitiveContentFrameLayout.onClick { toggleContentWarningVisibility() }
+            sensitiveContentToggleButton.setOnClickListener { toggleContentWarningVisibility() }
+            sensitiveContentFrameLayout.setOnClickListener { toggleContentWarningVisibility() }
         }
     }
 }
