@@ -12,7 +12,6 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.databinding.AboutAppFragmentBinding
 import org.jetbrains.anko.support.v4.startActivity
-import io.github.koss.mammut.feature.about.AboutAppFragmentDirections.Companion.actionAboutAppFragmentToContributorsFragment as toContributorsFragment
 
 class AboutAppFragment: Fragment(R.layout.about_app_fragment) {
 
@@ -26,7 +25,7 @@ class AboutAppFragment: Fragment(R.layout.about_app_fragment) {
             }
 
             contributorsCell.setOnClickListener {
-                findNavController().navigate(toContributorsFragment())
+                findNavController().navigate(AboutAppFragmentDirections.actionAboutAppFragmentToContributorsFragment())
             }
 
             // Setup insets

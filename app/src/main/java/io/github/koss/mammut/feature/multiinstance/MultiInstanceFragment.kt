@@ -13,6 +13,7 @@ import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
+import io.github.koss.mammut.base.navigation.NavigationHub
 import io.github.koss.mammut.base.util.awaitFirst
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.InstanceRegistration
@@ -29,7 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
+class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment), NavigationHub {
 
     @Inject
     lateinit var registrationRepository: RegistrationRepository
@@ -55,18 +56,7 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment) {
         observeRegistrations()
     }
 
-    fun lockViewPager() {
-        binding.viewPager.isUserInputEnabled = false
-    }
-
-    fun unlockViewPager() {
-        // Only properly unlock the ViewPager if enabled.
-        if (preferencesRepository.swipingBetweenInstancesEnabled) {
-            binding.viewPager.isUserInputEnabled = true
-        }
-    }
-
-    fun requestPageSelection(index: Int) {
+    override fun switchInstance(index: Int) {
         binding.viewPager.setCurrentItem(index, true)
 
         viewLifecycleOwner.lifecycleScope.launch {

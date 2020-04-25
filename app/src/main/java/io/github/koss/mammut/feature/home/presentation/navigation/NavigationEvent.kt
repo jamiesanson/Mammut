@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.presentation.navigation
+package io.github.koss.mammut.feature.home.presentation.navigation
 
 sealed class NavigationEvent
 

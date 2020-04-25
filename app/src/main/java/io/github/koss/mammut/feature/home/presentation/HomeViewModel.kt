@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.presentation
+package io.github.koss.mammut.feature.home.presentation
 
 import androidx.lifecycle.*
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
@@ -8,9 +8,13 @@ import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.navigation.Tab
 import io.github.koss.mammut.data.models.domain.FeedType
-import io.github.koss.mammut.feature.instance.presentation.navigation.UserPeekRequested
-import io.github.koss.mammut.feature.instance.presentation.state.*
-import io.github.koss.mammut.feature.instance.presentation.navigation.NavigationEvent as InstanceNavigationEvent
+import io.github.koss.mammut.feature.home.presentation.state.HomeState
+import io.github.koss.mammut.feature.home.presentation.state.HomeReducer
+import io.github.koss.mammut.feature.home.presentation.state.OnFeedTypeChanged
+import io.github.koss.mammut.feature.home.presentation.state.OnOffscreenItemCountChanged
+import io.github.koss.mammut.feature.home.presentation.state.OnRegistrationsLoaded
+import io.github.koss.mammut.feature.home.presentation.navigation.UserPeekRequested
+import io.github.koss.mammut.feature.home.presentation.navigation.NavigationEvent as InstanceNavigationEvent
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.randux.createStore
 import io.github.koss.randux.utils.Store
@@ -22,7 +26,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
-class InstanceViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
         @InstanceScope
         @Named("instance_access_token")
         private val instanceAccessToken: String,
@@ -35,14 +39,14 @@ class InstanceViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val store: Store = createStore(
-            reducer = InstanceReducer(),
-            preloadedState = InstanceState(
+            reducer = HomeReducer(),
+            preloadedState = HomeState(
                     instanceName = instanceName,
                     accessToken = instanceAccessToken
             )
     )
 
-    private val stateRelay = Channel<InstanceState>(capacity = CONFLATED)
+    private val stateRelay = Channel<HomeState>(capacity = CONFLATED)
 
     val state = liveData {
         for (item in stateRelay) {
@@ -55,7 +59,7 @@ class InstanceViewModel @Inject constructor(
     init {
         // Publish state
         store.subscribe {
-            (store.getState() as? InstanceState)?.let {
+            (store.getState() as? HomeState)?.let {
                 stateRelay.offer(it)
             }
         }

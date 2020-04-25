@@ -25,6 +25,7 @@ import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.navigation.Tab
+import io.github.koss.mammut.base.util.findRootNavController
 import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.Account
@@ -286,9 +287,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
                 return@run findFirstVisibleItemPosition() < 3
             } ?: false
 
-
     override fun onProfileClicked(account: Account) {
-        findNavController().navigate("https://_mammut_/profile/${account.accountId}".toUri())
+        findRootNavController().navigate("mammut://profile/${account.accountId}".toUri())
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {

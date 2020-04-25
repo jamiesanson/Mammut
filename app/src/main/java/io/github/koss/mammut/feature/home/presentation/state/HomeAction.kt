@@ -1,18 +1,18 @@
-package io.github.koss.mammut.feature.instance.presentation.state
+package io.github.koss.mammut.feature.home.presentation.state
 
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.data.models.domain.FeedType
 
-sealed class InstanceAction
+sealed class HomeAction
 
 data class OnRegistrationsLoaded(
         val registrations: List<InstanceRegistration>
-) : InstanceAction()
+) : HomeAction()
 
 data class OnFeedTypeChanged(
         val newFeedType: FeedType
-) : InstanceAction()
+) : HomeAction()
 
 data class OnOffscreenItemCountChanged(
         val newCount: Int
-) : InstanceAction()
+) : HomeAction()

@@ -2,6 +2,8 @@ package io.github.koss.mammut.feature.instance.dagger
 
 import dagger.Subcomponent
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
+import io.github.koss.mammut.feature.home.dagger.HomeComponent
+import io.github.koss.mammut.feature.home.dagger.HomeModule
 import io.github.koss.mammut.feature.profile.dagger.ProfileComponent
 import io.github.koss.mammut.feature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feature.instance.InstanceFragment
@@ -13,13 +15,10 @@ import io.github.koss.mammut.notifications.dagger.NotificationsComponent
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
 import io.github.koss.mammut.toot.dagger.ComposeTootComponent
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
-import javax.inject.Named
 
 @InstanceScope
 @Subcomponent(modules = [ InstanceModule::class ])
 interface InstanceComponent {
-
-    fun inject(instanceFragment: InstanceFragment)
 
     fun plus(feedModule: FeedModule): FeedComponent
 
@@ -31,9 +30,5 @@ interface InstanceComponent {
 
     fun plus(notificationsModule: NotificationsModule): NotificationsComponent
 
-    @Named("instance_access_token")
-    fun accessToken(): String
-
-    @Named("instance_name")
-    fun instanceName(): String
+    fun plus(homeModule: HomeModule): HomeComponent
 }

@@ -1,9 +1,9 @@
-package io.github.koss.mammut.feature.instance.presentation.state
+package io.github.koss.mammut.feature.home.presentation.state
 
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.domain.FeedType
 
-data class InstanceState(
+data class HomeState(
         val instanceName: String,
         val accessToken: String,
         val offscreenItemCount: Int = 0,

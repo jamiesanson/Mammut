@@ -28,20 +28,4 @@
         android:name="io.github.koss.mammut.notifications.NotificationsFragment"
         android:label="NotificationsFragment"
         tools:layout="@layout/notification_fragment" />
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="io.github.koss.mammut.feature.profile.ProfileFragment"
-        android:label="ProfileFragment">
-        <argument
-            android:name="accountId"
-            android:defaultValue="-1L"
-            app:argType="long" />
-        <argument
-            android:name="isMe"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <deepLink
-            android:id="@+id/deepLink"
-            app:uri="https://_mammut_/profile/{accountId}" />
-    </fragment>
 </navigation>

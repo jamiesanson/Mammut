@@ -1,115 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/container"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="54dp"
-        android:clipChildren="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/bottomNavigationSheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        app:cardElevation="8dp"
-        android:focusable="true"
-        android:paddingTop="6dp"
-        app:cardCornerRadius="12dp"
-        app:behavior_peekHeight="@dimen/default_navigation_peek_height"
-        app:layout_behavior="@string/bottom_sheet_behavior">
-
-        <LinearLayout
-            android:id="@+id/bottomNavigationContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <FrameLayout
-                android:id="@+id/bottomNavigationTopScrim"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom">
-
-                <View
-                    android:layout_width="24dp"
-                    android:layout_height="4dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center|top"
-                    android:alpha="0.32"
-                    android:background="@drawable/bottom_navigation_drag_pill_background" />
-
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="24dp"
-                    app:elevation="0dp"
-                    app:backgroundTint="@android:color/transparent"
-                    app:itemHorizontalTranslationEnabled="false"
-                    app:itemIconTint="@drawable/bottom_navigation_color_state"
-                    app:itemTextColor="@drawable/bottom_navigation_color_state"
-                    app:labelVisibilityMode="labeled"
-                    app:menu="@menu/instance_bottom_navigation" />
-
-            </FrameLayout>
-
-
-
-            <include
-                android:id="@+id/bottomSheetContentLayout"
-                layout="@layout/instance_bottom_navigation_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:src="@drawable/ic_add_black_24dp"
-        android:tint="?attr/colorControlNormal"
-        android:tintMode="src_in"
-        android:backgroundTint="?attr/colorAccent"
-        android:backgroundTintMode="src_in"
-        app:layout_anchor="@id/bottomNavigationSheet"
-        app:layout_anchorGravity="end|top"
-        app:useCompatPadding="true" />
-
-    <View
-        android:id="@+id/bottomNavigationDim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="?colorControlNormalTransparent"
-        android:clickable="true"
-        android:elevation="6dp"
-        android:focusable="true" />
-
-    <View
-        android:id="@+id/fullScreenPhotoLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/colorPrimaryTransparency"
-        android:elevation="16dp"
-        android:visibility="gone" />
-
-    <com.alexvasilkov.gestures.views.GestureImageView
-        android:id="@+id/fullScreenGestureImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="16dp"
-        android:visibility="gone" />
+        app:navGraph="@navigation/navigation_graph" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

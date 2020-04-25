@@ -31,7 +31,7 @@ import io.github.koss.mammut.base.util.behaviour
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.databinding.InstanceBottomNavigationViewBinding
-import io.github.koss.mammut.feature.instance.presentation.state.InstanceState
+import io.github.koss.mammut.feature.home.presentation.state.HomeState
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
@@ -49,7 +49,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private var peekInsetAddition: Int = 0
     private var peekJob: Job = Job()
 
-    private var currentState: InstanceState? = null
+    private var currentState: HomeState? = null
     private var initialised: Boolean = false
 
     var onNavigationClickListener: OnNavigationClickListener? = null
@@ -149,7 +149,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                 ?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    fun setState(state: InstanceState) {
+    fun setState(state: HomeState) {
         currentState = state
 
         if (initialised) {
@@ -289,7 +289,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    private fun renderBottomNavigationContent(state: InstanceState) {
+    private fun renderBottomNavigationContent(state: HomeState) {
         // Load Account
         @ColorInt val placeholderColor = colorAttr(R.attr.colorOnSurface)
 

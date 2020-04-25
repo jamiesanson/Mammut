@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.presentation.state
+package io.github.koss.mammut.feature.home.presentation.state
 
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.domain.FeedType
@@ -6,10 +6,10 @@ import io.github.koss.randux.utils.Action
 import io.github.koss.randux.utils.Reducer
 import io.github.koss.randux.utils.State
 
-class InstanceReducer : Reducer {
+class HomeReducer : Reducer {
 
     override fun invoke(currentState: State?, incomingAction: Action): State? =
-            (currentState as? InstanceState)?.let { state ->
+            (currentState as? HomeState)?.let { state ->
                 when (incomingAction) {
                     is OnRegistrationsLoaded -> {
                         return@let state.copy(

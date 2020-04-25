@@ -1,4 +1,4 @@
-package io.github.koss.mammut.feature.instance.view
+package io.github.koss.mammut.feature.home.view
 
 import android.transition.TransitionManager
 import android.view.View
@@ -9,10 +9,10 @@ import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import io.github.koss.mammut.R
 import io.github.koss.mammut.data.models.domain.FeedType
-import io.github.koss.mammut.databinding.InstanceFragmentTwoBinding
+import io.github.koss.mammut.databinding.HomeFragmentBinding
 import org.jetbrains.anko.colorAttr
 
-fun InstanceFragmentTwoBinding.setupChooser(
+fun HomeFragmentBinding.setupChooser(
         selectedFeedType: FeedType,
         onTypeChanged: (FeedType) -> Unit
 ) {
@@ -51,8 +51,8 @@ fun InstanceFragmentTwoBinding.setupChooser(
     }
 }
 
-fun InstanceFragmentTwoBinding.openChooser() {
-    val transform = MaterialContainerTransform(root.context).apply {
+fun HomeFragmentBinding.openChooser() {
+    val transform = MaterialContainerTransform().apply {
         startView = feedTypeButton
         endView = feedChooserCard
 
@@ -70,8 +70,8 @@ fun InstanceFragmentTwoBinding.openChooser() {
     feedChooserCard.visibility = View.VISIBLE
 }
 
-fun InstanceFragmentTwoBinding.closeChooser() {
-    val transform = MaterialContainerTransform(root.context).apply {
+fun HomeFragmentBinding.closeChooser() {
+    val transform = MaterialContainerTransform().apply {
         endView = feedTypeButton
         startView = feedChooserCard
 
@@ -86,7 +86,7 @@ fun InstanceFragmentTwoBinding.closeChooser() {
     feedTypeDim.visibility = View.GONE
 }
 
-fun InstanceFragmentTwoBinding.bindFeedTypeButton(feedType: FeedType) {
+fun HomeFragmentBinding.bindFeedTypeButton(feedType: FeedType) {
     with(feedTypeButton) {
         when (feedType) {
             FeedType.Home -> {

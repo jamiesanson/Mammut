@@ -76,7 +76,7 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity() as SubcomponentFactory)
+        findSubcomponentFactory()
                 .buildSubcomponent<ComposeTootModule, ComposeTootComponent>(ComposeTootModule(
                         accessToken = args.accessToken,
                         instanceName = args.instanceName
