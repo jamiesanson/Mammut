@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.navigation.NavigationHub
@@ -24,7 +23,6 @@ import io.github.koss.mammut.feature.instance.ARG_INSTANCE_NAME
 import io.github.koss.mammut.feature.instance.InstanceFragment
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
-import io.github.koss.mammut.toot.dagger.ComposeTootModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +48,8 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment), Navigat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewPager.isUserInputEnabled = preferencesRepository.swipingBetweenInstancesEnabled
+        // Disable ViewPager interactions
+        binding.viewPager.isUserInputEnabled = false
 
         // Setup registrations
         observeRegistrations()
