@@ -7,6 +7,7 @@ import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.alexvasilkov.gestures.views.GestureImageView
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import io.github.koss.mammut.base.util.GlideApp
 
 class FullScreenPhotoDelegate: FullScreenPhotoViewer {
@@ -28,7 +29,7 @@ class FullScreenPhotoDelegate: FullScreenPhotoViewer {
         return false
     }
 
-    override fun displayPhoto(sourceImageView: ImageView, photoUrl: String) {
+    override fun displayPhoto(sourceImageView: ImageView, photoUrl: String, customSourceOptions: RequestOptions?) {
         val (_, fullScreenGestureImageView) = getPhotoTargetViews() ?: return
 
         // Setup animator
@@ -54,6 +55,11 @@ class FullScreenPhotoDelegate: FullScreenPhotoViewer {
                             .placeholder(fullScreenGestureImageView.drawable)
                             .transition(withCrossFade())
                             .transform(FitCenter())
+                            .apply {
+                                customSourceOptions?.let {
+                                    apply(it)
+                                }
+                            }
                             .into(sourceImageView)
                     }
                 }

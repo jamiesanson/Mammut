@@ -210,6 +210,10 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
                 .apply(RequestOptions.circleCropTransform())
                 .into(binding.profileImageView)
 
+        binding.profileImageView.setOnClickListener {
+            displayPhoto(binding.profileImageView, account.avatar, customSourceOptions = RequestOptions.circleCropTransform())
+        }
+
         // Header image
         GlideApp.with(binding.coverPhotoImageView)
                 .load(account.header)
