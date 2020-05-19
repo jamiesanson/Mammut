@@ -50,6 +50,8 @@ dependencies {
     implementation rootProject.ext.dagger
 
     implementation rootProject.ext.material
+    
+    implementation rootProject.ext.gestureView
 
     // TODO - Move this out of here
     def nav_version = "2.3.0-alpha05"

@@ -363,5 +363,19 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/fullScreenPhotoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorPrimaryTransparency"
+        android:elevation="16dp"
+        android:visibility="gone" />
+
+    <com.alexvasilkov.gestures.views.GestureImageView
+        android:id="@+id/fullScreenGestureImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

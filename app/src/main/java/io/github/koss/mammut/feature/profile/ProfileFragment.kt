@@ -25,6 +25,8 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
+import io.github.koss.mammut.base.photoviewer.FullScreenPhotoDelegate
+import io.github.koss.mammut.base.photoviewer.FullScreenPhotoViewer
 import io.github.koss.mammut.base.util.*
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.NetworkState
@@ -43,7 +45,7 @@ import org.jetbrains.anko.colorAttr
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
-class ProfileFragment: Fragment(R.layout.profile_fragment) {
+class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewer by FullScreenPhotoDelegate() {
 
     private val binding by viewLifecycleLazy { ProfileFragmentBinding.bind(requireView()) }
 
@@ -82,6 +84,10 @@ class ProfileFragment: Fragment(R.layout.profile_fragment) {
         viewModel.accountLiveData.observe(this, ::bindAccount)
         viewModel.followStateLiveData.observe(this, ::bindFollowButton)
         viewModel.networkState.observe(this, ::bindNetworkState)
+
+        setPhotoTargetViewBinding {
+            binding.fullScreenPhotoLayout to binding.fullScreenGestureImageView
+        }
     }
 
     private fun setupToolbar() {

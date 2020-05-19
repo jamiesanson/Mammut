@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.alexvasilkov.gestures.views.GestureImageView
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
@@ -36,6 +37,8 @@ import io.github.koss.mammut.feature.home.view.closeChooser
 import io.github.koss.mammut.feature.home.view.openChooser
 import io.github.koss.mammut.feature.home.view.setupChooser
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
+import io.github.koss.mammut.base.photoviewer.FullScreenPhotoDelegate
+import io.github.koss.mammut.base.photoviewer.FullScreenPhotoViewer
 import io.github.koss.mammut.feature.profile.ProfileFragmentArgs
 import io.github.koss.mammut.feed.presentation.FeedTypeProvider
 import io.github.koss.mammut.repo.RegistrationRepository
@@ -44,7 +47,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider {
+class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScreenPhotoViewer by FullScreenPhotoDelegate() {
 
     private val binding by viewLifecycleLazy { HomeFragmentBinding.bind(requireView()) }
 
@@ -79,6 +82,10 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider {
 
         setupNavigation()
         setupView()
+
+        setPhotoTargetViewBinding {
+            binding.fullScreenPhotoLayout to binding.fullScreenGestureImageView
+        }
 
         homeViewModel.state.observe(viewLifecycleOwner, ::onStateChanged)
         homeViewModel.navigationEvents.observe(viewLifecycleOwner, ::onNavigationEvent)

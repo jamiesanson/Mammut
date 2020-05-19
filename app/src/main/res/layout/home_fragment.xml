@@ -36,7 +36,6 @@
         app:layout_anchorGravity="end|top"
         app:useCompatPadding="true" />
 
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/feedTypeButton"
         android:layout_width="wrap_content"
@@ -76,7 +75,6 @@
         android:layout_height="match_parent"
         android:elevation="16dp"
         android:visibility="gone" />
-
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/feedChooserCard"
@@ -121,7 +119,6 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
 
     <View
         android:id="@+id/feedTypeDim"

@@ -11,13 +11,10 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import dagger.internal.InstanceFactory
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.FeedScope
@@ -25,6 +22,7 @@ import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.navigation.Tab
+import io.github.koss.mammut.base.util.findFullScreenPhotoViewer
 import io.github.koss.mammut.base.util.findRootNavController
 import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.viewLifecycleLazy
@@ -292,7 +290,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
-        TODO("Not yet implemented")
+        findFullScreenPhotoViewer().displayPhoto(sourceImageView = imageView, photoUrl = photoUrl)
     }
 
     override fun onTootClicked(status: Status) {

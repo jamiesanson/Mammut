@@ -17,6 +17,7 @@ import io.github.koss.mammut.base.R
 import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.NavigationHub
+import io.github.koss.mammut.base.photoviewer.FullScreenPhotoViewer
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.textColor
 import kotlin.properties.ReadOnlyProperty
@@ -88,6 +89,12 @@ fun <T> Fragment.viewLifecycleLazy(initialise: () -> T): ReadOnlyProperty<Fragme
                 }
             }
         }
+
+fun Fragment.findFullScreenPhotoViewer(): FullScreenPhotoViewer =
+    (parentFragment as? FullScreenPhotoViewer)
+        ?: parentFragment?.findFullScreenPhotoViewer()
+        ?: /* Try the Activity */ requireActivity() as? FullScreenPhotoViewer
+        ?: throw IllegalStateException("No parent SubComponentFactory found")
 
 fun Fragment.findSubcomponentFactory(): SubcomponentFactory =
         (parentFragment as? SubcomponentFactory)
