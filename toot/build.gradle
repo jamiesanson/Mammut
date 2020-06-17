@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         // TODO - move this
-        def nav_version = "2.3.0-alpha04"
+        def nav_version = "2.3.0-rc01"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
@@ -55,7 +55,7 @@ dependencies {
     implementation rootProject.ext.ktx
 
     // TODO - Move this out of here
-    def nav_version = "2.3.0-alpha04"
+    def nav_version = "2.3.0-rc01"
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"

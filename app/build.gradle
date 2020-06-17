@@ -12,7 +12,7 @@ buildscript {
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
 
         // TODO - move this
-        def nav_version = "2.3.0-alpha05"
+        def nav_version = "2.3.0-rc01"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
@@ -109,7 +109,7 @@ dependencies {
     api rootProject.ext.viewPager2
 
     // TODO - Move this out of here
-    def nav_version = "2.3.0-alpha05"
+    def nav_version = "2.3.0-rc01"
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"
