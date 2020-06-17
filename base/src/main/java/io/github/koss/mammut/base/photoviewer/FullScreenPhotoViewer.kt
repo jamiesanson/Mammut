@@ -9,7 +9,7 @@ interface FullScreenPhotoViewer {
 
     fun setPhotoTargetViewBinding(binding: () -> Pair<View, GestureImageView>?)
 
-    fun closeViewerIfVisible(): Boolean
+    fun closeViewerIfVisible()
 
     fun displayPhoto(sourceImageView: ImageView, photoUrl: String, customSourceOptions: RequestOptions? = null)
 }

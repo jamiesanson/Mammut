@@ -2,6 +2,8 @@ package io.github.koss.mammut.base.photoviewer
 
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import com.alexvasilkov.gestures.transition.GestureTransitions
 import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator
 import com.alexvasilkov.gestures.views.GestureImageView
@@ -20,16 +22,22 @@ class FullScreenPhotoDelegate: FullScreenPhotoViewer {
         getPhotoTargetViews = binding
     }
 
-    override fun closeViewerIfVisible(): Boolean {
+    override fun closeViewerIfVisible() {
         if (fullScreenImageAnimator?.isLeaving == false) {
             fullScreenImageAnimator?.exit(true)
-            return true
         }
-
-        return false
     }
 
     override fun displayPhoto(sourceImageView: ImageView, photoUrl: String, customSourceOptions: RequestOptions?) {
+        // Handle back presses
+        (sourceImageView.context as AppCompatActivity).onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                closeViewerIfVisible()
+                remove()
+            }
+        })
+
+
         val (_, fullScreenGestureImageView) = getPhotoTargetViews() ?: return
 
         // Setup animator
