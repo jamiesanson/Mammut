@@ -47,7 +47,7 @@ ext {
     anko = "org.jetbrains.anko:anko:0.10.8"
 
     // Material
-    material = 'com.google.android.material:material:1.2.0-beta01'
+    material = 'com.google.android.material:material:1.2.0-alpha06'
 
     // Mastodon4J
     mastodon4j = 'com.github.jamiesanson.mastodon4j:mastodon4j:61d6faacb1'

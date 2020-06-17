@@ -91,6 +91,8 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
     }
 
     private fun setupView() {
+        binding.bottomSheet.initialise()
+
         binding.feedTypeButton.setOnClickListener {
             binding.openChooser()
         }

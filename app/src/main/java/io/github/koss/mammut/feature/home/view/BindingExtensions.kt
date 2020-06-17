@@ -1,10 +1,10 @@
 package io.github.koss.mammut.feature.home.view
 
+import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.transition.doOnEnd
 import androidx.core.view.isVisible
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import io.github.koss.mammut.R
@@ -56,24 +56,13 @@ fun HomeFragmentBinding.openChooser() {
         startView = feedTypeButton
         endView = feedChooserCard
 
-        setPathMotion(MaterialArcMotion())
+        pathMotion = MaterialArcMotion()
 
         scrimColor = root.context.colorAttr(R.attr.colorControlNormalTransparent)
 
-        addListener(object: Transition.TransitionListener {
-            override fun onTransitionEnd(transition: Transition) {
-
-                feedTypeDim.visibility = View.VISIBLE
-            }
-
-            override fun onTransitionResume(transition: Transition) {}
-
-            override fun onTransitionPause(transition: Transition) {}
-
-            override fun onTransitionCancel(transition: Transition) {}
-
-            override fun onTransitionStart(transition: Transition) {}
-        })
+        doOnEnd {
+            feedTypeDim.visibility = View.VISIBLE
+        }
     }
 
     TransitionManager.beginDelayedTransition(root as ViewGroup, transform)
@@ -86,7 +75,7 @@ fun HomeFragmentBinding.closeChooser() {
         endView = feedTypeButton
         startView = feedChooserCard
 
-        setPathMotion(MaterialArcMotion())
+        pathMotion = MaterialArcMotion()
 
         scrimColor = root.context.colorAttr(R.attr.colorControlNormalTransparent)
     }

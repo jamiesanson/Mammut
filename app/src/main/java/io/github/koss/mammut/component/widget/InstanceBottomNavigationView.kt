@@ -59,22 +59,17 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     val navigationView: BottomNavigationView
         get() = binding.bottomNavigationView
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        initialise()
-    }
-
-    private fun initialise() {
+    fun initialise() {
         // Ensure this is being used correctly
         require(layoutParams is CoordinatorLayout.LayoutParams) {
             "InstanceBottomNavigationView must be used within a CoordinatorLayout"
         }
 
         // Apply insets
-        doOnApplyWindowInsets { _, insets, _ ->
+        doOnApplyWindowInsets { view, insets, _ ->
             if (insets.systemWindowInsetBottom != 0) {
                 peekInsetAddition = insets.systemWindowInsetBottom
-                updatePadding(bottom = insets.systemWindowInsetBottom)
+                view.updatePadding(bottom = insets.systemWindowInsetBottom)
                 resetPeek()
             }
         }

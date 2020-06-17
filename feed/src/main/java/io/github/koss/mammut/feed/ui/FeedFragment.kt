@@ -207,6 +207,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
+                if (view == null) return
+
                 if ((binding.recyclerView.layoutManager as? LinearLayoutManager)
                         ?.findFirstCompletelyVisibleItemPosition() == 0) {
                     updateBadgeCount()

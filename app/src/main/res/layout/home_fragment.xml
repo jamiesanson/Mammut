@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:nestedScrollingEnabled="false"
         app:cardElevation="8dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
@@ -58,6 +57,7 @@
         android:layout_height="match_parent"
         android:alpha="0"
         android:background="?colorControlNormalTransparent"
+        android:visibility="gone"
         android:clickable="true"
         android:focusable="true" />
 

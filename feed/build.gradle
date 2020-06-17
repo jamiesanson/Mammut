@@ -93,6 +93,8 @@ dependencies {
 
     implementation rootProject.ext.threetenabp
 
+    implementation rootProject.ext.anko
+
     implementation rootProject.ext.exoCore
     implementation rootProject.ext.exoUi
 
