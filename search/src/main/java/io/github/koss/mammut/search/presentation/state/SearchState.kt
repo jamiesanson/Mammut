@@ -2,12 +2,17 @@ package io.github.koss.mammut.search.presentation.state
 
 import io.github.koss.mammut.search.presentation.model.SearchModel
 
-sealed class SearchState
+sealed class SearchState(val query: String)
 
-object NoResults: SearchState()
+class NoResults(
+    query: String
+): SearchState(query)
 
-object Loading: SearchState()
+class Loading(
+    query: String
+): SearchState(query)
 
-data class Loaded(
+class Loaded(
+    query: String,
     val results: List<SearchModel>
-): SearchState()
+): SearchState(query)

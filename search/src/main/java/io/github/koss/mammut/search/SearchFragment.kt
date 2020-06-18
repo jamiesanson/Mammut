@@ -1,6 +1,7 @@
 package io.github.koss.mammut.search
 
 import android.os.Bundle
+import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,8 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
     @Named("instance_access_token")
     lateinit var accessToken: String
 
+    private var searchTextWatcher: TextWatcher? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,7 +66,7 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
                 }
             }
 
-            searchEditText.doOnTextChanged { text, _, _, _ ->
+            searchTextWatcher = searchEditText.doOnTextChanged { text, _, _, _ ->
                 text?.toString()?.let(viewModel::search)
             }
 
@@ -85,16 +88,18 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
     private fun onStateChanged(state: SearchState) {
         // TODO - Improve animations when smoothing things out
         when (state) {
-            NoResults -> {
+            is NoResults -> {
                 with (binding) {
                     TransitionManager.beginDelayedTransition(root)
                     noResultsTextView.isVisible = true
 
                     progressBar.isGone = true
                     searchResultsRecyclerView.isGone = true
+
+                    updateSearchQuery(state.query)
                 }
             }
-            Loading -> {
+            is Loading -> {
 
                 with (binding) {
                     TransitionManager.beginDelayedTransition(root)
@@ -102,6 +107,8 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
 
                     noResultsTextView.isGone = true
                     searchResultsRecyclerView.isGone = true
+
+                    updateSearchQuery(state.query)
                 }
             }
             is Loaded -> {
@@ -116,7 +123,19 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
                     searchResultsRecyclerView.isVisible = true
                     (searchResultsRecyclerView.adapter as SearchResultsAdapter)
                             .submitList(state.results)
+
+                    updateSearchQuery(state.query)
                 }
+            }
+        }
+    }
+
+    private fun updateSearchQuery(query: String) {
+        with (binding) {
+            if (searchEditText.text.toString() != query) {
+                searchEditText.removeTextChangedListener(searchTextWatcher)
+                searchEditText.setText(query)
+                searchEditText.addTextChangedListener(searchTextWatcher)
             }
         }
     }

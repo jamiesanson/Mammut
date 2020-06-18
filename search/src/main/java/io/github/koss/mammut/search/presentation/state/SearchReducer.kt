@@ -10,11 +10,13 @@ import io.github.koss.randux.utils.State
 class SearchReducer : Reducer {
     override fun invoke(currentState: State?, incomingAction: Action): State? {
         return when (incomingAction) {
-            is OnLoadStart -> Loading
+            is OnLoadStart -> Loading(incomingAction.query)
             is OnResults -> if (incomingAction.results.accounts.isEmpty()) {
-                NoResults
+                NoResults(incomingAction.query)
             } else {
-                Loaded(incomingAction.results.toSearchModels())
+                Loaded(
+                    query = incomingAction.query,
+                    results = incomingAction.results.toSearchModels())
             }
             else -> currentState
         }

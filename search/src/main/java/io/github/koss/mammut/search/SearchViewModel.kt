@@ -28,7 +28,7 @@ class SearchViewModel @Inject constructor(
 
     private val store: Store = createStore(
         reducer = SearchReducer(),
-        preloadedState = NoResults
+        preloadedState = NoResults(query = "")
     )
 
     private val stateRelay = Channel<SearchState>(capacity = Channel.CONFLATED)
@@ -55,10 +55,14 @@ class SearchViewModel @Inject constructor(
     }
 
     fun search(query: String) {
+        if (state.value?.query == query) {
+            return
+        }
+
         queryDebounceJob?.cancel()
 
         queryDebounceJob = viewModelScope.launch {
-            store.dispatch(OnLoadStart)
+            store.dispatch(OnLoadStart(query))
 
             delay(1000)
 
@@ -66,7 +70,7 @@ class SearchViewModel @Inject constructor(
                 Public(client).getSearch(query = query, resolve = true).execute()
             }
 
-            store.dispatch(OnResults(results.await()))
+            store.dispatch(OnResults(query, results.await()))
         }
     }
 }
