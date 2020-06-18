@@ -52,7 +52,7 @@
         <activity
             android:name=".feature.multiinstance.MultiInstanceActivity"
             android:configChanges="orientation"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan"/>
 
         <!-- Disable the WorkManagerInitializer such that we can use our own worker factory -->
         <provider
