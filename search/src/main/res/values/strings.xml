@@ -1,3 +1,4 @@
 <resources>
     <string name="coming_soon">Search support is coming soon!</string>
+    <string name="search_mastodon">Search Mastodon</string>
 </resources>
