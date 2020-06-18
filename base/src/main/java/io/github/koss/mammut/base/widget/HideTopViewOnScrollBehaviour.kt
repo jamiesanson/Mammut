@@ -1,4 +1,4 @@
-package io.github.koss.mammut.component.widget
+package io.github.koss.mammut.base.widget
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

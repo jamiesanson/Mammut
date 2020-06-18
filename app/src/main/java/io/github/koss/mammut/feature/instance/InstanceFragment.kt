@@ -12,6 +12,7 @@ import io.github.koss.mammut.feature.instance.dagger.InstanceModule
 import io.github.koss.mammut.feature.profile.dagger.ProfileModule
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
+import io.github.koss.mammut.search.dagger.SearchModule
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 
 const val ARG_INSTANCE_NAME = "arg_instance_name"
@@ -38,6 +39,7 @@ class InstanceFragment : Fragment(R.layout.instance_fragment), SubcomponentFacto
             is FeedModule -> component.plus(module)
             is ProfileModule -> component.plus(module)
             is HomeModule -> component.plus(module)
+            is SearchModule -> component.plus(module)
             else -> throw IllegalArgumentException("Unknown module type")
         } as Subcomponent
     }

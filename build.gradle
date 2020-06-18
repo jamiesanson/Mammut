@@ -50,7 +50,7 @@ ext {
     material = 'com.google.android.material:material:1.2.0-alpha06'
 
     // Mastodon4J
-    mastodon4j = 'com.github.jamiesanson.mastodon4j:mastodon4j:61d6faacb1'
+    mastodon4j = 'com.github.jamiesanson.mastodon4j:mastodon4j:33907ff18c'
 
     // Room
     def room_version = "2.2.5"

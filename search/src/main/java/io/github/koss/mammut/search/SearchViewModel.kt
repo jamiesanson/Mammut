@@ -14,11 +14,12 @@ import io.github.koss.mammut.search.presentation.state.SearchState
 import io.github.koss.randux.applyMiddleware
 import io.github.koss.randux.createStore
 import io.github.koss.randux.utils.Store
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.broadcastIn
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emptyFlow
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(
@@ -31,6 +32,8 @@ class SearchViewModel @Inject constructor(
     )
 
     private val stateRelay = Channel<SearchState>(capacity = Channel.CONFLATED)
+
+    private var queryDebounceJob: Job? = null
 
     val state = liveData {
         for (item in stateRelay) {
@@ -52,8 +55,12 @@ class SearchViewModel @Inject constructor(
     }
 
     fun search(query: String) {
-        viewModelScope.launch {
+        queryDebounceJob?.cancel()
+
+        queryDebounceJob = viewModelScope.launch {
             store.dispatch(OnLoadStart)
+
+            delay(1000)
 
             val results = async(Dispatchers.IO) {
                 Public(client).getSearch(query = query, resolve = true).execute()

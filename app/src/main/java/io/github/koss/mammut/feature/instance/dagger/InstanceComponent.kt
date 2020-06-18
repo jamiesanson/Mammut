@@ -13,6 +13,8 @@ import io.github.koss.mammut.feed.dagger.FeedComponent
 import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.notifications.dagger.NotificationsComponent
 import io.github.koss.mammut.notifications.dagger.NotificationsModule
+import io.github.koss.mammut.search.dagger.SearchComponent
+import io.github.koss.mammut.search.dagger.SearchModule
 import io.github.koss.mammut.toot.dagger.ComposeTootComponent
 import io.github.koss.mammut.toot.dagger.ComposeTootModule
 
@@ -31,4 +33,6 @@ interface InstanceComponent {
     fun plus(notificationsModule: NotificationsModule): NotificationsComponent
 
     fun plus(homeModule: HomeModule): HomeComponent
+
+    fun plus(searchModule: SearchModule): SearchComponent
 }

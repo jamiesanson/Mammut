@@ -49,7 +49,7 @@
         app:iconGravity="start"
         tools:icon="@drawable/ic_home_black_24dp"
         tools:text="Home feed"
-        app:layout_behavior="io.github.koss.mammut.component.widget.HideTopViewOnScrollBehavior"/>
+        app:layout_behavior="io.github.koss.mammut.base.widget.HideTopViewOnScrollBehavior"/>
 
     <View
         android:id="@+id/bottomNavigationDim"

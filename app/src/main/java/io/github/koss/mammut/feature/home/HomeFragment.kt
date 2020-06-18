@@ -21,7 +21,7 @@ import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.Event
 import io.github.koss.mammut.base.navigation.Tab
 import io.github.koss.mammut.base.util.*
-import io.github.koss.mammut.component.widget.HideTopViewOnScrollBehavior
+import io.github.koss.mammut.base.widget.HideTopViewOnScrollBehavior
 import io.github.koss.mammut.component.widget.InstanceBottomNavigationView
 import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.databinding.HomeFragmentBinding
