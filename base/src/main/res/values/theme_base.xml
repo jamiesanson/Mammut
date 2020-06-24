@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppStart.SplashStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Mammut.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorSurface">@color/surfaceColor</item>
         <item name="android:windowBackground">@drawable/drawable_splash_background</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>

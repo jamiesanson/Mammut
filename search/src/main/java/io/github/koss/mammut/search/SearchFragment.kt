@@ -2,7 +2,6 @@ package io.github.koss.mammut.search
 
 import android.os.Bundle
 import android.text.TextWatcher
-import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
@@ -26,6 +25,7 @@ import io.github.koss.mammut.search.presentation.state.Loading
 import io.github.koss.mammut.search.presentation.state.NoResults
 import io.github.koss.mammut.search.presentation.state.SearchState
 import io.github.koss.mammut.search.ui.SearchResultsAdapter
+import org.jetbrains.anko.dimenAttr
 import org.jetbrains.anko.support.v4.dip
 import javax.inject.Inject
 import javax.inject.Named
@@ -80,6 +80,11 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
                 top = insets.systemWindowInsetTop + dip(56) + dip(8),
                 bottom = dip(96)
             )
+
+            recyclerView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                val actionBarSize = requireContext().dimenAttr(R.attr.actionBarSize)
+                topMargin = -(insets.systemWindowInsetTop + actionBarSize)
+            }
         }
 
         viewModel.state.observe(this, ::onStateChanged)
@@ -90,7 +95,6 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
         when (state) {
             is NoResults -> {
                 with (binding) {
-                    TransitionManager.beginDelayedTransition(root)
                     noResultsTextView.isVisible = true
 
                     progressBar.isGone = true
@@ -100,9 +104,7 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
                 }
             }
             is Loading -> {
-
                 with (binding) {
-                    TransitionManager.beginDelayedTransition(root)
                     progressBar.isVisible = true
 
                     noResultsTextView.isGone = true
@@ -112,10 +114,6 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
                 }
             }
             is Loaded -> {
-                if (!binding.searchResultsRecyclerView.isVisible) {
-                    TransitionManager.beginDelayedTransition(binding.root)
-                }
-
                 with (binding) {
                     noResultsTextView.isGone = true
                     progressBar.isGone = true

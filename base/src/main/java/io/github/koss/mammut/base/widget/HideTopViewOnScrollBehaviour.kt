@@ -18,9 +18,8 @@ class HideTopViewOnScrollBehavior<V : View> @JvmOverloads constructor(
         attributeSet: AttributeSet? = null
 ) : CoordinatorLayout.Behavior<V>(context, attributeSet) {
 
-
-    protected val ENTER_ANIMATION_DURATION = 225
-    protected val EXIT_ANIMATION_DURATION = 250
+    private val ENTER_ANIMATION_DURATION = 225
+    private val EXIT_ANIMATION_DURATION = 250
 
     private val STATE_SCROLLED_DOWN = 1
     private val STATE_SCROLLED_UP = 2

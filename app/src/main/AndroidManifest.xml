@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".MammutApplication"
-        android:theme="@style/AppStart.SplashStyle">
+        android:theme="@style/Mammut.Splash">
 
 
         <activity android:name=".feature.joininstance.JoinInstanceActivity"
@@ -30,7 +30,7 @@
         </activity>
 
         <activity android:name=".feature.splash.SplashActivity"
-            android:theme="@style/AppStart.SplashStyle">
+            android:theme="@style/Mammut.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
