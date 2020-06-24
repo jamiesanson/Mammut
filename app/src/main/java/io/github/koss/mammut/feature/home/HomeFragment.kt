@@ -91,8 +91,6 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
     }
 
     private fun setupView() {
-        binding.bottomSheet.initialise()
-
         binding.feedTypeButton.setOnClickListener {
             binding.openChooser()
         }
@@ -118,6 +116,13 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
         }
 
         hideFeedIndicatorDelayed()
+
+        binding.bottomSheet.doOnApplyWindowInsets { view, insets, _ ->
+            (view as InstanceBottomNavigationView).apply {
+                peekInsetAddition = insets.systemWindowInsetBottom
+                initialise()
+            }
+        }
     }
 
     private fun setupNavigation() {

@@ -16,8 +16,6 @@
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         app:cardElevation="8dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 

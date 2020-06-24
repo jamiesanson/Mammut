@@ -4,9 +4,12 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -23,7 +26,6 @@ import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.GlideApp
@@ -46,7 +48,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private val binding = InstanceBottomNavigationViewBinding
             .inflate(LayoutInflater.from(context), this)
 
-    private var peekInsetAddition: Int = 0
+    var peekInsetAddition: Int = 0
     private var peekJob: Job = Job()
 
     private var currentState: HomeState? = null
@@ -63,15 +65,6 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         // Ensure this is being used correctly
         require(layoutParams is CoordinatorLayout.LayoutParams) {
             "InstanceBottomNavigationView must be used within a CoordinatorLayout"
-        }
-
-        // Apply insets
-        doOnApplyWindowInsets { view, insets, _ ->
-            if (insets.systemWindowInsetBottom != 0) {
-                peekInsetAddition = insets.systemWindowInsetBottom
-                view.updatePadding(bottom = insets.systemWindowInsetBottom)
-                resetPeek()
-            }
         }
 
         // Setup top scrim
@@ -102,29 +95,33 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         }
 
         // Setup slide listening
-        behaviour<BottomSheetBehavior<View>>()
-                ?.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(view: View, proportion: Float) {
-                        if (peekJob.children.any { it.isActive }) {
-                            // Check to see that the user hasn't tried to swipe up the bottom sheet
-                            val peekHeight = behaviour<BottomSheetBehavior<View>>()?.peekHeight
-                            val screenHeight = view.context.displayMetrics.heightPixels
-                            if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
-                                // Reset peak height and re-enable dimming
-                                resetPeek()
-                            } else {
-                                return
-                            }
-                        }
+        behaviour<BottomSheetBehavior<View>>()?.apply {
+            isGestureInsetBottomIgnored = true
 
-                        onSheetScrollListener?.onScrolled(proportion)
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(view: View, proportion: Float) {
+                    if (peekJob.children.any { it.isActive }) {
+                        // Check to see that the user hasn't tried to swipe up the bottom sheet
+                        val peekHeight = behaviour<BottomSheetBehavior<View>>()?.peekHeight
+                        val screenHeight = view.context.displayMetrics.heightPixels
+                        if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
+                            // Reset peak height and re-enable dimming
+                            resetPeek()
+                        } else {
+                            return
+                        }
                     }
 
-                    override fun onStateChanged(p0: View, p1: Int) {}
+                    onSheetScrollListener?.onScrolled(proportion)
+                }
 
-                })
+                override fun onStateChanged(p0: View, p1: Int) {}
+
+            })
+        }
 
         setupInstancesRecycler()
+        resetPeek()
 
         initialised = true
 

@@ -11,8 +11,7 @@
         <FrameLayout
             android:id="@+id/bottomNavigationTopScrim"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+            android:layout_height="wrap_content">
 
             <View
                 android:layout_width="24dp"
@@ -37,10 +36,10 @@
 
         </FrameLayout>
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="top"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
