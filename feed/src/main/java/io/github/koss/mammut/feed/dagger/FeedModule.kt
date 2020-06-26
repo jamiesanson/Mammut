@@ -62,7 +62,7 @@ class FeedModule(
             databaseName: String
     ): StatusDatabase =
             when (feedType) {
-                is FeedType.AccountToots, FeedType.Federated ->
+                is FeedType.AccountToots, FeedType.Federated, is FeedType.Hashtag ->
                     Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
                             .build()
                 else -> {

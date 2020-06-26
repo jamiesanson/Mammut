@@ -13,4 +13,12 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <fragment
+        android:id="@+id/hashtagFragment"
+        android:name="io.github.koss.mammut.feed.ui.hashtag.HashtagFragment"
+        android:label="HashtagFragment">
+        <argument
+            android:name="tagName"
+            app:argType="string" />
+    </fragment>
 </navigation>

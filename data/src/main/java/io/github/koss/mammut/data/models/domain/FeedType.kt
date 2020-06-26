@@ -18,6 +18,7 @@ private const val KEY_HOME_FEED = "home"
 private const val KEY_LOCAL_FEED = "local"
 private const val KEY_FEDERATED_FEED = "federated"
 private const val KEY_ACCOUNT_FEED = "account_toots"
+private const val KEY_HASHTAG = "hashtag"
 
 sealed class FeedType(
         val key: String,
@@ -73,5 +74,16 @@ sealed class FeedType(
                 )
             }
         }
+    }
+
+    @Parcelize
+    data class Hashtag(
+        val tag: String
+    ): FeedType("${KEY_HASHTAG}_tag", supportsStreaming = true) {
+        override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
+                { handler -> Streaming(client).localHashtag(tag, handler) }
+
+        override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> =
+                { range -> Public(client).getLocalTag(tag, range) }
     }
 }

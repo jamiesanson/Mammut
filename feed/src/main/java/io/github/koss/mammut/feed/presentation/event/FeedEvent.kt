@@ -11,5 +11,5 @@ sealed class Navigation: FeedEvent() {
 
     data class Profile(val userId: String): Navigation()
 
-    data class Tag(val tagName: String, val tagUrl: String): Navigation()
+    data class Tag(val tagName: String): Navigation()
 }

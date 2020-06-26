@@ -72,5 +72,19 @@
         <action
             android:id="@+id/action_homeFragment_to_aboutAppFragment"
             app:destination="@id/aboutAppFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_hashtagFragment2"
+            app:destination="@id/hashtag" />
+    </fragment>
+    <fragment
+        android:id="@+id/hashtag"
+        android:name="io.github.koss.mammut.feed.ui.hashtag.HashtagFragment"
+        android:label="HashtagFragment">
+        <argument
+            android:name="tagName"
+            app:argType="string" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="mammut://timeline/tag/{tagName}" />
     </fragment>
 </navigation>

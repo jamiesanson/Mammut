@@ -1,6 +1,5 @@
 package io.github.koss.mammut.extension
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.koss.mammut.MammutApplication
 import io.github.koss.mammut.dagger.application.ApplicationComponent

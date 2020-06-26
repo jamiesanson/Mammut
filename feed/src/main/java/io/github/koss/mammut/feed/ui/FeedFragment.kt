@@ -209,7 +209,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     private fun handleInsets() {
         binding.recyclerView.doOnApplyWindowInsets { view, insets, _ ->
-            view.updatePadding(top = insets.systemWindowInsetTop)
+            if (feedType !is FeedType.Hashtag) {
+                view.updatePadding(top = insets.systemWindowInsetTop)
+            }
         }
     }
 
@@ -226,7 +228,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
             is Navigation -> {
                 when (event) {
                     is Navigation.Profile -> navigateToAccount(event.userId)
-                    else -> Log.i("FeedFragment", "Navigation to $event requested")
+                    is Navigation.Tag -> navigateToHashtag(event.tagName)
                 }
             }
         }
@@ -285,6 +287,10 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
 
     private fun navigateToAccount(id: String) {
         findRootNavController().navigate("mammut://profile/$id".toUri())
+    }
+
+    private fun navigateToHashtag(hashtag: String) {
+        findRootNavController().navigate("mammut://timeline/tag/$hashtag".toUri())
     }
 
     override fun onProfileClicked(account: Account) {

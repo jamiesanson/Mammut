@@ -50,7 +50,7 @@ class SpanReplacingMiddleware(
 
     private fun SpannableStringBuilder.replaceTags(status: Status) {
         replaceUrlSpans(findMatchingModel = { url -> status.tags.find { it.tagUrl == url } }) { tag ->
-            onNavigationEvent(Navigation.Tag(tagName = tag.tagName, tagUrl = tag.tagUrl))
+            onNavigationEvent(Navigation.Tag(tagName = tag.tagName))
         }
     }
 
