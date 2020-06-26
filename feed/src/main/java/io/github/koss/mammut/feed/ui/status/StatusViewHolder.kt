@@ -17,6 +17,7 @@ import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
@@ -35,6 +36,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.colorAttr
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.imageResource
 
 @ExperimentalCoroutinesApi
@@ -131,7 +133,8 @@ class StatusViewHolder(
             text = if (viewState.retootCount > 0) viewState.retootCount.toString() else ""
         }
 
-        @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val color = ElevationOverlayProvider(itemView.context)
+                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
 
         if ((itemView.context as AppCompatActivity).isDestroyed) return
 
