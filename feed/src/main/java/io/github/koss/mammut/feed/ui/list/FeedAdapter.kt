@@ -6,13 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.presentation.model.BrokenTimelineModel
 import io.github.koss.mammut.feed.presentation.model.FeedModel
 import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.broken.BrokenTimelineViewHolder
-import io.github.koss.mammut.feed.ui.profile.media.ProfileMediaViewHolder
 import io.github.koss.mammut.feed.ui.status.StatusViewHolder
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
@@ -26,8 +24,7 @@ open class FeedItemViewHolder(
 class FeedAdapter(
         private val viewModelProvider: ViewModelProvider,
         private val feedCallbacks: FeedCallbacks,
-        private val pagingRelay: PagingRelay,
-        private val displayOnlyMedia: Boolean = false
+        private val pagingRelay: PagingRelay
 ): ListAdapter<FeedModel, FeedItemViewHolder>(DIFF_CALLBACK) {
 
     init {
@@ -40,7 +37,6 @@ class FeedAdapter(
             when (viewType) {
                 R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
                 R.layout.view_holder_feed_item -> StatusViewHolder(parent, viewModelProvider, feedCallbacks)
-                R.layout.media_view_holder -> ProfileMediaViewHolder(parent, feedCallbacks)
                 else -> throw IllegalArgumentException("Unknown viewtype: $viewType")
             }
 
@@ -61,12 +57,6 @@ class FeedAdapter(
 
                 holder.bind(current)
             }
-            is ProfileMediaViewHolder -> {
-                val current = getItem(position) as? StatusModel ?: return
-                val attachment = current.displayAttachments.firstOrNull() ?: return
-
-                holder.bind(attachment, isSensitive = current.isSensitive)
-            }
             is BrokenTimelineViewHolder -> {
                 holder.bind(callbacks = feedCallbacks)
             }
@@ -75,7 +65,7 @@ class FeedAdapter(
 
     override fun getItemViewType(position: Int): Int = when (val item = getItem(position)) {
         BrokenTimelineModel -> R.layout.view_holder_broken_timeline
-        is StatusModel -> if (displayOnlyMedia) R.layout.media_view_holder else R.layout.view_holder_feed_item
+        is StatusModel -> R.layout.view_holder_feed_item
         else -> throw IllegalArgumentException("No known viewtype for item: $item")
     }
 
@@ -90,7 +80,6 @@ class FeedAdapter(
         super.onViewRecycled(holder)
         when (holder) {
             is StatusViewHolder -> holder.recycle()
-            is ProfileMediaViewHolder -> holder.unbind()
         }
     }
 

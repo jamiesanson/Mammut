@@ -157,6 +157,7 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
         }
 
         binding.pager.adapter = pagerAdapter
+        binding.pager.isUserInputEnabled = false
 
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = when (position) {

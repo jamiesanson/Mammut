@@ -14,6 +14,10 @@
         android:name=".MammutApplication"
         android:theme="@style/Mammut.Splash">
 
+        <activity
+            android:name=".feature.multiinstance.MultiInstanceActivity"
+            android:configChanges="orientation"
+            android:windowSoftInputMode="adjustPan"/>
 
         <activity android:name=".feature.joininstance.JoinInstanceActivity"
             android:windowSoftInputMode="adjustPan">
@@ -48,11 +52,6 @@
 
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
-
-        <activity
-            android:name=".feature.multiinstance.MultiInstanceActivity"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="adjustPan"/>
 
         <!-- Disable the WorkManagerInitializer such that we can use our own worker factory -->
         <provider

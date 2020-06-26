@@ -12,8 +12,7 @@
         android:background="@drawable/accent_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="vertical"
-        android:paddingBottom="8dp">
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

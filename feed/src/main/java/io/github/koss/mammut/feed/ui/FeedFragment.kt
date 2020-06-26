@@ -1,6 +1,7 @@
 package io.github.koss.mammut.feed.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,13 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.scope.FeedScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
+import io.github.koss.mammut.base.navigation.Event
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.navigation.Tab
@@ -37,6 +38,7 @@ import io.github.koss.mammut.feed.presentation.FeedTypeProvider
 import io.github.koss.mammut.feed.presentation.FeedViewModel
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
 import io.github.koss.mammut.feed.presentation.event.ItemStreamed
+import io.github.koss.mammut.feed.presentation.event.Navigation
 import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.Loaded
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
@@ -83,7 +85,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     private var pendingStreamItem: Boolean = false
 
     private val stateObserver = Observer<FeedState> { processState(it) }
-    private val eventObserver = Observer<FeedEvent> { handleEvent(it) }
+    private val eventObserver = Observer<Event<FeedEvent>> { it.getContentIfNotHandled()?.let(::handleEvent) }
 
     private val args by navArgs<FeedFragmentArgs>()
 
@@ -183,25 +185,13 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     }
 
     private fun setupRecyclerView() {
-        val type = feedType
-        if (type is FeedType.AccountToots && type.onlyMedia) {
-            binding.recyclerView.adapter = FeedAdapter(
-                    viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
-                    feedCallbacks = this,
-                    pagingRelay = pagingRelay,
-                    displayOnlyMedia = true
-            )
+        binding.recyclerView.adapter = FeedAdapter(
+                viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
+                feedCallbacks = this,
+                pagingRelay = pagingRelay
+        )
 
-            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
-        } else {
-            binding.recyclerView.adapter = FeedAdapter(
-                    viewModelProvider = ViewModelProvider(activity as AppCompatActivity, factory),
-                    feedCallbacks = this,
-                    pagingRelay = pagingRelay
-            )
-
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        }
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -233,6 +223,12 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
     private fun handleEvent(event: FeedEvent) {
         when (event) {
             ItemStreamed -> pendingStreamItem = true
+            is Navigation -> {
+                when (event) {
+                    is Navigation.Profile -> navigateToAccount(event.userId)
+                    else -> Log.i("FeedFragment", "Navigation to $event requested")
+                }
+            }
         }
     }
 
@@ -287,8 +283,12 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
                 return@run findFirstVisibleItemPosition() < 3
             } ?: false
 
+    private fun navigateToAccount(id: String) {
+        findRootNavController().navigate("mammut://profile/$id".toUri())
+    }
+
     override fun onProfileClicked(account: Account) {
-        findRootNavController().navigate("mammut://profile/${account.accountId}".toUri())
+       navigateToAccount(account.accountId.toString())
     }
 
     override fun onPhotoClicked(imageView: ImageView, photoUrl: String) {
