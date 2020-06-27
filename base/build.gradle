@@ -10,6 +10,15 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -27,32 +36,29 @@ dependencies {
 
     implementation rootProject.ext.constraintLayout
 
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
-
     implementation rootProject.ext.glide
     implementation rootProject.ext.glideTransformations
     kapt rootProject.ext.glideCompiler
 
     implementation rootProject.ext.mastodon4j
 
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxKotlin
-
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
+    implementation rootProject.ext.lifecycleJava8
 
     implementation rootProject.ext.anko
-
-    implementation rootProject.ext.calligraphy
 
     implementation rootProject.ext.dagger
 
     implementation rootProject.ext.material
+    
+    implementation rootProject.ext.gestureView
 
-    api rootProject.ext.arrowCore
+    // TODO - Move this out of here
+    def nav_version = "2.3.0-rc01"
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
 
     api "dev.chrisbanes:insetter-ktx:0.2.0"
 }

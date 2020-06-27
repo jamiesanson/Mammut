@@ -28,7 +28,7 @@ import io.github.koss.mammut.base.BaseActivity
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.provideViewModel
 import io.github.koss.mammut.base.util.snackbar
-import io.github.koss.mammut.feature.instance.MultiInstanceActivity
+import io.github.koss.mammut.feature.multiinstance.MultiInstanceActivity
 import org.jetbrains.anko.colorAttr
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback

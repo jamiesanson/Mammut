@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
-import io.github.koss.mammut.feature.instance.MultiInstanceActivity
+import io.github.koss.mammut.feature.multiinstance.MultiInstanceActivity
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
 import kotlinx.coroutines.*
 import org.jetbrains.anko.startActivity

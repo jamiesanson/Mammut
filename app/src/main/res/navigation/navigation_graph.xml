@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/contributorsFragment"
+        android:name="io.github.koss.mammut.feature.contributors.ContributorsFragment"
+        android:label="ContributorsFragment" />
+    <fragment
+        android:id="@+id/aboutAppFragment"
+        android:name="io.github.koss.mammut.feature.about.AboutAppFragment"
+        android:label="AboutAppFragment">
+        <action
+            android:id="@+id/action_aboutAppFragment_to_contributorsFragment"
+            app:destination="@id/contributorsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="io.github.koss.mammut.feature.settings.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/pendingWorkFragment"
+        android:name="io.github.koss.mammut.feature.pending.PendingWorkFragment"
+        android:label="PendingWorkFragment" />
+    <fragment
+        android:id="@+id/composeTootFragment"
+        android:name="io.github.koss.mammut.toot.ComposeTootFragment"
+        android:label="ComposeTootFragment">
+        <argument
+            android:name="instanceName"
+            app:argType="string" />
+        <argument
+            android:name="accessToken"
+            app:argType="string" />
+        <argument
+            android:name="account"
+            app:argType="io.github.koss.mammut.data.models.Account" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="io.github.koss.mammut.feature.profile.ProfileFragment"
+        android:label="ProfileFragment">
+        <argument
+            android:name="accountId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <argument
+            android:name="isMe"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="mammut://profile/{accountId}" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="io.github.koss.mammut.feature.home.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_pendingWorkFragment"
+            app:destination="@id/pendingWorkFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_composeTootFragment"
+            app:destination="@id/composeTootFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_aboutAppFragment"
+            app:destination="@id/aboutAppFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_hashtagFragment2"
+            app:destination="@id/hashtag" />
+    </fragment>
+    <fragment
+        android:id="@+id/hashtag"
+        android:name="io.github.koss.mammut.feed.ui.hashtag.HashtagFragment"
+        android:label="HashtagFragment">
+        <argument
+            android:name="tagName"
+            app:argType="string" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="mammut://timeline/tag/{tagName}" />
+    </fragment>
+</navigation>

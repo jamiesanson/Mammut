@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.MaterialComponents.Chip.Mammut">
+        <item name="android:fontFamily">@font/varela_round_regular</item>
+    </style>
+</resources>

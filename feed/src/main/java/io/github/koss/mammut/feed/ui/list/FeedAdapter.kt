@@ -36,7 +36,8 @@ class FeedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedItemViewHolder =
             when (viewType) {
                 R.layout.view_holder_broken_timeline -> BrokenTimelineViewHolder(parent)
-                else -> StatusViewHolder(parent, viewModelProvider, feedCallbacks)
+                R.layout.view_holder_feed_item -> StatusViewHolder(parent, viewModelProvider, feedCallbacks)
+                else -> throw IllegalArgumentException("Unknown viewtype: $viewType")
             }
 
     override fun onBindViewHolder(holder: FeedItemViewHolder, position: Int) {

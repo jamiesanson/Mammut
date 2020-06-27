@@ -17,5 +17,7 @@ data class OnItemsLoaded(
 ): FeedAction()
 
 data class OnItemsRendered(
-    val renderedItems: List<StatusModel>
+    val items: List<Status>,
+    val renderedItems: List<StatusModel>,
+    val spansReplaced: Boolean = false
 ): FeedAction()

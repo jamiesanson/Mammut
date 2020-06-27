@@ -1,7 +1,22 @@
 apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        // TODO - move this
+        def nav_version = "2.3.0-rc01"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+    }
+}
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -13,6 +28,19 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -26,6 +54,17 @@ dependencies {
     implementation rootProject.ext.kotlinRuntime
     implementation rootProject.ext.ktx
 
+    // TODO - Move this out of here
+    def nav_version = "2.3.0-rc01"
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
     implementation rootProject.ext.appCompat
     implementation rootProject.ext.constraintLayout
 
@@ -34,27 +73,16 @@ dependencies {
     implementation rootProject.ext.coroutinesCore
     implementation rootProject.ext.coroutinesAndroid
 
-    implementation rootProject.ext.conductor
-    implementation rootProject.ext.conductorArchLifecycle
-    implementation rootProject.ext.conductorSupport
-
     implementation rootProject.ext.dagger
     kapt rootProject.ext.daggerCompiler
 
     implementation rootProject.ext.mastodon4j
 
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxKotlin
-
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
+    implementation rootProject.ext.lifecycleKtx
+    implementation rootProject.ext.lifecycleLivedataKtx
 
     implementation rootProject.ext.anko
 
     implementation rootProject.ext.glide
-}
-
-androidExtensions {
-    experimental = true
 }

@@ -4,15 +4,18 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.base.navigation.Event
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.preferences.PreferencesRepository
 import io.github.koss.mammut.feed.presentation.event.FeedEvent
+import io.github.koss.mammut.feed.presentation.event.Navigation
 import io.github.koss.mammut.feed.presentation.state.FeedReducer
 import io.github.koss.mammut.feed.presentation.state.FeedState
 import io.github.koss.mammut.feed.presentation.state.LoadingAll
 import io.github.koss.mammut.feed.presentation.state.OnItemsLoaded
 import io.github.koss.mammut.feed.presentation.state.OnLoadingStateChanged
+import io.github.koss.mammut.feed.presentation.status.SpanReplacingMiddleware
 import io.github.koss.mammut.feed.presentation.status.StatusRenderingMiddleware
 import io.github.koss.paging.event.ItemStreamed
 import io.github.koss.randux.applyMiddleware
@@ -35,7 +38,10 @@ class FeedViewModel @Inject constructor(
 
     private val store: Store = createStore(
         reducer = FeedReducer(),
-        enhancer = applyMiddleware(StatusRenderingMiddleware(viewModelScope, applicationContext)),
+        enhancer = applyMiddleware(
+                StatusRenderingMiddleware(viewModelScope, applicationContext),
+                SpanReplacingMiddleware(::onNavigationEvent)
+        ),
         preloadedState = LoadingAll(
             initialPosition = when (feedType) {
                 FeedType.Home -> preferencesRepository.homeFeedLastPositionSeen
@@ -62,7 +68,7 @@ class FeedViewModel @Inject constructor(
 
     val event = liveData {
         for (item in eventRelay) {
-            emit(item)
+            emit(Event(item))
         }
     }
 
@@ -119,6 +125,12 @@ class FeedViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun onNavigationEvent(event: Navigation) {
+        viewModelScope.launch {
+            eventRelay.offer(event)
         }
     }
 

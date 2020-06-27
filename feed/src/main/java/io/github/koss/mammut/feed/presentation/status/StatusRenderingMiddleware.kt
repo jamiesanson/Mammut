@@ -43,7 +43,10 @@ class StatusRenderingMiddleware(
                     .toList()
 
                 withContext(Dispatchers.Main) {
-                    next(OnItemsRendered(items))
+                    next(OnItemsRendered(
+                            items = action.items,
+                            renderedItems = items
+                    ))
                 }
             }
             else -> next(action)
@@ -64,8 +67,8 @@ class StatusRenderingMiddleware(
 
         val content = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_COMPACT).trim()
 
-        val renderedContent = EmojiRenderer.render(applicationContext, content, emojis = emojis?.map { it.toNetworkModel() }
-            ?: emptyList())
+        val renderedContent = EmojiRenderer
+                .render(applicationContext, content, emojis = emojis?.map { it.toNetworkModel() } ?: emptyList())
 
         val model = StatusModel(
             id = id,

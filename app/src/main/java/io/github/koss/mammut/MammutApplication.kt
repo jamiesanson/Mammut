@@ -11,7 +11,6 @@ import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.dagger.application.ApplicationComponent
 import io.github.koss.mammut.dagger.module.ApplicationModule
 import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
-import okhttp3.internal.http2.StreamResetException
 import javax.inject.Inject
 import saschpe.android.customtabs.CustomTabsActivityLifecycleCallbacks
 
@@ -32,8 +31,6 @@ class MammutApplication: Application() {
                 .build()
                 .also { it.inject(this) }
 
-        themeEngine.updateFontDefaults()
-
         AndroidThreeTen.init(this)
 
         Fabric.with(this, Crashlytics())
@@ -43,14 +40,5 @@ class MammutApplication: Application() {
 
         // Initialise WorkManager
         WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(workerFactory).build())
-
-        // Global exception handler
-        Thread.setDefaultUncaughtExceptionHandler { _, e ->
-            if (e is StreamResetException || e.cause is StreamResetException) {
-                return@setDefaultUncaughtExceptionHandler // Stream shutdown within API wrapper
-            }
-
-            throw e
-        }
     }
 }

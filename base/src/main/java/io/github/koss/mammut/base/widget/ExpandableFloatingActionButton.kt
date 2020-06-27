@@ -48,7 +48,7 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
             try {
                 expandableFabTextView.text = getString(R.styleable.ExpandableFloatingActionButton_buttonText)?.capitalize()
                 val color = getColor(R.styleable.ExpandableFloatingActionButton_buttonAccentColor,
-                        ContextCompat.getColor(context, android.R.color.white))
+                        ContextCompat.getColor(context, android.R.color.black))
 
                 expandableFabTextView.textColor = color
                 expandableFabImageView.setImageDrawable(getDrawable(R.styleable.ExpandableFloatingActionButton_buttonIcon))

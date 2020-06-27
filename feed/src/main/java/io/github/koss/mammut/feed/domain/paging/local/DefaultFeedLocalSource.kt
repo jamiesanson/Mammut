@@ -5,7 +5,6 @@ import io.github.koss.mammut.data.database.entities.feed.Status
 import io.github.koss.paging.local.LocalDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.reactive.flow.asFlow
 
 class DefaultFeedLocalSource(
         private val statusDao: StatusDao
@@ -13,7 +12,7 @@ class DefaultFeedLocalSource(
 
     @ExperimentalCoroutinesApi
     override val localData: Flow<List<Status>>
-        get() = statusDao.getAllAsPublisher().asFlow()
+        get() = statusDao.getAllAsPublisher()
 
     override suspend fun insertOrUpdate(vararg model: Status) {
         statusDao.insertAll(model.toList())

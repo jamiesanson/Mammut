@@ -2,7 +2,7 @@ package io.github.koss.mammut.dagger.module
 
 import dagger.Module
 import dagger.Provides
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.repository.InstanceDetailRepository

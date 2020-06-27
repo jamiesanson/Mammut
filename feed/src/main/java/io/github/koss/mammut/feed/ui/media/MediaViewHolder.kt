@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
@@ -30,6 +31,7 @@ import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.feed.R
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import kotlinx.android.synthetic.main.media_view_holder.view.*
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.math.pow
@@ -123,10 +125,8 @@ class MediaViewHolder(
         itemView.playerView.visibility = View.GONE
 
         // Resolve colors
-        val typedValue = TypedValue()
-        val theme = itemView.context.theme ?: return
-        theme.resolveAttribute(R.attr.colorSurface, typedValue, true)
-        @ColorInt val color = typedValue.data
+        @ColorInt val color = ElevationOverlayProvider(itemView.context)
+                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
 
         val requestManager = GlideApp.with(itemView)
 
@@ -156,8 +156,14 @@ class MediaViewHolder(
                 return
             }
 
+
+            @ColorInt val color = ElevationOverlayProvider(itemView.context)
+                    .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
+
             // Initial conditions
             sensitiveContentFrameLayout.isVisible = true
+            sensitiveContentFrameLayout.setBackgroundColor(color)
+
             sensitiveContentToggleButton.isVisible = true
 
             fun View.largestDimension(): Float = sqrt(this.width.toFloat().pow(2F) + this.height.toFloat().pow(2F))

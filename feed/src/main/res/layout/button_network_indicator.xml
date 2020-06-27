@@ -9,6 +9,5 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="16dp"
     app:buttonAccentColor="?attr/colorControlNormal"
-    app:buttonIcon="@drawable/ic_cloud_off_black_24dp"
     app:buttonText="OFFLINE"
     app:small="true" />

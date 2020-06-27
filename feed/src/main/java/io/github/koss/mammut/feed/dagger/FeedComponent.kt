@@ -1,11 +1,14 @@
 package io.github.koss.mammut.feed.dagger
 
 import dagger.Subcomponent
-import io.github.koss.mammut.feed.ui.FeedController
+import io.github.koss.mammut.feed.ui.FeedFragment
+import io.github.koss.mammut.feed.ui.hashtag.HashtagFragment
 
 @FeedScope
 @Subcomponent(modules = [ FeedModule::class ])
 interface FeedComponent {
 
-    fun inject(controller: FeedController)
+    fun inject(fragment: FeedFragment)
+
+    fun inject(fragment: HashtagFragment)
 }

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navGraph="@navigation/instance_navigation_graph" />
+
+    <io.github.koss.mammut.component.widget.InstanceBottomNavigationView
+        android:id="@+id/bottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="8dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:backgroundTint="?attr/colorAccent"
+        android:backgroundTintMode="src_in"
+        android:src="@drawable/ic_add_black_24dp"
+        android:tint="?attr/colorControlNormal"
+        android:tintMode="src_in"
+        app:layout_anchor="@id/bottomSheet"
+        app:layout_anchorGravity="end|top"
+        app:useCompatPadding="true" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/feedTypeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="56dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:textAllCaps="false"
+        android:textAppearance="?textAppearanceBody1"
+        app:cornerRadius="24dp"
+        app:iconGravity="start"
+        tools:icon="@drawable/ic_home_black_24dp"
+        tools:text="Home feed"
+        app:layout_behavior="io.github.koss.mammut.base.widget.HideTopViewOnScrollBehavior"/>
+
+    <View
+        android:id="@+id/bottomNavigationDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="?colorControlNormalTransparent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <View
+        android:id="@+id/fullScreenPhotoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorPrimaryTransparency"
+        android:elevation="16dp"
+        android:visibility="gone" />
+
+    <com.alexvasilkov.gestures.views.GestureImageView
+        android:id="@+id/fullScreenGestureImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/feedChooserCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="18dp"
+        app:cardCornerRadius="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_gravity="center|top">
+
+        <LinearLayout
+            android:id="@+id/feedChooserCardContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="What do you want to see?"
+                android:textAppearance="?textAppearanceHeadline6"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <include
+                android:id="@+id/homeFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+            <include
+                android:id="@+id/localFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+            <include
+                android:id="@+id/federatedFeedTypeCell"
+                layout="@layout/view_holder_feed_type"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/feedTypeDim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="?colorControlNormalTransparent"
+        android:clickable="true"
+        android:focusable="true" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,7 +8,7 @@ import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import javax.inject.Named
 
-@Module(includes = [ InstanceViewModelModule::class ])
+@Module
 class InstanceModule(private val instanceName: String, private val accessToken: String) {
 
     @Provides

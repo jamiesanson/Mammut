@@ -2,4 +2,5 @@
     <string name="app_name">feed</string>
     <string name="new_toots">New toots</string>
     <string name="profile_picture_content_descrption">Profile picture</string>
+    <string name="hashtag_feed_tag">hashtag_feed_fragment</string>
 </resources>

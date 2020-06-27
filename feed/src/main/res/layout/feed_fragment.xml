@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="?attr/colorAccent"
+        android:indeterminate="true"
+        android:layout_gravity="center"/>
+
+    <ProgressBar
+        android:id="@+id/topLoadingIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="top"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_marginTop="-6dp"
+        android:indeterminateTint="?attr/colorAccent"
+        android:indeterminateTintMode="src_in"
+        android:indeterminateBehavior="cycle"
+        android:indeterminate="true"
+        tools:ignore="NegativeMargin" />
+
+    <ProgressBar
+        android:id="@+id/bottomLoadingIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="bottom"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_marginBottom="-6dp"
+        android:indeterminateTint="?attr/colorAccent"
+        android:indeterminateTintMode="src_in"
+        android:indeterminateBehavior="cycle"
+        android:indeterminate="true"
+        tools:ignore="NegativeMargin" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

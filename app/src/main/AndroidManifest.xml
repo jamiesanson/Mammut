@@ -12,11 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".MammutApplication"
-        android:theme="@style/AppStart.SplashStyle">
+        android:theme="@style/Mammut.Splash">
 
+        <activity
+            android:name=".feature.multiinstance.MultiInstanceActivity"
+            android:configChanges="orientation"
+            android:windowSoftInputMode="adjustPan"/>
 
         <activity android:name=".feature.joininstance.JoinInstanceActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -30,7 +34,7 @@
         </activity>
 
         <activity android:name=".feature.splash.SplashActivity"
-            android:theme="@style/AppStart.SplashStyle">
+            android:theme="@style/Mammut.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -48,10 +52,6 @@
 
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
-
-        <activity
-            android:name=".feature.instance.MultiInstanceActivity"
-            android:windowSoftInputMode="adjustResize" />
 
         <!-- Disable the WorkManagerInitializer such that we can use our own worker factory -->
         <provider

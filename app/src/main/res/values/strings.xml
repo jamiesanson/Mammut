@@ -67,4 +67,15 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="dark_mode_follow_system">Dark Mode - Follow System</string>
     <string name="dark_mode_follow_system_description">Follow night mode system preference</string>
+    <string name="search">Search</string>
+    <string name="feed">Feed</string>
+    <string name="home_feed_title">Home Timeline</string>
+    <string name="home_feed_subtitle">Users you follow</string>
+    <string name="local_feed_title">Local Timeline</string>
+    <string name="local_feed_subtitle">Users in this instance</string>
+    <string name="federated_feed_title">Federated Timeline</string>
+    <string name="federated_feed_subtitle">Users from this instance and others</string>
+    <string name="home_feed_label">Feed - Home</string>
+    <string name="local_feed_label">Feed - Local</string>
+    <string name="federated_feed_label">Feed - Federated</string>
 </resources>

@@ -1,11 +1,11 @@
 package io.github.koss.mammut.toot.repo
 
-import arrow.core.Either
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.data.converters.toNetworkModel
+import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.repository.InstanceDetailRepository
 import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
@@ -35,13 +35,13 @@ class StatusRepository(
                 visibility = model.visibility
         ).run().let { result ->
             return when (result) {
-                is Either.Left -> {
+                is Result.Failure -> {
                     SubmissionState(
                             isSubmitting = false,
-                            error = result.a.error
+                            error = result.error.error
                     )
                 }
-                is Either.Right -> {
+                is Result.Success -> {
                     SubmissionState(
                             isSubmitting = false,
                             hasSubmitted = true

@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.repository.TootRepository
-import io.github.koss.mammut.feed.domain.FeedType
+import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.feed.domain.paging.FeedPagingManager
 import io.github.koss.mammut.feed.domain.paging.local.DefaultFeedLocalSource
 import io.github.koss.mammut.feed.domain.paging.network.DefaultFeedNetworkSource
@@ -25,8 +25,7 @@ typealias FeedNetworkSource = NetworkDataSource<Status>
 
 @Module(includes = [FeedViewModelModule::class])
 class FeedModule(
-        private val feedType: FeedType,
-        private val uniqueId: String
+        private val feedType: FeedType
 ) {
 
     @Provides
@@ -52,8 +51,8 @@ class FeedModule(
     @Provides
     @FeedScope
     @Named("database_name")
-    fun provideDatabaseName(): String =
-            "status_${feedType.key}_${uniqueId.take(4)}"
+    fun provideDatabaseName(@Named("instance_access_token") accessToken: String): String =
+            "status_${feedType.key}_${accessToken.take(4)}"
 
     @Provides
     @FeedScope
@@ -63,7 +62,7 @@ class FeedModule(
             databaseName: String
     ): StatusDatabase =
             when (feedType) {
-                is FeedType.AccountToots, FeedType.Federated ->
+                is FeedType.AccountToots, FeedType.Federated, is FeedType.Hashtag ->
                     Room.inMemoryDatabaseBuilder(context, StatusDatabase::class.java)
                             .build()
                 else -> {

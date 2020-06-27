@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Mammut.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorSurface">@color/surfaceColor</item>
+        <item name="android:windowBackground">@drawable/drawable_splash_background</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+    </style>
+
+    <style name="Mammut.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorSurface">@color/surfaceColor</item>
+
+        <!--  Edge to edge theming  -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
+
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:fontFamily">@font/varela_round_regular</item>
+    </style>
+</resources>

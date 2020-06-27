@@ -1,9 +1,6 @@
 package io.github.koss.mammut.data.extensions
 
 import android.util.Log
-import arrow.core.Either
-import arrow.core.Left
-import arrow.core.Right
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -14,43 +11,54 @@ import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.models.Account
 import okhttp3.OkHttpClient
 
-tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Either<Error, T> {
+sealed class Result<T> {
+    data class Success<T>(val data: T): Result<T>()
+    data class Failure<T>(val error: Error): Result<T>()
+}
+
+fun <T> Result<T>.orNull(): T? = when (this) {
+    is Result.Success -> data
+    is Result.Failure -> null
+}
+
+tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> {
     val result = try {
-        Right(execute())
+        Result.Success(execute())
     } catch (e: Mastodon4jRequestException) {
         if (e.isErrorResponse()) {
             e.response?.body()?.string()?.run {
                 when {
                     startsWith("{") ->  try {
-                        Left(GsonBuilder()
+                        Result.Failure<T>(GsonBuilder()
                                 .excludeFieldsWithoutExposeAnnotation()
                                 .create()
                                 .fromJson(e.response?.body()?.charStream(), Error::class.java))
                     } catch (e: Exception) {
                         null
                     }
-                    isNotEmpty() -> unknownError(this)
+                    isNotEmpty() -> unknownError<T>(this)
                     else -> null
                 }
-            } ?: unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            } ?: unknownError<T>(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
         } else {
-            unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            unknownError<T>(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
         }
     }
 
-    if (result is Either.Left && retryCount > 0) {
+    if (result is Result.Failure && retryCount > 0) {
         return run(retryCount - 1)
     }
 
-    if (result is Either.Left) {
-        Log.e("MastodonRunner", "An error occurred: ${result.a}")
+    if (result is Result.Failure) {
+        Log.e("MastodonRunner", "An error occurred: ${result.error}")
     }
 
     return result
 }
 
-private fun unknownError(description: String) =
-        Left(Error(error = "unknown_error", description = description))
+@Suppress("BlockingMethodInNonBlockingContext")
+private fun <T> unknownError(description: String) =
+        Result.Failure<T>(Error(error = "unknown_error", description = description))
 
 data class Error(
         @Expose

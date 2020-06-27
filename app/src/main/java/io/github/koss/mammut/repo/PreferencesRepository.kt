@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.koss.mammut.repo
 
 import android.content.Context
@@ -20,8 +22,6 @@ class PreferencesRepository(appContext: Context) {
     var isStreamingEnabled by preferences.boolean(defaultReturn = true)
 
     var shouldKeepFeedPlace by preferences.boolean(defaultReturn = true)
-
-    var swipingBetweenInstancesEnabled by preferences.boolean(defaultReturn = false)
 
     var darkModeOverrideEnabled by preferences.boolean(defaultReturn = false)
 

@@ -56,11 +56,6 @@ class SettingsViewModel @Inject constructor(
                                 subtitleRes = R.string.well_keep_your_place,
                                 isSet = preferencesRepository.shouldKeepFeedPlace,
                                 action = TogglePlaceKeeping
-                        ),
-                        ToggleableItem(
-                                titleRes = R.string.swipe_between_instances,
-                                isSet = preferencesRepository.swipingBetweenInstancesEnabled,
-                                action = ToggleSwipingBetweenInstance
                         )
                 )
         )
@@ -74,10 +69,6 @@ class SettingsViewModel @Inject constructor(
             }
             TogglePlaceKeeping -> {
                 preferencesRepository.shouldKeepFeedPlace = !preferencesRepository.shouldKeepFeedPlace
-                rebuildSettingsScreen()
-            }
-            ToggleSwipingBetweenInstance -> {
-                preferencesRepository.swipingBetweenInstancesEnabled = !preferencesRepository.swipingBetweenInstancesEnabled
                 rebuildSettingsScreen()
             }
             ToggleDarkMode -> {

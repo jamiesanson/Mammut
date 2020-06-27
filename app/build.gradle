@@ -9,7 +9,11 @@ buildscript {
     }
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
-        classpath 'com.google.android.gms:oss-licenses-plugin:0.9.4'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
+
+        // TODO - move this
+        def nav_version = "2.3.0-rc01"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
 
@@ -17,6 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -53,8 +58,16 @@ android {
         targetCompatibility 1.8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     lintOptions {
         abortOnError false
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -75,6 +88,7 @@ dependencies {
     api project(":data")
     api project(":emoji")
     api project(":notifications")
+    api project(":search")
 
     api rootProject.ext.kotlinRuntime
     api rootProject.ext.coroutinesCore
@@ -89,26 +103,25 @@ dependencies {
     api rootProject.ext.randux
 
     api rootProject.ext.lifecycle
-    api rootProject.ext.lifecycleRx
+    api rootProject.ext.lifecycleKtx
+    api rootProject.ext.lifecycleLivedataKtx
+
+    api rootProject.ext.viewPager2
+
+    // TODO - Move this out of here
+    def nav_version = "2.3.0-rc01"
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     api rootProject.ext.anko
 
     api rootProject.ext.material
-
-    api rootProject.ext.rxJava
-    api rootProject.ext.rxAndroid
-    api rootProject.ext.rxKotlin
-
-    api rootProject.ext.arrowCore
-    api rootProject.ext.arrowSyntax
-    api rootProject.ext.arrowTypeclasses
-    api rootProject.ext.arrowData
-    api rootProject.ext.arrowInstancesCore
-    api rootProject.ext.arrowInstancesCoreData
-    api rootProject.ext.arrowOptics
-    kapt rootProject.ext.arrowProcessor
-
-    api rootProject.ext.calligraphy
 
     api rootProject.ext.mastodon4j
 
@@ -122,15 +135,7 @@ dependencies {
     api rootProject.ext.glideTransformations
     kapt rootProject.ext.glideCompiler
 
-    api rootProject.ext.inboxRecyclerView
-
-    api rootProject.ext.paging
-
     api rootProject.ext.threetenabp
-
-    api rootProject.ext.conductor
-    api rootProject.ext.conductorArchLifecycle
-    api rootProject.ext.conductorSupport
 
     api(rootProject.ext.crashlytics) {
         transitive = true

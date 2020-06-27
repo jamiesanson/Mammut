@@ -25,6 +25,15 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 
@@ -36,24 +45,18 @@ dependencies {
     api rootProject.ext.workManager
 
     implementation rootProject.ext.room
-    implementation rootProject.ext.roomRx
     implementation rootProject.ext.roomKtx
     kapt rootProject.ext.roomCompiler
 
     implementation rootProject.ext.mastodon4j
 
     implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleRx
     implementation rootProject.ext.lifecycleLivedataKtx
 
     implementation rootProject.ext.coroutinesCore
 
     implementation rootProject.ext.retrofit
     implementation rootProject.ext.retrofitGsonConverter
-
-    implementation rootProject.ext.paging
-
-    implementation rootProject.ext.arrowCore
 }
 
 androidExtensions {

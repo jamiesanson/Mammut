@@ -1,10 +1,10 @@
 package io.github.koss.mammut.feed.ui.status
 
 import android.graphics.drawable.ColorDrawable
+import android.text.method.LinkMovementMethod
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.isVisible
@@ -17,37 +17,27 @@ import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
-import io.github.koss.mammut.data.models.Status
 import io.github.koss.mammut.feed.R
+import io.github.koss.mammut.feed.databinding.ViewHolderFeedItemBinding
 import io.github.koss.mammut.feed.presentation.model.StatusModel
 import io.github.koss.mammut.feed.ui.list.FeedItemViewHolder
 import io.github.koss.mammut.feed.ui.media.MediaAdapter
-import io.github.koss.mammut.feed.ui.media.getThumbnailSpec
 import io.github.koss.mammut.feed.ui.media.processSpec
 import io.github.koss.mammut.feed.ui.view.TriStateButton
 import io.github.koss.mammut.feed.util.FeedCallbacks
-import kotlinx.android.synthetic.main.view_holder_feed_item.*
-import kotlinx.android.synthetic.main.view_holder_feed_item.attachmentsRecyclerView
-import kotlinx.android.synthetic.main.view_holder_feed_item.contentTextView
-import kotlinx.android.synthetic.main.view_holder_feed_item.contentWarningTextView
-import kotlinx.android.synthetic.main.view_holder_feed_item.contentWarningVisibilityButton
-import kotlinx.android.synthetic.main.view_holder_feed_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.filter
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.colorAttr
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.textColor
 
 @ExperimentalCoroutinesApi
 class StatusViewHolder(
@@ -60,21 +50,28 @@ class StatusViewHolder(
     private lateinit var viewModel: StatusViewModel
     private var job: Job? = null
 
-    init {
-        itemView.onClick {
-            viewModel.currentStatus.status.let(callbacks::onTootClicked)
-        }
-        profileImageView.onClick {
-            viewModel.currentStatus.status.account?.let(callbacks::onProfileClicked)
-        }
-        boostButton.onClick {
-            viewModel.onBoostClicked()
-        }
-        retootButton.onClick {
-            viewModel.onRetootClicked()
-        }
+    private val binding by lazy { ViewHolderFeedItemBinding.bind(itemView) }
 
-        replyButton.updateState(TriStateButton.State.INACTIVE)
+    init {
+        with (binding) {
+            root.setOnClickListener {
+                viewModel.currentStatus.status.let(callbacks::onTootClicked)
+            }
+
+            profileImageView.setOnClickListener {
+                viewModel.currentStatus.status.account?.let(callbacks::onProfileClicked)
+            }
+            boostButton.setOnClickListener {
+                viewModel.onBoostClicked()
+            }
+            retootButton.setOnClickListener {
+                viewModel.onRetootClicked()
+            }
+
+            contentTextView.movementMethod = LinkMovementMethod()
+
+            replyButton.updateState(TriStateButton.State.INACTIVE)
+        }
     }
 
     fun bind(status: StatusModel) {
@@ -100,12 +97,14 @@ class StatusViewHolder(
     }
 
     private fun applyOverrides(statusOverrides: StatusOverrides) {
-        timeTextView.text = statusOverrides.submissionTime
-        boostButton.updateState(statusOverrides.isBoosted.toButtonState())
-        retootButton.updateState(statusOverrides.isRetooted.toButtonState())
+        with (binding) {
+            timeTextView.text = statusOverrides.submissionTime
+            boostButton.updateState(statusOverrides.isBoosted.toButtonState())
+            retootButton.updateState(statusOverrides.isRetooted.toButtonState())
+        }
     }
 
-    private fun renderState(viewState: StatusModel) {
+    private fun renderState(viewState: StatusModel) = with (binding) {
         viewState.name.let(displayNameTextView::setText)
         viewState.username.let(usernameTextView::setText)
 
@@ -134,7 +133,8 @@ class StatusViewHolder(
             text = if (viewState.retootCount > 0) viewState.retootCount.toString() else ""
         }
 
-        @ColorInt val color = itemView.colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val color = ElevationOverlayProvider(itemView.context)
+                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
 
         if ((itemView.context as AppCompatActivity).isDestroyed) return
 
@@ -156,7 +156,7 @@ class StatusViewHolder(
     }
 
     private fun renderAttachments(attachments: List<Attachment<*>>, isSensitive: Boolean) {
-        with(itemView) {
+        with(binding) {
             with(ConstraintSet()) {
                 clone(recyclerViewConstraintLayout)
                 @Suppress("SENSELESS_COMPARISON") // lmao
@@ -168,7 +168,7 @@ class StatusViewHolder(
             when {
                 attachmentsRecyclerView.adapter == null -> {
                     attachmentsRecyclerView.adapter = MediaAdapter(callbacks)
-                    attachmentsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                    attachmentsRecyclerView.layoutManager = LinearLayoutManager(root.context, RecyclerView.HORIZONTAL, false)
                     LinearSnapHelper().attachToRecyclerView(attachmentsRecyclerView)
                 }
             }
@@ -180,7 +180,7 @@ class StatusViewHolder(
         }
     }
 
-    private fun setupSpoiler(state: StatusModel) = with(itemView) {
+    private fun setupSpoiler(state: StatusModel) = with(binding) {
         contentWarningTextView.text = state.spoilerText
         contentWarningTextView.isVisible = state.spoilerText.isNotEmpty()
         contentWarningVisibilityButton.isVisible = state.spoilerText.isNotEmpty()
@@ -202,7 +202,7 @@ class StatusViewHolder(
         }
 
         if (state.spoilerText.isNotEmpty()) {
-            contentWarningVisibilityButton.onClick {
+            contentWarningVisibilityButton.setOnClickListener {
                 viewModel.let {
                     it.isContentVisible = !it.isContentVisible
                 }

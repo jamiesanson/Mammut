@@ -4,13 +4,15 @@ import android.content.Context
 import android.os.Build
 import dagger.Module
 import dagger.Provides
+import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.themes.ThemeConfig
 import io.github.koss.mammut.base.themes.ThemeEngine
-import io.github.koss.mammut.dagger.application.ApplicationScope
+import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.database.MammutDatabase
 import io.github.koss.mammut.data.database.MammutDatabaseInitialiser
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feed.ui.view.NetworkIndicator
+import javax.inject.Singleton
 
 @Module
 class ApplicationModule(private val appContext: Context) {
@@ -49,6 +51,11 @@ class ApplicationModule(private val appContext: Context) {
 
     @Provides
     @ApplicationScope
-    fun provideNetworkIndicator(context: Context): NetworkIndicator =
-            NetworkIndicator(context)
+    fun provideNetworkIndicator(): NetworkIndicator =
+            NetworkIndicator()
+
+    @Provides
+    @ApplicationScope
+    fun provideNavigationEventBus(): NavigationEventBus =
+            NavigationEventBus()
 }

@@ -7,6 +7,7 @@ import com.sys1yagi.mastodon4j.api.method.Statuses
 import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.database.StatusDatabase
 import io.github.koss.mammut.data.extensions.ClientBuilder
+import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.data.work.SingleWorkerFactory
 import io.github.koss.mammut.data.work.WorkConstants.TootInteraction.TAG_BOOST
@@ -60,7 +61,10 @@ class TootInteractionWorker(
             Action.UNRETOOT -> statuses.postUnreblog(statusId)
         }
 
-        val updatedStatus = request.run(retryCount = 3).toOption().orNull() ?: return Result.failure()
+        val updatedStatus = when (val result = request.run(retryCount = 3)) {
+            is io.github.koss.mammut.data.extensions.Result.Success -> result.data
+            is io.github.koss.mammut.data.extensions.Result.Failure -> return Result.failure()
+        }
 
         val databaseName = inputData.getString(INPUT_DATABASE_NAME) ?: return Result.failure()
 

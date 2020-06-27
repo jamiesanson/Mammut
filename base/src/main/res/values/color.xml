@@ -2,4 +2,5 @@
 <resources>
     <color name="errorRed">#e53935</color>
     <color name="successGreen">#00c853</color>
+    <color name="surfaceColor">#FFFFFF</color>
 </resources>
