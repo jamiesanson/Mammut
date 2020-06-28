@@ -37,8 +37,15 @@ ext {
     lifecycle = "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     lifecycleJava8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     lifecycleKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
-    viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+
+    // Navigation
+    def nav_version = "2.3.0"
+    navFragment = "androidx.navigation:navigation-fragment:$nav_version"
+    navUI = "androidx.navigation:navigation-ui:$nav_version"
+    navFragmentKtx = "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    navUIKtx = "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     // ViewPager2
     viewPager2 = "androidx.viewpager2:viewpager2:1.0.0"
