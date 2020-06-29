@@ -81,9 +81,9 @@ sealed class FeedType(
         val tag: String
     ): FeedType("${KEY_HASHTAG}_tag", supportsStreaming = true) {
         override fun getStreamingBuilder(client: MastodonClient): ((Handler) -> Shutdownable)? =
-                { handler -> Streaming(client).localHashtag(tag, handler) }
+                { handler -> Streaming(client).federatedHashtag(tag, handler) }
 
         override fun getRequestBuilder(client: MastodonClient): (Range) -> MastodonRequest<Pageable<Status>> =
-                { range -> Public(client).getLocalTag(tag, range) }
+                { range -> Public(client).getFederatedTag(tag, range) }
     }
 }

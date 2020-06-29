@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feed.presentation.status
 
+import android.net.Uri
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ClickableSpan
@@ -7,6 +8,7 @@ import android.text.style.URLSpan
 import android.view.View
 import androidx.core.text.getSpans
 import io.github.koss.mammut.data.models.Status
+import io.github.koss.mammut.data.models.Tag
 import io.github.koss.mammut.feed.presentation.event.Navigation
 import io.github.koss.mammut.feed.presentation.state.OnItemsRendered
 import io.github.koss.randux.utils.Dispatch
@@ -35,7 +37,7 @@ class SpanReplacingMiddleware(
         renderedItems.forEachIndexed { index, statusModel ->
             (statusModel.renderedContent as? SpannableStringBuilder)?.apply {
                 replaceMentions(items[index])
-                replaceTags(items[index])
+                replaceTags()
             }
         }
 
@@ -48,8 +50,20 @@ class SpanReplacingMiddleware(
         }
     }
 
-    private fun SpannableStringBuilder.replaceTags(status: Status) {
-        replaceUrlSpans(findMatchingModel = { url -> status.tags.find { it.tagUrl == url } }) { tag ->
+    private fun SpannableStringBuilder.replaceTags() {
+        fun matchUrl(url: String): Tag? {
+            val uri = Uri.parse(url)
+
+            if (uri.pathSegments.firstOrNull() == "tags") {
+                return uri.pathSegments
+                    .drop(1)
+                    .firstOrNull()?.let { Tag(tagName = it) }
+            }
+
+            return null
+        }
+
+        replaceUrlSpans(findMatchingModel = ::matchUrl) { tag ->
             onNavigationEvent(Navigation.Tag(tagName = tag.tagName))
         }
     }
