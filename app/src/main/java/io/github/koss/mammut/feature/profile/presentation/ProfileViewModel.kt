@@ -1,10 +1,8 @@
 package io.github.koss.mammut.feature.profile.presentation
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.crashlytics.android.Crashlytics
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Accounts
 import io.github.koss.mammut.data.converters.toLocalModel
@@ -14,6 +12,7 @@ import io.github.koss.mammut.data.models.NetworkState
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
+import io.github.koss.mammut.base.util.Logging.logWarning
 import io.github.koss.mammut.base.util.postSafely
 import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.extensions.orNull
@@ -59,7 +58,7 @@ class ProfileViewModel @Inject constructor(
                     is Result.Failure -> {
                         // We're most likely offline. Log this as a warning just in case
                         networkState.postSafely(NetworkState.Offline)
-                        Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.error.error)
+                        logWarning { accountResult.error.error }
                         null
                     }
                 }?.toLocalModel() ?: return@launch
@@ -78,7 +77,7 @@ class ProfileViewModel @Inject constructor(
                     is Result.Failure -> {
                         // We're most likely offline. Log this as a warning just in case
                         networkState.postSafely(NetworkState.Offline)
-                        Crashlytics.log(Log.WARN, ProfileViewModel::class.java.name, accountResult.error.error)
+                        logWarning { accountResult.error.error }
                         null
                     }
                 }?.toLocalModel() ?: return@launch

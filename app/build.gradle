@@ -5,23 +5,24 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
     }
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
 
-        // TODO - move this
-        def nav_version = "2.3.0-rc01"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+    dependencies {
+        classpath rootProject.ext.ossLicensesPlugin
+
+        classpath rootProject.ext.googleServices
+        classpath rootProject.ext.firebaseCrashlyticsGradlePlugin
+        classpath rootProject.ext.navSafeArgsPlugin
     }
 }
 
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
+
+apply plugin: 'com.google.gms.google-services'
 apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -75,11 +76,14 @@ repositories {
     google()
     jcenter()
     maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation platform(rootProject.ext.firebaseBom)
+    implementation rootProject.ext.firebaseCrashlytics
+    implementation rootProject.ext.firebaseAnalytics
 
     api project(":base")
     api project(":instances")
@@ -130,10 +134,6 @@ dependencies {
     kapt rootProject.ext.glideCompiler
 
     api rootProject.ext.threetenabp
-
-    api(rootProject.ext.crashlytics) {
-        transitive = true
-    }
 
     api rootProject.ext.ktx
 

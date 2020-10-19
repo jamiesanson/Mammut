@@ -46,6 +46,7 @@ ext {
     navUI = "androidx.navigation:navigation-ui:$nav_version"
     navFragmentKtx = "androidx.navigation:navigation-fragment-ktx:$nav_version"
     navUIKtx = "androidx.navigation:navigation-ui-ktx:$nav_version"
+    navSafeArgsPlugin = "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
     // ViewPager2
     viewPager2 = "androidx.viewpager2:viewpager2:1.0.0"
@@ -85,14 +86,21 @@ ext {
 
     // GMS
     ossLicenses = 'com.google.android.gms:play-services-oss-licenses:16.0.2'
+    ossLicensesPlugin = 'com.google.android.gms:oss-licenses-plugin:0.10.2'
+
+    // Firebase
+    googleServices = 'com.google.gms:google-services:4.3.4'
+    firebaseBom = 'com.google.firebase:firebase-bom:25.12.0'
+    firebaseAnalytics = 'com.google.firebase:firebase-analytics-ktx'
+    firebaseCrashlytics = 'com.google.firebase:firebase-crashlytics-ktx'
+    firebaseCrashlyticsGradlePlugin = 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
 
     // Misc
     threetenabp = 'com.jakewharton.threetenabp:threetenabp:1.1.0' // TODO: Remove
-    crashlytics = 'com.crashlytics.sdk.android:crashlytics:2.9.5@aar' // TODO: Remove
     gestureView = 'com.alexvasilkov:gesture-views:2.5.2'
     flexAdapter = "com.github.ajalt:flexadapter:2.2.0"
     lottie = "com.airbnb.android:lottie:3.4.0" //TODO: Remove
-    customTabsHelper = 'saschpe.android:customtabs:2.0.0'
+    customTabsHelper = 'saschpe.android:customtabs:3.0.2'
 }
 
 buildscript {
@@ -102,7 +110,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.1.0'
+
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

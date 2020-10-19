@@ -105,6 +105,10 @@ class JoinInstanceViewModel @Inject constructor(
         }
     }
 
+    fun loginFailed() {
+        (isLoading as MutableLiveData).value = false
+    }
+
     fun onQueryChanged(query: String) {
         launch {
             val results = instancesRepository.searchInstances(query)

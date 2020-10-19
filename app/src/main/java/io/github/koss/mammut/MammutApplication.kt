@@ -4,10 +4,12 @@ import android.app.Application
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.WorkerFactory
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.jakewharton.threetenabp.AndroidThreeTen
-import io.fabric.sdk.android.Fabric
 import io.github.koss.mammut.base.themes.ThemeEngine
+import io.github.koss.mammut.base.util.Logger
+import io.github.koss.mammut.base.util.Logging
 import io.github.koss.mammut.dagger.application.ApplicationComponent
 import io.github.koss.mammut.dagger.module.ApplicationModule
 import io.github.koss.mammut.dagger.application.DaggerApplicationComponent
@@ -26,6 +28,12 @@ class MammutApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Initialise logging - log to Crashlytics if not debuggable
+        if (!BuildConfig.DEBUG) {
+            Logging.loggers.add(CrashlyticsLogger)
+        }
+
+        // Dependencies
         component = DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(this))
                 .build()
@@ -33,12 +41,20 @@ class MammutApplication: Application() {
 
         AndroidThreeTen.init(this)
 
-        Fabric.with(this, Crashlytics())
-
         // Preload custom tabs
         registerActivityLifecycleCallbacks(CustomTabsActivityLifecycleCallbacks())
 
         // Initialise WorkManager
         WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(workerFactory).build())
+    }
+}
+
+private val CrashlyticsLogger = Logger { priority, tag, message, throwable ->
+    // Format: E/TAG: my message
+    Firebase.crashlytics.log("${priority.name.first()}/$tag: ${message()}")
+
+    // Log the exception
+    if (throwable != null) {
+        Firebase.crashlytics.recordException(throwable)
     }
 }

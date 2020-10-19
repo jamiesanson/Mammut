@@ -20,11 +20,12 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
         applicationComponent.inject(this)
 
         launch {
-            val registrations = registrationRepository
+            val completedRegistrations = registrationRepository
                     .getAllRegistrations()
+                    .filter { it.account != null }
 
             withContext(Dispatchers.Main) {
-                if (registrations.isNotEmpty()) {
+                if (completedRegistrations.isNotEmpty()) {
                     startActivity<MultiInstanceActivity>()
                 } else {
                     startActivity<JoinInstanceActivity>()
