@@ -30,9 +30,9 @@ import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.provideViewModel
 import io.github.koss.mammut.base.util.snackbar
 import io.github.koss.mammut.feature.multiinstance.MultiInstanceActivity
+import io.github.koss.mammut.feature.webview.MammutWebViewFallback
 import org.jetbrains.anko.colorAttr
 import saschpe.android.customtabs.CustomTabsHelper
-import saschpe.android.customtabs.WebViewFallback
 
 class JoinInstanceActivity: BaseActivity() {
 
@@ -124,8 +124,9 @@ class JoinInstanceActivity: BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK) {
-            viewModel.loginFailed()
+        when (resultCode) {
+            MammutWebViewFallback.RESULT_CODE -> data?.data?.let(::onUri)
+            else -> viewModel.loginFailed()
         }
     }
 
@@ -140,7 +141,7 @@ class JoinInstanceActivity: BaseActivity() {
 
         CustomTabsHelper.openCustomTab(this, customTabsIntent,
                 Uri.parse(url),
-                WebViewFallback())
+                MammutWebViewFallback(redirectUrl))
     }
 
     private fun InstanceSuggestionPopupWindow.show() {
@@ -196,15 +197,15 @@ class JoinInstanceActivity: BaseActivity() {
         viewModel.login(url, redirectUrl, clientName)
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val uri = intent.data
-        val redirectUri = "${getString(R.string.oauth_scheme)}://${BuildConfig.APPLICATION_ID}"
-
-        if (uri != null && uri.toString().startsWith(redirectUri)) {
+    private fun onUri(uri: Uri) {
+        if (uri.toString().startsWith(redirectUrl)) {
             viewModel.finishLogin(uri)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        intent.data?.let(::onUri)
     }
 
     override fun injectDependencies() {

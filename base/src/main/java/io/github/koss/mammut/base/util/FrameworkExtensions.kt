@@ -24,14 +24,14 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 inline fun <reified T: ViewModel> AppCompatActivity.provideViewModel(viewModelFactory: MammutViewModelFactory): T =
-        ViewModelProviders.of(this, viewModelFactory)[T::class.java]
+        ViewModelProvider(this, viewModelFactory)[T::class.java]
 
 fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     val typedValue = TypedValue()
     theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
     @ColorInt val primaryDarkColor = typedValue.data
 
-    theme.resolveAttribute(R.attr.colorAccentLight, typedValue, true)
+    theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true)
     @ColorInt val lightAccentColor = typedValue.data
 
     Snackbar.make(contentView!!, message, length).apply {

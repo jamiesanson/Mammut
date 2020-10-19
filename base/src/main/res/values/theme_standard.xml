@@ -11,7 +11,7 @@
     <color name="standardSecondaryTextColor">#000000</color>
     <color name="standardColorControlTransparent">#8AFFFFFF</color>
 
-    <style name="Mammut.Standard" parent="Mammut.Base">
+    <style name="Theme.Mammut.Standard" parent="Theme.Mammut.Base">
         <item name="colorPrimary">@color/standardSecondaryColor</item>
         <item name="colorPrimaryLight">@color/standardSecondaryLightColor</item>
         <item name="colorPrimaryDark">@color/standardSecondaryDarkColor</item>

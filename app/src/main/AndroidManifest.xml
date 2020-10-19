@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".MammutApplication"
-        android:theme="@style/Mammut.Splash">
+        android:theme="@style/Theme.Mammut.Splash">
 
         <activity
             android:name=".feature.multiinstance.MultiInstanceActivity"
@@ -34,7 +34,7 @@
         </activity>
 
         <activity android:name=".feature.splash.SplashActivity"
-            android:theme="@style/Mammut.Splash">
+            android:theme="@style/Theme.Mammut.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -42,6 +42,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".feature.webview.MammutWebViewActivity"
+            android:theme="@style/Theme.Mammut.WebView"/>
 
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>

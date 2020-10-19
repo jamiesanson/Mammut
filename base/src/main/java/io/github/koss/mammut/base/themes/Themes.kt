@@ -14,7 +14,7 @@ sealed class Theme(
  */
 object Standard: Theme(
         themeName = "Standard",
-        styleRes = R.style.Mammut_Standard,
+        styleRes = R.style.Theme_Mammut_Standard,
         primaryFont = VarelaRound)
 
 /**
@@ -22,6 +22,6 @@ object Standard: Theme(
  */
 object PastelGreen: Theme(
         themeName = "Pastel Green",
-        styleRes = R.style.Mammut_Pastel_Green,
+        styleRes = R.style.Theme_Mammut_Pastel_Green,
         primaryFont = VarelaRound
 )

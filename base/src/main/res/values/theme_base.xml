@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Mammut.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Mammut.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorSurface">@color/surfaceColor</item>
         <item name="android:windowBackground">@drawable/drawable_splash_background</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
-    <style name="Mammut.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Mammut.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorSurface">@color/surfaceColor</item>
 
         <!--  Edge to edge theming  -->

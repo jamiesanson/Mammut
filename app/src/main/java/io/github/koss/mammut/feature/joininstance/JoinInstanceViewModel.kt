@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.Scope
 import com.sys1yagi.mastodon4j.api.method.Accounts
@@ -31,7 +32,7 @@ class JoinInstanceViewModel @Inject constructor(
         private val preferencesRepository: PreferencesRepository,
         private val instancesRepository: InstancesRepository,
         private val clientBuilder: ClientBuilder
-) : ViewModel(), CoroutineScope by GlobalScope {
+) : ViewModel() {
 
     val isLoading: LiveData<Boolean> = MutableLiveData()
 
@@ -44,13 +45,13 @@ class JoinInstanceViewModel @Inject constructor(
     val searchResults: LiveData<List<InstanceSearchResult>> = MutableLiveData()
 
     init {
-        launch {
+        viewModelScope.launch {
             instancesRepository.initialiseResults()
         }
     }
 
     fun login(dirtyUrl: String, redirectUrl: String, clientName: String) {
-        launch {
+        viewModelScope.launch {
             isLoading.postSafely(true)
 
             val url = dirtyUrl.canonicalize()
@@ -110,7 +111,7 @@ class JoinInstanceViewModel @Inject constructor(
     }
 
     fun onQueryChanged(query: String) {
-        launch {
+        viewModelScope.launch {
             val results = instancesRepository.searchInstances(query)
             searchResults.postSafely(results)
         }
@@ -119,7 +120,7 @@ class JoinInstanceViewModel @Inject constructor(
     fun finishLogin(uri: Uri) {
         isLoading.postSafely(true)
 
-        launch {
+        viewModelScope.launch {
             // This should either have returned an authorization code or an error.
             val code = uri.getQueryParameter("code")
             val error = uri.getQueryParameter("error")
