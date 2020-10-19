@@ -4,12 +4,9 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -26,6 +23,8 @@ import com.github.ajalt.flexadapter.register
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.ShapeAppearanceModel
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.GlideApp
@@ -34,11 +33,13 @@ import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.databinding.InstanceBottomNavigationViewBinding
 import io.github.koss.mammut.feature.home.presentation.state.HomeState
+import kotlinx.android.synthetic.main.instance_bottom_navigation_view.view.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.displayMetrics
+import kotlin.properties.Delegates
 
 class InstanceBottomNavigationView @JvmOverloads constructor(
         context: Context,
@@ -48,7 +49,8 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private val binding = InstanceBottomNavigationViewBinding
             .inflate(LayoutInflater.from(context), this)
 
-    var peekInsetAddition: Int = 0
+    var peekInsetAddition: Int  = 0
+
     private var peekJob: Job = Job()
 
     private var currentState: HomeState? = null
@@ -78,7 +80,12 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
             }
         }
 
-        radius = dip(12f).toFloat()
+        val cornerRadius = dip(12f).toFloat()
+
+        shapeAppearanceModel = ShapeAppearanceModel.Builder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius)
+                .setTopRightCorner(CornerFamily.ROUNDED, cornerRadius)
+                .build()
 
         // Setup navigation
         binding.settingsCell.setOnClickListener {
@@ -96,7 +103,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
 
         // Setup slide listening
         behaviour<BottomSheetBehavior<View>>()?.apply {
-            isGestureInsetBottomIgnored = true
+           // isGestureInsetBottomIgnored = true
 
             addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(view: View, proportion: Float) {
@@ -111,6 +118,13 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                             return
                         }
                     }
+
+                    // Animate change in padding
+                    val bottomNavPaddingBottom = (peekHeight * (1 - proportion)) / 2f
+                    val aboutAppMarginBottom = (peekHeight * proportion) / 2f
+
+                    navigationView.updatePadding(bottom = bottomNavPaddingBottom.toInt())
+                    aboutAppCell.updateLayoutParams<MarginLayoutParams> { bottomMargin = aboutAppMarginBottom.toInt() }
 
                     onSheetScrollListener?.onScrolled(proportion)
                 }
