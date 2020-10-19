@@ -31,6 +31,8 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
@@ -46,6 +48,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
 
     implementation project(":base")
     implementation project(":data")
@@ -84,8 +88,6 @@ dependencies {
     implementation rootProject.ext.lifecycleLivedataKtx
 
     implementation rootProject.ext.viewModelKtx
-
-    implementation rootProject.ext.threetenabp
 
     implementation rootProject.ext.anko
 

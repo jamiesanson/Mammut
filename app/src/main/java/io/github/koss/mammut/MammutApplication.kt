@@ -6,7 +6,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerFactory
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.base.util.Logger
 import io.github.koss.mammut.base.util.Logging
@@ -38,8 +37,6 @@ class MammutApplication: Application() {
                 .applicationModule(ApplicationModule(this))
                 .build()
                 .also { it.inject(this) }
-
-        AndroidThreeTen.init(this)
 
         // Preload custom tabs
         registerActivityLifecycleCallbacks(CustomTabsActivityLifecycleCallbacks())

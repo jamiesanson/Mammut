@@ -1,6 +1,5 @@
 package io.github.koss.mammut.feed.ui.status
 
-import androidx.core.text.PrecomputedTextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -19,9 +18,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.threeten.bp.Duration
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.temporal.ChronoUnit
+import java.time.Duration
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @Suppress("EXPERIMENTAL_API_USAGE")

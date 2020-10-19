@@ -96,7 +96,6 @@ ext {
     firebaseCrashlyticsGradlePlugin = 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
 
     // Misc
-    threetenabp = 'com.jakewharton.threetenabp:threetenabp:1.1.0' // TODO: Remove
     gestureView = 'com.alexvasilkov:gesture-views:2.5.2'
     flexAdapter = "com.github.ajalt:flexadapter:2.2.0"
     lottie = "com.airbnb.android:lottie:3.4.0" //TODO: Remove
