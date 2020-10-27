@@ -12,7 +12,7 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.util.postSafely
+import io.github.koss.mammut.base.util.tryPost
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.models.*
@@ -22,8 +22,6 @@ import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.base.InputError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,7 +50,7 @@ class JoinInstanceViewModel @Inject constructor(
 
     fun login(dirtyUrl: String, redirectUrl: String, clientName: String) {
         viewModelScope.launch {
-            isLoading.postSafely(true)
+            isLoading.tryPost(true)
 
             val url = dirtyUrl.canonicalize()
 
@@ -63,8 +61,8 @@ class JoinInstanceViewModel @Inject constructor(
             // and we shouldn't continue
             val instanceResult = Public(client).getInstance().run()
             if (instanceResult is Result.Failure) {
-                isLoading.postSafely(false)
-                errorMessage.postSafely(InputError { resources -> resources.getString(R.string.error_non_existant_instance) })
+                isLoading.tryPost(false)
+                errorMessage.tryPost(InputError { resources -> resources.getString(R.string.error_non_existant_instance) })
 
                 return@launch
             }
@@ -79,8 +77,8 @@ class JoinInstanceViewModel @Inject constructor(
                     result.data
                 }
                 is Result.Failure -> {
-                    isLoading.postSafely(false)
-                    errorMessage.postSafely(Event { _ -> result.error.description })
+                    isLoading.tryPost(false)
+                    errorMessage.tryPost(Event { _ -> result.error.description })
 
                     return@launch
                 }
@@ -102,7 +100,7 @@ class JoinInstanceViewModel @Inject constructor(
             // Save the URL for later
             preferencesRepository.loginDomain = url
 
-            this@JoinInstanceViewModel.oauthUrl.postSafely(Event(oauthUrl))
+            this@JoinInstanceViewModel.oauthUrl.tryPost(Event(oauthUrl))
         }
     }
 
@@ -113,12 +111,12 @@ class JoinInstanceViewModel @Inject constructor(
     fun onQueryChanged(query: String) {
         viewModelScope.launch {
             val results = instancesRepository.searchInstances(query)
-            searchResults.postSafely(results)
+            searchResults.tryPost(results)
         }
     }
 
     fun finishLogin(uri: Uri) {
-        isLoading.postSafely(true)
+        isLoading.tryPost(true)
 
         viewModelScope.launch {
             // This should either have returned an authorization code or an error.
@@ -129,8 +127,8 @@ class JoinInstanceViewModel @Inject constructor(
             val registration = registrationRepository.getRegistrationForName(instanceName)
 
             if (error != null || code == null || registration == null) {
-                isLoading.postSafely(false)
-                errorMessage.postSafely(Event({ resources -> resources.getString(R.string.error_generic) }))
+                isLoading.tryPost(false)
+                errorMessage.tryPost(Event({ resources -> resources.getString(R.string.error_generic) }))
                 return@launch
             }
 
@@ -151,8 +149,8 @@ class JoinInstanceViewModel @Inject constructor(
                     result.data
                 }
                 is Result.Failure -> {
-                    isLoading.postSafely(false)
-                    errorMessage.postSafely(Event({ _ -> result.error.description }))
+                    isLoading.tryPost(false)
+                    errorMessage.tryPost(Event({ _ -> result.error.description }))
 
                     return@launch
                 }
@@ -164,8 +162,8 @@ class JoinInstanceViewModel @Inject constructor(
             val account = when (val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()) {
                 is Result.Success -> accountResult.data
                 is Result.Failure -> {
-                    isLoading.postSafely(false)
-                    errorMessage.postSafely(Event { _ -> accountResult.error.description })
+                    isLoading.tryPost(false)
+                    errorMessage.tryPost(Event { _ -> accountResult.error.description })
 
                     return@launch
                 }
@@ -202,8 +200,8 @@ class JoinInstanceViewModel @Inject constructor(
             // Update the registration repo
             registrationRepository.addOrUpdateRegistration(completedRegistration)
 
-            isLoading.postSafely(false)
-            registrationCompleteEvent.postSafely(Event(null))
+            isLoading.tryPost(false)
+            registrationCompleteEvent.tryPost(Event(null))
         }
     }
 

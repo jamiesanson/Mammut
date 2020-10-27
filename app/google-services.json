@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "561910534546",
+    "firebase_url": "https://mammut-f9ff4.firebaseio.com",
+    "project_id": "mammut-f9ff4",
+    "storage_bucket": "mammut-f9ff4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561910534546:android:69c0225a8b90decd38314b",
+        "android_client_info": {
+          "package_name": "io.github.koss.mammut"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561910534546-69so0gvnt24hv04lgb84eejsjr4pf3o8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPr7tOEiIYGdoU_AMB_D4I1TkweOoDayo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561910534546-69so0gvnt24hv04lgb84eejsjr4pf3o8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561910534546:android:ed3efa2c20daa0a838314b",
+        "android_client_info": {
+          "package_name": "io.github.koss.mammut.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561910534546-69so0gvnt24hv04lgb84eejsjr4pf3o8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPr7tOEiIYGdoU_AMB_D4I1TkweOoDayo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561910534546-69so0gvnt24hv04lgb84eejsjr4pf3o8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
