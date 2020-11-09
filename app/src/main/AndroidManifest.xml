@@ -19,8 +19,7 @@
             android:configChanges="orientation"
             android:windowSoftInputMode="adjustPan"/>
 
-        <activity android:name=".feature.joininstance.JoinInstanceActivity"
-            android:windowSoftInputMode="adjustPan">
+        <activity android:name=".feature.joininstance.JoinInstanceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

@@ -22,6 +22,7 @@ import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.base.InputError
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -109,7 +110,7 @@ class JoinInstanceViewModel @Inject constructor(
     }
 
     fun onQueryChanged(query: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val results = instancesRepository.searchInstances(query)
             searchResults.tryPost(results)
         }

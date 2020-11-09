@@ -10,6 +10,7 @@ import android.view.ViewOutlineProvider
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -25,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.ShapeAppearanceModel
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.GlideApp
@@ -39,7 +41,6 @@ import org.jetbrains.anko.colorAttr
 import org.jetbrains.anko.dimen
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.displayMetrics
-import kotlin.properties.Delegates
 
 class InstanceBottomNavigationView @JvmOverloads constructor(
         context: Context,
@@ -49,7 +50,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private val binding = InstanceBottomNavigationViewBinding
             .inflate(LayoutInflater.from(context), this)
 
-    var peekInsetAddition: Int  = 0
+    private var peekInsetAddition: Int  = 0
 
     private var peekJob: Job = Job()
 
@@ -135,6 +136,11 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         }
 
         setupInstancesRecycler()
+
+        // Setup peek
+        doOnApplyWindowInsets { _, insets, _ ->
+            peekInsetAddition = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+        }
         resetPeek()
 
         initialised = true

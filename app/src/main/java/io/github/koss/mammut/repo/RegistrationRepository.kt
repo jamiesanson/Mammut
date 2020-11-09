@@ -13,6 +13,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -29,27 +30,27 @@ class RegistrationRepository @Inject constructor(
         }
     }
 
-    suspend fun addOrUpdateRegistration(registration: InstanceRegistration) {
+    suspend fun addOrUpdateRegistration(registration: InstanceRegistration) = withContext(Dispatchers.IO) {
         database.instanceRegistrationDao().insertRegistration(registration = registration.toLocalModel())
     }
 
-    suspend fun getRegistrationForName(name: String): InstanceRegistration? = database.instanceRegistrationDao().getRegistrationByName(name)?.toNetworkModel()
+    suspend fun getRegistrationForName(name: String): InstanceRegistration? = withContext(Dispatchers.IO) {
+        database.instanceRegistrationDao().getRegistrationByName(name)?.toNetworkModel()
+    }
 
-    suspend fun hasRegistrations(): Boolean = database.instanceRegistrationDao().getAllRegistrations().isNotEmpty()
-
-    suspend fun getAllRegistrations(): List<InstanceRegistration> = database.instanceRegistrationDao().getAllRegistrations().map { it.toNetworkModel() }
+    suspend fun getAllRegistrations(): List<InstanceRegistration> = withContext(Dispatchers.IO) {
+        database.instanceRegistrationDao().getAllRegistrations().map { it.toNetworkModel() }
+    }
 
     fun getAllRegistrationsFlow(): Flow<List<InstanceRegistration>> =
             database.instanceRegistrationDao()
                     .getAllRegistrationsFlow()
-                    .map { list -> list.map { it.toNetworkModel() }}
+                    .map { list -> list.map { it.toNetworkModel() } }
 
     fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toNetworkModel() } }
 
     fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(getAllRegistrationsLive()
             .filterElements {
                 it.account != null
-            }) { it.sortedBy { item -> item.orderIndex }}
-
-    suspend fun logOut(id: Long) = database.instanceRegistrationDao().deleteRegistration(id)
+            }) { it.sortedBy { item -> item.orderIndex } }
 }

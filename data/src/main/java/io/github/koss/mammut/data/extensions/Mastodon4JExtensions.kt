@@ -9,6 +9,8 @@ import com.sys1yagi.mastodon4j.MastodonRequest
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException
 import io.github.koss.mammut.data.BuildConfig
 import io.github.koss.mammut.data.models.Account
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 
 sealed class Result<T> {
@@ -21,7 +23,7 @@ fun <T> Result<T>.orNull(): T? = when (this) {
     is Result.Failure -> null
 }
 
-tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> {
+suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> = withContext(Dispatchers.IO) {
     val result = try {
         Result.Success(execute())
     } catch (e: Mastodon4jRequestException) {
@@ -29,31 +31,31 @@ tailrec suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> {
             e.response?.body()?.string()?.run {
                 when {
                     startsWith("{") ->  try {
-                        Result.Failure<T>(GsonBuilder()
+                        Result.Failure(GsonBuilder()
                                 .excludeFieldsWithoutExposeAnnotation()
                                 .create()
                                 .fromJson(e.response?.body()?.charStream(), Error::class.java))
                     } catch (e: Exception) {
                         null
                     }
-                    isNotEmpty() -> unknownError<T>(this)
+                    isNotEmpty() -> unknownError(this)
                     else -> null
                 }
-            } ?: unknownError<T>(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            } ?: unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
         } else {
-            unknownError<T>(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
         }
     }
 
     if (result is Result.Failure && retryCount > 0) {
-        return run(retryCount - 1)
+        return@withContext run(retryCount - 1)
     }
 
     if (result is Result.Failure) {
         Log.e("MastodonRunner", "An error occurred: ${result.error}")
     }
 
-    return result
+    return@withContext result
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")

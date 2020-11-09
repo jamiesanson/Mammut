@@ -7,6 +7,8 @@ import io.github.koss.mammut.data.database.entities.InstanceSearchResultEntity
 import io.github.koss.mammut.data.models.InstanceSearchResult
 import io.github.koss.mammut.instances.MastodonInstancesService
 import io.github.koss.mammut.instances.response.InstanceDetail
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,9 +56,9 @@ class InstancesRepository constructor(
         }
     }
 
-    suspend fun initialiseResults() {
+    suspend fun initialiseResults() = withContext(Dispatchers.IO) {
         if (database.instanceSearchDao().getAllResults().isEmpty()) {
-            val instances = retrieveAllInstances() ?: return
+            val instances = retrieveAllInstances() ?: return@withContext
             database.instanceSearchDao().addAllResults(instances.map { InstanceSearchResultEntity(name = it.name, users = it.users.toLong()) })
         }
     }

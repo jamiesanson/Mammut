@@ -3,7 +3,6 @@ package io.github.koss.mammut.feature.home
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.*
@@ -115,13 +114,7 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
         }
 
         hideFeedIndicatorDelayed()
-
-        binding.bottomSheet.doOnApplyWindowInsets { view, insets, _ ->
-            (view as InstanceBottomNavigationView).apply {
-                peekInsetAddition = insets.systemWindowInsetBottom
-                initialise()
-            }
-        }
+        binding.bottomSheet.initialise()
     }
 
     private fun setupNavigation() {
@@ -181,7 +174,6 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
                 override fun onInstanceChanged(index: Int) = onInstanceIndexSelected(index)
             }
         }
-
     }
 
     private fun onStateChanged(state: HomeState) {
