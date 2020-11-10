@@ -12,6 +12,7 @@ import io.github.koss.mammut.data.models.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import retrofit2.HttpException
 
 sealed class Result<T> {
     data class Success<T>(val data: T): Result<T>()
@@ -38,12 +39,12 @@ suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> = withCon
                     } catch (e: Exception) {
                         null
                     }
-                    isNotEmpty() -> unknownError(this)
+                    isNotEmpty() -> unknownError(e, this)
                     else -> null
                 }
-            } ?: unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            } ?: unknownError(e, if (BuildConfig.DEBUG) "Exception from non-error response ($e)" else "Oh jeez, something's gone wrong")
         } else {
-            unknownError(if (BuildConfig.DEBUG) "Exception from non-error response" else "Oh jeez, something's gone wrong")
+            unknownError(e, if (BuildConfig.DEBUG) "Exception from non-error response ($e)" else "Oh jeez, something's gone wrong")
         }
     }
 
@@ -59,8 +60,10 @@ suspend fun <T> MastodonRequest<T>.run(retryCount: Int = 0): Result<T> = withCon
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
-private fun <T> unknownError(description: String) =
-        Result.Failure<T>(Error(error = "unknown_error", description = description))
+private fun <T> unknownError(error: Mastodon4jRequestException, description: String): Result<T> {
+    Log.e("Mastodon4J", "Error occurred in Mastodon4J library (${error.response}", error)
+    return Result.Failure(Error(error = "unknown_error", description = description))
+}
 
 data class Error(
         @Expose
@@ -71,7 +74,6 @@ data class Error(
 )
 
 fun Account.fullAcct(instanceName: String): String = "@$userName@$instanceName"
-
 
 class ClientBuilder(
         private val okHttpClient: OkHttpClient.Builder,

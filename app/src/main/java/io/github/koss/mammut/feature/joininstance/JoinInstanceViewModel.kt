@@ -12,7 +12,7 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Apps
 import com.sys1yagi.mastodon4j.api.method.Public
 import io.github.koss.mammut.R
-import io.github.koss.mammut.base.util.tryPost
+import io.github.koss.mammut.base.util.postIfMutable
 import io.github.koss.mammut.data.extensions.ClientBuilder
 import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.models.*
@@ -51,7 +51,7 @@ class JoinInstanceViewModel @Inject constructor(
 
     fun login(dirtyUrl: String, redirectUrl: String, clientName: String) {
         viewModelScope.launch {
-            isLoading.tryPost(true)
+            isLoading.postIfMutable(true)
 
             val url = dirtyUrl.canonicalize()
 
@@ -62,8 +62,8 @@ class JoinInstanceViewModel @Inject constructor(
             // and we shouldn't continue
             val instanceResult = Public(client).getInstance().run()
             if (instanceResult is Result.Failure) {
-                isLoading.tryPost(false)
-                errorMessage.tryPost(InputError { resources -> resources.getString(R.string.error_non_existant_instance) })
+                isLoading.postIfMutable(false)
+                errorMessage.postIfMutable(InputError { resources -> resources.getString(R.string.error_non_existant_instance) })
 
                 return@launch
             }
@@ -78,8 +78,8 @@ class JoinInstanceViewModel @Inject constructor(
                     result.data
                 }
                 is Result.Failure -> {
-                    isLoading.tryPost(false)
-                    errorMessage.tryPost(Event { _ -> result.error.description })
+                    isLoading.postIfMutable(false)
+                    errorMessage.postIfMutable(Event { _ -> result.error.description })
 
                     return@launch
                 }
@@ -101,7 +101,7 @@ class JoinInstanceViewModel @Inject constructor(
             // Save the URL for later
             preferencesRepository.loginDomain = url
 
-            this@JoinInstanceViewModel.oauthUrl.tryPost(Event(oauthUrl))
+            this@JoinInstanceViewModel.oauthUrl.postIfMutable(Event(oauthUrl))
         }
     }
 
@@ -112,12 +112,12 @@ class JoinInstanceViewModel @Inject constructor(
     fun onQueryChanged(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val results = instancesRepository.searchInstances(query)
-            searchResults.tryPost(results)
+            searchResults.postIfMutable(results)
         }
     }
 
     fun finishLogin(uri: Uri) {
-        isLoading.tryPost(true)
+        isLoading.postIfMutable(true)
 
         viewModelScope.launch {
             // This should either have returned an authorization code or an error.
@@ -128,8 +128,8 @@ class JoinInstanceViewModel @Inject constructor(
             val registration = registrationRepository.getRegistrationForName(instanceName)
 
             if (error != null || code == null || registration == null) {
-                isLoading.tryPost(false)
-                errorMessage.tryPost(Event({ resources -> resources.getString(R.string.error_generic) }))
+                isLoading.postIfMutable(false)
+                errorMessage.postIfMutable(Event { resources -> resources.getString(R.string.error_generic) })
                 return@launch
             }
 
@@ -150,8 +150,8 @@ class JoinInstanceViewModel @Inject constructor(
                     result.data
                 }
                 is Result.Failure -> {
-                    isLoading.tryPost(false)
-                    errorMessage.tryPost(Event({ _ -> result.error.description }))
+                    isLoading.postIfMutable(false)
+                    errorMessage.postIfMutable(Event { _ -> result.error.description })
 
                     return@launch
                 }
@@ -163,8 +163,8 @@ class JoinInstanceViewModel @Inject constructor(
             val account = when (val accountResult = Accounts(authenticatedClient).getVerifyCredentials().run()) {
                 is Result.Success -> accountResult.data
                 is Result.Failure -> {
-                    isLoading.tryPost(false)
-                    errorMessage.tryPost(Event { _ -> accountResult.error.description })
+                    isLoading.postIfMutable(false)
+                    errorMessage.postIfMutable(Event { _ -> accountResult.error.description })
 
                     return@launch
                 }
@@ -201,8 +201,8 @@ class JoinInstanceViewModel @Inject constructor(
             // Update the registration repo
             registrationRepository.addOrUpdateRegistration(completedRegistration)
 
-            isLoading.tryPost(false)
-            registrationCompleteEvent.tryPost(Event(null))
+            isLoading.postIfMutable(false)
+            registrationCompleteEvent.postIfMutable(Event(null))
         }
     }
 

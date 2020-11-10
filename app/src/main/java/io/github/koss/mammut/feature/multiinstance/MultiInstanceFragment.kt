@@ -6,14 +6,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.navigation.NavigationEvent
 import io.github.koss.mammut.base.navigation.NavigationEventBus
 import io.github.koss.mammut.base.navigation.NavigationHub
-import io.github.koss.mammut.base.util.awaitFirst
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.data.models.InstanceRegistration
 import io.github.koss.mammut.databinding.MultiInstanceFragmentBinding
@@ -25,10 +23,11 @@ import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.repo.RegistrationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment), NavigationHub {
+class MultiInstanceFragment : Fragment(R.layout.multi_instance_fragment), NavigationHub {
 
     @Inject
     lateinit var registrationRepository: RegistrationRepository
@@ -65,14 +64,16 @@ class MultiInstanceFragment: Fragment(R.layout.multi_instance_fragment), Navigat
     }
 
     private fun observeRegistrations() {
-        val liveData = registrationRepository.getAllCompletedRegistrationsLive()
-
         // Observe registrations with the view lifecycle
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-            liveData.awaitFirst().let(::setupPager)
-            liveData.observe(viewLifecycleOwner, Observer {
-                (binding.viewPager.adapter as? InstancePagerAdapter)?.registrations = it
-            })
+            registrationRepository.getAllCompletedRegistrationsFlow()
+                    .collectIndexed { index, registrations ->
+                        if (index == 0) {
+                            setupPager(registrations)
+                        } else {
+                            (binding.viewPager.adapter as? InstancePagerAdapter)?.registrations = registrations
+                        }
+                    }
         }
     }
 

@@ -17,7 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.base.util.observe
-import io.github.koss.mammut.base.util.tryPost
+import io.github.koss.mammut.base.util.postIfMutable
 import io.github.koss.mammut.feed.R
 import kotlinx.android.synthetic.main.button_network_indicator.view.*
 import org.jetbrains.anko.connectivityManager
@@ -111,9 +111,9 @@ class NetworkIndicator {
     inner class NetworkIndicatorReceiver: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context?.connectivityManager?.activeNetworkInfo?.isConnected == true) {
-                isConnectedLiveData.tryPost(true)
+                isConnectedLiveData.postIfMutable(true)
             } else {
-                isConnectedLiveData.tryPost(false)
+                isConnectedLiveData.postIfMutable(false)
             }
         }
     }

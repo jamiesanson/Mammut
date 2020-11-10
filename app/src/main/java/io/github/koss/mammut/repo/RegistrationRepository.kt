@@ -1,8 +1,5 @@
 package io.github.koss.mammut.repo
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import io.github.koss.mammut.base.util.filterElements
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.data.converters.toLocalModel
 import io.github.koss.mammut.data.converters.toNetworkModel
@@ -47,10 +44,11 @@ class RegistrationRepository @Inject constructor(
                     .getAllRegistrationsFlow()
                     .map { list -> list.map { it.toNetworkModel() } }
 
-    fun getAllRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(database.instanceRegistrationDao().getAllRegistrationsLive()) { it -> it.map { it.toNetworkModel() } }
-
-    fun getAllCompletedRegistrationsLive(): LiveData<List<InstanceRegistration>> = Transformations.map(getAllRegistrationsLive()
-            .filterElements {
-                it.account != null
-            }) { it.sortedBy { item -> item.orderIndex } }
+    fun getAllCompletedRegistrationsFlow(): Flow<List<InstanceRegistration>> =
+            getAllRegistrationsFlow()
+                    .map {
+                        it
+                                .filter { registration -> registration.account != null }
+                                .sortedBy { item -> item.orderIndex }
+                    }
 }

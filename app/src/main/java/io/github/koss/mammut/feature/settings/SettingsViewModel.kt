@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.themes.Theme
-import io.github.koss.mammut.base.util.tryPost
+import io.github.koss.mammut.base.util.postIfMutable
 import io.github.koss.mammut.repo.PreferencesRepository
 import io.github.koss.mammut.feature.base.Event
 import io.github.koss.mammut.feature.settings.model.*
@@ -27,7 +27,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun rebuildSettingsScreen() {
-        settingsItems.tryPost(
+        settingsItems.postIfMutable(
                 listOfNotNull(
                         ToggleableItem(
                                 titleRes = R.string.dark_mode,
@@ -72,12 +72,12 @@ class SettingsViewModel @Inject constructor(
             }
             ToggleDarkMode -> {
                 preferencesRepository.darkModeOverrideEnabled = !preferencesRepository.darkModeOverrideEnabled
-                restartApp.tryPost(Event(Unit))
+                restartApp.postIfMutable(Event(Unit))
                 rebuildSettingsScreen()
             }
             ToggleDarkModeFollowSystem -> {
                 preferencesRepository.darkModeFollowSystem = !preferencesRepository.darkModeFollowSystem
-                restartApp.tryPost(Event(Unit))
+                restartApp.postIfMutable(Event(Unit))
                 rebuildSettingsScreen()
             }
         }
@@ -88,7 +88,7 @@ class SettingsViewModel @Inject constructor(
 
         preferencesRepository.themeId = theme.themeName
 
-        restartApp.tryPost(Event(Unit))
+        restartApp.postIfMutable(Event(Unit))
         rebuildSettingsScreen()
     }
 

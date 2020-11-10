@@ -13,7 +13,7 @@ import io.github.koss.mammut.data.extensions.run
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.base.util.Logging.logWarning
-import io.github.koss.mammut.base.util.tryPost
+import io.github.koss.mammut.base.util.postIfMutable
 import io.github.koss.mammut.data.extensions.Result
 import io.github.koss.mammut.data.extensions.orNull
 import io.github.koss.mammut.feature.profile.domain.FollowState
@@ -45,7 +45,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun load() {
-        networkState.tryPost(NetworkState.Loading)
+        networkState.postIfMutable(NetworkState.Loading)
 
         if (accountId == null) {
             launch {
@@ -57,15 +57,15 @@ class ProfileViewModel @Inject constructor(
                     is Result.Success -> accountResult.data
                     is Result.Failure -> {
                         // We're most likely offline. Log this as a warning just in case
-                        networkState.tryPost(NetworkState.Offline)
+                        networkState.postIfMutable(NetworkState.Offline)
                         logWarning { accountResult.error.error }
                         null
                     }
                 }?.toLocalModel() ?: return@launch
 
-                accountLiveData.tryPost(account)
-                followStateLiveData.tryPost(FollowState.IsMe)
-                networkState.tryPost(NetworkState.Loaded)
+                accountLiveData.postIfMutable(account)
+                followStateLiveData.postIfMutable(FollowState.IsMe)
+                networkState.postIfMutable(NetworkState.Loaded)
             }
         } else {
             // Get relationship to current account
@@ -76,13 +76,13 @@ class ProfileViewModel @Inject constructor(
                     is Result.Success -> accountResult.data
                     is Result.Failure -> {
                         // We're most likely offline. Log this as a warning just in case
-                        networkState.tryPost(NetworkState.Offline)
+                        networkState.postIfMutable(NetworkState.Offline)
                         logWarning { accountResult.error.error }
                         null
                     }
                 }?.toLocalModel() ?: return@launch
 
-                accountLiveData.tryPost(account)
+                accountLiveData.postIfMutable(account)
 
                 Accounts(client)
                         .getRelationships(accountIds = listOf(accountId))
@@ -91,16 +91,16 @@ class ProfileViewModel @Inject constructor(
                         ?.let { relationships ->
                             relationships.firstOrNull { it.id == accountId }?.let {
                                 if (it.isFollowing) {
-                                    followStateLiveData.tryPost(FollowState.Following())
+                                    followStateLiveData.postIfMutable(FollowState.Following())
                                 } else {
-                                    followStateLiveData.tryPost(FollowState.NotFollowing())
+                                    followStateLiveData.postIfMutable(FollowState.NotFollowing())
                                 }
                             } ?: kotlin.run {
-                                followStateLiveData.tryPost(FollowState.NotFollowing())
+                                followStateLiveData.postIfMutable(FollowState.NotFollowing())
                             }
                         }
 
-                networkState.tryPost(NetworkState.Loaded)
+                networkState.postIfMutable(NetworkState.Loaded)
             }
 
         }
@@ -109,30 +109,30 @@ class ProfileViewModel @Inject constructor(
     fun requestFollowToggle(followState: FollowState) {
         when (followState) {
             is FollowState.Following -> launch {
-                followStateLiveData.tryPost(FollowState.Following(loadingUnfollow = true))
+                followStateLiveData.postIfMutable(FollowState.Following(loadingUnfollow = true))
                 Accounts(client)
                         .postUnFollow(accountId!!)
                         .run()
                         .orNull()
                         ?.let {
                     if (!it.isFollowing) {
-                        followStateLiveData.tryPost(FollowState.NotFollowing())
+                        followStateLiveData.postIfMutable(FollowState.NotFollowing())
                     } else {
-                        followStateLiveData.tryPost(FollowState.Following())
+                        followStateLiveData.postIfMutable(FollowState.Following())
                     }
                 }
             }
             is FollowState.NotFollowing -> launch {
-                followStateLiveData.tryPost(FollowState.NotFollowing(loadingFollow = true))
+                followStateLiveData.postIfMutable(FollowState.NotFollowing(loadingFollow = true))
                 Accounts(client)
                         .postFollow(accountId!!)
                         .run()
                         .orNull()
                         ?.let {
                             if (it.isFollowing) {
-                                followStateLiveData.tryPost(FollowState.Following())
+                                followStateLiveData.postIfMutable(FollowState.Following())
                             } else {
-                                followStateLiveData.tryPost(FollowState.NotFollowing())
+                                followStateLiveData.postIfMutable(FollowState.NotFollowing())
                             }
                         }
             }
