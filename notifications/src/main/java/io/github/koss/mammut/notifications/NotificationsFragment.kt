@@ -36,6 +36,6 @@ class NotificationsFragment : Fragment(R.layout.notification_fragment) {
                 .buildSubcomponent<NotificationsModule, NotificationsComponent>(NotificationsModule())
                 .inject(this)
 
-        viewModel = ViewModelProvider(requireActivity(), factory).get(accessToken, NotificationsViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), factory)[accessToken, NotificationsViewModel::class.java]
     }
 }

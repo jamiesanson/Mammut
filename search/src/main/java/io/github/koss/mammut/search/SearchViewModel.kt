@@ -5,21 +5,15 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.sys1yagi.mastodon4j.MastodonClient
 import com.sys1yagi.mastodon4j.api.method.Public
-import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.search.presentation.state.NoResults
 import io.github.koss.mammut.search.presentation.state.OnLoadStart
 import io.github.koss.mammut.search.presentation.state.OnResults
 import io.github.koss.mammut.search.presentation.state.SearchReducer
 import io.github.koss.mammut.search.presentation.state.SearchState
-import io.github.koss.randux.applyMiddleware
 import io.github.koss.randux.createStore
 import io.github.koss.randux.utils.Store
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.broadcastIn
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.emptyFlow
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(
@@ -49,7 +43,7 @@ class SearchViewModel @Inject constructor(
         // Publish state
         store.subscribe {
             (store.getState() as? SearchState)?.let {
-                stateRelay.offer(it)
+                stateRelay.trySend(it)
             }
         }
     }

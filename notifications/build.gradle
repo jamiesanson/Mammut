@@ -26,8 +26,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(":base")
     implementation project(":data")
 
@@ -48,8 +46,6 @@ dependencies {
     implementation libs.mastodon4j
 
     implementation libs.androidx.lifecycle.runtime
-
-    implementation rootProject.ext.anko
 
     implementation libs.glide
 }

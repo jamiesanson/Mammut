@@ -26,8 +26,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(":base")
     implementation project(":data")
 
@@ -55,8 +53,6 @@ dependencies {
     implementation libs.androidx.lifecycle.runtime
     implementation libs.androidx.lifecycle.livedata
     implementation libs.androidx.lifecycle.viewmodel
-
-    implementation rootProject.ext.anko
 
     implementation libs.glide
 }
