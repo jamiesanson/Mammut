@@ -48,19 +48,18 @@ dependencies {
 
     implementation project(":instances")
 
-    api rootProject.ext.workManager
+    api libs.androidx.work
 
-    implementation rootProject.ext.room
-    implementation rootProject.ext.roomKtx
-    kapt rootProject.ext.roomCompiler
+    implementation libs.androidx.room
+    kapt libs.androidx.room.compiler
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleLivedataKtx
+    implementation libs.androidx.lifecycle.runtime
+    implementation libs.androidx.lifecycle.livedata
 
-    implementation rootProject.ext.coroutinesCore
+    implementation libs.kotlinx.coroutines.core
 
-    implementation rootProject.ext.retrofit
-    implementation rootProject.ext.retrofitGsonConverter
+    implementation libs.retrofit
+    implementation libs.retrofit.gson
 }

@@ -8,11 +8,11 @@ buildscript {
     }
 
     dependencies {
-        classpath rootProject.ext.ossLicensesPlugin
+        classpath libs.oss.licenses.plugin
 
-        classpath rootProject.ext.googleServices
-        classpath rootProject.ext.firebaseCrashlyticsGradlePlugin
-        classpath rootProject.ext.navSafeArgsPlugin
+        classpath libs.google.services
+        classpath libs.firebase.crashlytics.plugin
+        classpath libs.androidx.navigation.safeargs
     }
 }
 
@@ -85,9 +85,9 @@ repositories {
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
 
-    implementation platform(rootProject.ext.firebaseBom)
-    implementation rootProject.ext.firebaseCrashlytics
-    implementation rootProject.ext.firebaseAnalytics
+    implementation platform(libs.firebase.bom)
+    implementation libs.firebase.crashlytics
+    implementation libs.firebase.analytics
 
     api project(":base")
     api project(":instances")
@@ -98,58 +98,55 @@ dependencies {
     api project(":notifications")
     api project(":search")
 
-    api rootProject.ext.kotlinRuntime
-    api rootProject.ext.coroutinesCore
-    api rootProject.ext.coroutinesAndroid
+    api libs.kotlin.stdlib
+    api libs.kotlinx.coroutines.core
+    api libs.kotlinx.coroutines.android
 
-    api rootProject.ext.appCompat
-    api rootProject.ext.constraintLayout
+    api libs.androidx.appcompat
+    api libs.androidx.constraintlayout
 
-    api rootProject.ext.dagger
-    kapt rootProject.ext.daggerCompiler
+    api libs.dagger
+    kapt libs.dagger.compiler
 
-    api rootProject.ext.randux
+    api libs.randux
 
-    api rootProject.ext.lifecycle
-    api rootProject.ext.lifecycleKtx
-    api rootProject.ext.lifecycleLivedataKtx
+    api libs.androidx.lifecycle.runtime
+    api libs.androidx.lifecycle.livedata
 
-    api rootProject.ext.viewPager2
+    api libs.androidx.viewpager2
 
-    api rootProject.ext.navFragment
-    api rootProject.ext.navUI
-    api rootProject.ext.navFragmentKtx
-    api rootProject.ext.navUIKtx
+    api libs.androidx.navigation.fragment
+    api libs.androidx.navigation.ui
 
     api rootProject.ext.anko
 
-    api rootProject.ext.material
+    api libs.material
 
-    api rootProject.ext.mastodon4j
+    api libs.mastodon4j
 
-    api rootProject.ext.room
-    kapt rootProject.ext.roomCompiler
+    api libs.androidx.room
+    kapt libs.androidx.room.compiler
 
-    api rootProject.ext.retrofit
-    api rootProject.ext.retrofitGsonConverter
+    api libs.retrofit
+    api libs.retrofit.gson
 
-    api rootProject.ext.glide
-    api rootProject.ext.glideTransformations
-    kapt rootProject.ext.glideCompiler
+    api libs.glide
+    api libs.glide.transformations
+    kapt libs.glide.compiler
 
-    api rootProject.ext.ktx
+    api libs.androidx.core
 
-    api rootProject.ext.gestureView
+    api libs.gestureview
 
-    api rootProject.ext.exoCore
-    api rootProject.ext.exoUi
+    api libs.exoplayer.core
+    api libs.exoplayer.ui
 
-    api rootProject.ext.flexAdapter
+    api libs.flexadapter
 
-    api rootProject.ext.ossLicenses
+    api libs.oss.licenses
 
-    api rootProject.ext.customTabsHelper
-    api rootProject.ext.customTabs
+    api libs.customtab.helper
+    api libs.androidx.browser
 
-    api rootProject.ext.workManager
+    api libs.androidx.work
 }

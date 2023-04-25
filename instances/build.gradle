@@ -24,6 +24,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation rootProject.ext.retrofit
-    implementation rootProject.ext.retrofitGsonConverter
+    implementation libs.retrofit
+    implementation libs.retrofit.gson
 }

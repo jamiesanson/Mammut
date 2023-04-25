@@ -27,35 +27,34 @@ dependencies {
 
     implementation project(":data")
 
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.ktx
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core
 
-    implementation rootProject.ext.appCompat
+    implementation libs.androidx.appcompat
 
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation rootProject.ext.constraintLayout
+    implementation libs.androidx.constraintlayout
 
-    implementation rootProject.ext.glide
-    implementation rootProject.ext.glideTransformations
-    kapt rootProject.ext.glideCompiler
+    implementation libs.glide
+    implementation libs.glide.transformations
+    kapt libs.glide.compiler
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleJava8
+    implementation libs.androidx.lifecycle.runtime
 
     implementation rootProject.ext.anko
 
-    implementation rootProject.ext.dagger
+    implementation libs.dagger
 
-    implementation rootProject.ext.material
+    implementation libs.material
     
-    implementation rootProject.ext.gestureView
+    implementation libs.gestureview
 
-    implementation rootProject.ext.navFragment
-    implementation rootProject.ext.navUI
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
-    api "dev.chrisbanes:insetter-ktx:0.2.0"
+    api libs.insetter.ktx
 }

@@ -31,25 +31,25 @@ dependencies {
     implementation project(":base")
     implementation project(":data")
 
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.ktx
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core
 
-    implementation rootProject.ext.appCompat
-    implementation rootProject.ext.constraintLayout
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
 
-    implementation rootProject.ext.material
+    implementation libs.material
 
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation rootProject.ext.dagger
-    kapt rootProject.ext.daggerCompiler
+    implementation libs.dagger
+    kapt libs.dagger.compiler
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.lifecycle
+    implementation libs.androidx.lifecycle.runtime
 
     implementation rootProject.ext.anko
 
-    implementation rootProject.ext.glide
+    implementation libs.glide
 }
