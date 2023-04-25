@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     namespace "io.github.koss.mammut.instances"
@@ -26,8 +25,4 @@ dependencies {
 
     implementation rootProject.ext.retrofit
     implementation rootProject.ext.retrofitGsonConverter
-}
-
-androidExtensions {
-    experimental = true
 }

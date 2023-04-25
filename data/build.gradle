@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply from: '../keys.gradle'
@@ -59,8 +58,4 @@ dependencies {
 
     implementation rootProject.ext.retrofit
     implementation rootProject.ext.retrofitGsonConverter
-}
-
-androidExtensions {
-    experimental = true
 }

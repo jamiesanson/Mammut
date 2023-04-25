@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -59,8 +58,4 @@ dependencies {
     implementation rootProject.ext.navUI
 
     api "dev.chrisbanes:insetter-ktx:0.2.0"
-}
-
-androidExtensions {
-    experimental = true
 }

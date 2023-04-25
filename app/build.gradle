@@ -17,7 +17,6 @@ buildscript {
 }
 
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.google.gms.google-services'
@@ -152,8 +151,4 @@ dependencies {
     api rootProject.ext.customTabs
 
     api rootProject.ext.workManager
-}
-
-androidExtensions {
-    experimental = true
 }
