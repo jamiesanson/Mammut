@@ -45,8 +45,6 @@ dependencies {
 
     implementation libs.androidx.lifecycle.runtime
 
-    implementation rootProject.ext.anko
-
     implementation libs.dagger
 
     implementation libs.material
