@@ -17,6 +17,7 @@ androidx-work = "2.8.1"
 
 customtab-helper = "3.0.2"
 dagger = "2.45"
+desugar-jdk-libs = "2.0.3"
 exoplayer = "2.18.6"
 firebase-bom = "31.5.0"
 firebase-crashlytics = "2.9.5"
@@ -62,6 +63,8 @@ customtab-helper = { group = "saschpe.android", name = "customtabs", version.ref
 
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-core", version.ref = "exoplayer" }
 exoplayer-ui = { group = "com.google.android.exoplayer", name = "exoplayer-ui", version.ref = "exoplayer" }

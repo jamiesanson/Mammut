@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
+import androidx.core.content.getSystemService
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -15,14 +17,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.postIfMutable
+import io.github.koss.mammut.base.widget.ExpandableFloatingActionButton
 import io.github.koss.mammut.feed.R
-import kotlinx.android.synthetic.main.button_network_indicator.view.*
-import org.jetbrains.anko.connectivityManager
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * General network indicator class - can be attached to any `FrameLayout`-esque layout
@@ -34,13 +34,13 @@ class NetworkIndicator {
     private val isConnectedLiveData: LiveData<Boolean> = MutableLiveData()
 
     fun attach(view: ViewGroup, lifecycleOwner: LifecycleOwner) {
-        if (view.offlineModeButton == null) {
+        if (view.findViewById<View>(R.id.offlineModeButton) == null) {
             view.inflate(R.layout.button_network_indicator, addToRoot = true)
             view.context.registerReceiver(NetworkIndicatorReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
         view.doOnApplyWindowInsets { _, insets, initialState ->
-            view.offlineModeButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            view.findViewById<View>(R.id.offlineModeButton)?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = initialState.margins.top + insets.systemWindowInsetTop
             }
         }
@@ -53,14 +53,15 @@ class NetworkIndicator {
         })
 
         // Observe network state
-        view.offlineModeButton.doOnLayout {
-            view.offlineModeButton.apply {
+        val offlineModeButton = view.findViewById<ExpandableFloatingActionButton>(R.id.offlineModeButton)
+        offlineModeButton.doOnLayout {
+            offlineModeButton.apply {
                 translationY = if (isConnectedLiveData.value != false) {
-                    -(y + height + dip(50))
+                    -(y + height + view.context.dip(50f))
                 } else {
                     0f.also {
-                        view.offlineModeButton.postDelayed({
-                            view.offlineModeButton.collapse(300L)
+                        offlineModeButton.postDelayed({
+                            offlineModeButton.collapse(300L)
                         }, 3000L)
                     }
                 }
@@ -69,21 +70,21 @@ class NetworkIndicator {
             isConnectedLiveData.observe(lifecycleOwner) {
                 when {
                     !it -> {
-                        if (view.offlineModeButton.translationY != 0F) {
+                        if (offlineModeButton.translationY != 0F) {
                             // Animate in from top
-                            view.offlineModeButton.animate()
+                            offlineModeButton.animate()
                                     .translationY(0F)
                                     .setInterpolator(OvershootInterpolator())
                                     .setDuration(300L)
                                     .start()
 
-                            view.offlineModeButton.postDelayed({
-                                view.offlineModeButton.collapse(300L)
+                            offlineModeButton.postDelayed({
+                                offlineModeButton.collapse(300L)
                             }, 3000L)
                         }
 
-                        view.offlineModeButton.apply {
-                            onClick {
+                        offlineModeButton.apply {
+                            setOnClickListener {
                                 if (isExpanded) {
                                     collapse(300)
                                 } else {
@@ -93,10 +94,10 @@ class NetworkIndicator {
                         }
                     }
                     else -> {
-                        if (view.offlineModeButton.translationY == 0F) {
+                        if (offlineModeButton.translationY == 0F) {
                             // Animate out
-                            view.offlineModeButton.animate()
-                                    .translationY(-(view.offlineModeButton.y + view.offlineModeButton.height - 50))
+                            offlineModeButton.animate()
+                                    .translationY(-(offlineModeButton.y + offlineModeButton.height - 50))
                                     .setInterpolator(AccelerateInterpolator())
                                     .setDuration(150L)
                                     .start()
@@ -110,7 +111,7 @@ class NetworkIndicator {
 
     inner class NetworkIndicatorReceiver: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (context?.connectivityManager?.activeNetworkInfo?.isConnected == true) {
+            if (context?.getSystemService<ConnectivityManager>()?.activeNetworkInfo?.isConnected == true) {
                 isConnectedLiveData.postIfMutable(true)
             } else {
                 isConnectedLiveData.postIfMutable(false)

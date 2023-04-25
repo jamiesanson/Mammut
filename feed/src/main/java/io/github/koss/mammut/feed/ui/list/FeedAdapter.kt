@@ -76,13 +76,6 @@ class FeedAdapter(
         }
     }
 
-    override fun onViewRecycled(holder: FeedItemViewHolder) {
-        super.onViewRecycled(holder)
-        when (holder) {
-            is StatusViewHolder -> holder.recycle()
-        }
-    }
-
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FeedModel>() {
             override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean = oldItem.feedId == newItem.feedId

@@ -1,8 +1,6 @@
 package io.github.koss.mammut.feed.ui.media
 
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
@@ -15,25 +13,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.sys1yagi.mastodon4j.api.entity.Attachment
 import com.sys1yagi.mastodon4j.api.entity.GifvAttachment
 import com.sys1yagi.mastodon4j.api.entity.PhotoAttachment
 import com.sys1yagi.mastodon4j.api.entity.VideoAttachment
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.feed.R
+import io.github.koss.mammut.feed.databinding.MediaViewHolderBinding
 import io.github.koss.mammut.feed.util.FeedCallbacks
-import kotlinx.android.synthetic.main.media_view_holder.view.*
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -42,7 +39,9 @@ class MediaViewHolder(
         private val callbacks: FeedCallbacks
 ): RecyclerView.ViewHolder(parent.inflate(R.layout.media_view_holder)) {
 
-    private var exoPlayer: SimpleExoPlayer? = null
+    private var exoPlayer: ExoPlayer? = null
+
+    private val binding = MediaViewHolderBinding.bind(itemView)
 
     fun bind(attachment: Attachment<*>, isSensitive: Boolean) {
         processAttachment(attachment)
@@ -58,18 +57,18 @@ class MediaViewHolder(
             val aspect = attachment.getThumbnailSpec()
 
             with(ConstraintSet()) {
-                clone(constraintLayout)
-                setDimensionRatio(tootImageCardView.id, aspect.toString())
-                applyTo(constraintLayout)
+                clone(binding.constraintLayout)
+                setDimensionRatio(binding.tootImageCardView.id, aspect.toString())
+                applyTo(binding.constraintLayout)
             }
 
             loadAttachment(attachment)
 
-            tootImageCardView.visibility = View.VISIBLE
+            binding.tootImageCardView.visibility = View.VISIBLE
 
-            tootImageCardView.onClick {
-                if (!sensitiveContentFrameLayout.isVisible) {
-                    callbacks.onPhotoClicked(tootImageView, attachment.url)
+            binding.tootImageCardView.setOnClickListener {
+                if (!binding.sensitiveContentFrameLayout.isVisible) {
+                    callbacks.onPhotoClicked(binding.tootImageView, attachment.url)
                 }
             }
         }
@@ -84,71 +83,93 @@ class MediaViewHolder(
     }
 
     private fun loadGifv(gifvAttachment: Attachment<*>) {
-        itemView.tootImageView.visibility = View.GONE
-        itemView.playerView.visibility = View.VISIBLE
-        itemView.playerView.useController = false
+        with (binding) {
+            tootImageView.visibility = View.GONE
+            playerView.visibility = View.VISIBLE
+            playerView.useController = false
 
-        val factory = DefaultDataSourceFactory(itemView.context,
-                Util.getUserAgent(itemView.context, "Mammut"))
+            val factory = DefaultDataSource.Factory(
+                itemView.context,
+                DefaultHttpDataSource.Factory().apply {
+                    setUserAgent(Util.getUserAgent(itemView.context, "Mammut"))
+                }
+            )
 
-        val source = ExtractorMediaSource.Factory(factory)
-                .createMediaSource(Uri.parse(gifvAttachment.url))
+            val source = ProgressiveMediaSource.Factory(factory)
+                .createMediaSource(MediaItem.fromUri(gifvAttachment.url))
 
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context).apply {
-            repeatMode = Player.REPEAT_MODE_ALL
-            playWhenReady = true
+            exoPlayer = ExoPlayer.Builder(itemView.context).build().apply {
+                repeatMode = Player.REPEAT_MODE_ALL
+                playWhenReady = true
+            }
+
+            playerView.player = exoPlayer
+
+            exoPlayer?.apply {
+                setMediaSource(source)
+                prepare()
+            }
         }
-
-        itemView.playerView.player = exoPlayer
-        exoPlayer?.prepare(source)
     }
 
     private fun loadVideo(videoAttachment: Attachment<*>) {
-        itemView.tootImageView.visibility = View.GONE
-        itemView.playerView.visibility = View.VISIBLE
-        itemView.playerView.useController = true
+        with (binding) {
+            tootImageView.visibility = View.GONE
+            playerView.visibility = View.VISIBLE
+            playerView.useController = true
 
-        val factory = DefaultDataSourceFactory(itemView.context,
-                Util.getUserAgent(itemView.context, "Mammut"))
+            val factory = DefaultDataSource.Factory(
+                itemView.context,
+                DefaultHttpDataSource.Factory().apply {
+                    setUserAgent(Util.getUserAgent(itemView.context, "Mammut"))
+                }
+            )
 
-        val source = ExtractorMediaSource.Factory(factory)
-                .createMediaSource(Uri.parse(videoAttachment.url))
+            val source = ProgressiveMediaSource.Factory(factory)
+                .createMediaSource(MediaItem.fromUri(videoAttachment.url))
 
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(itemView.context)
+            exoPlayer = ExoPlayer.Builder(itemView.context).build()
 
-        itemView.playerView.player = exoPlayer
-        exoPlayer?.prepare(source)
+            playerView.player = exoPlayer
+
+            exoPlayer?.apply {
+                setMediaSource(source)
+                prepare()
+            }
+        }
     }
 
     private fun loadImage(photoAttachment: PhotoAttachment) {
-        itemView.tootImageView.visibility = View.VISIBLE
-        itemView.playerView.visibility = View.GONE
+        with (binding) {
+            tootImageView.visibility = View.VISIBLE
+            playerView.visibility = View.GONE
 
-        // Resolve colors
-        @ColorInt val color = ElevationOverlayProvider(itemView.context)
-                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
+            // Resolve colors
+            @ColorInt val color = ElevationOverlayProvider(itemView.context)
+                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.context.dip(8f).toFloat())
 
-        val requestManager = GlideApp.with(itemView)
+            val requestManager = GlideApp.with(itemView)
 
-        // Load attachment
-        requestManager
+            // Load attachment
+            requestManager
                 .load(photoAttachment.url)
                 .thumbnail(
-                        requestManager
-                                .load(photoAttachment.previewUrl)
-                                .thumbnail(
-                                        requestManager
-                                                .load(ColorDrawable(color))
-                                )
-                                .transition(DrawableTransitionOptions.withCrossFade())
+                    requestManager
+                        .load(photoAttachment.previewUrl)
+                        .thumbnail(
+                            requestManager
+                                .load(ColorDrawable(color))
+                        )
+                        .transition(DrawableTransitionOptions.withCrossFade())
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(RequestOptions.bitmapTransform(FitCenter()))
-                .into(itemView.tootImageView)
+                .into(tootImageView)
+        }
     }
 
     private fun setupContentWarning(isSensitive: Boolean) {
-        with(itemView) {
+        with(binding) {
             // If not sensitive content, short circuit
             if (!isSensitive) {
                 sensitiveContentFrameLayout.isVisible = false
@@ -158,7 +179,7 @@ class MediaViewHolder(
 
 
             @ColorInt val color = ElevationOverlayProvider(itemView.context)
-                    .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
+                    .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.context.dip(8).toFloat())
 
             // Initial conditions
             sensitiveContentFrameLayout.isVisible = true
@@ -183,7 +204,7 @@ class MediaViewHolder(
                         duration = 250L
                     }.start()
 
-                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_black_24dp
+                    sensitiveContentToggleButton.setImageResource(R.drawable.ic_visibility_black_24dp)
                 } else {
                     ViewAnimationUtils.createCircularReveal(
                             sensitiveContentFrameLayout,
@@ -198,12 +219,12 @@ class MediaViewHolder(
                         duration = 250L
                     }.start()
 
-                    sensitiveContentToggleButton.imageResource = R.drawable.ic_visibility_off_black_24dp
+                    sensitiveContentToggleButton.setImageResource(R.drawable.ic_visibility_off_black_24dp)
                 }
             }
 
-            sensitiveContentToggleButton.onClick { toggleContentWarningVisibility() }
-            sensitiveContentFrameLayout.onClick { toggleContentWarningVisibility() }
+            sensitiveContentToggleButton.setOnClickListener { toggleContentWarningVisibility() }
+            sensitiveContentFrameLayout.setOnClickListener { toggleContentWarningVisibility() }
         }
     }
 }
