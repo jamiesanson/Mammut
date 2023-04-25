@@ -82,7 +82,7 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
             )
 
             recyclerView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                val actionBarSize = requireContext().dimenAttr(R.attr.actionBarSize)
+                val actionBarSize = requireContext().dimenAttr(com.google.android.material.R.attr.actionBarSize)
                 topMargin = -(insets.systemWindowInsetTop + actionBarSize)
             }
         }

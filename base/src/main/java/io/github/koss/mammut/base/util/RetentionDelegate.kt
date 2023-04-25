@@ -64,7 +64,7 @@ class RetentionDelegate<T>(
         @JvmField
         val FACTORY = object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
                     RetentionViewModel(mutableMapOf()) as T
         }
     }

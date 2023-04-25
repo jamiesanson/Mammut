@@ -18,7 +18,6 @@ import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -184,7 +183,7 @@ class ComposeTootFragment : Fragment(R.layout.compose_toot_fragment) {
         if (binding.toolbar.menu.isNotEmpty()) return
 
         // Inflate delete and send items
-        val colorControlNormal = binding.toolbar.context.colorAttr(R.attr.colorOnSurface)
+        val colorControlNormal = binding.toolbar.context.colorAttr(com.google.android.material.R.attr.colorOnSurface)
         binding.toolbar.inflateMenu(R.menu.menu_compose)
         binding.toolbar.menu.children
             .forEach {
@@ -258,7 +257,7 @@ class ComposeTootFragment : Fragment(R.layout.compose_toot_fragment) {
     }
 
     private fun setupProfileCell(account: Account) {
-        @ColorInt val placeholderColor = requireContext().colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = requireContext().colorAttr(io.github.koss.mammut.base.R.attr.colorPrimaryLight)
 
         Glide.with(requireView())
             .load(account.avatar)

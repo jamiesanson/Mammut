@@ -75,7 +75,7 @@ class SettingsFragment: Fragment(R.layout.settings_fragment) {
 
         // Setup close button
         binding.toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        binding.toolbar.navigationIcon?.setTint(requireContext().colorAttr(R.attr.colorOnSurface))
+        binding.toolbar.navigationIcon?.setTint(requireContext().colorAttr(com.google.android.material.R.attr.colorOnSurface))
 
         // Setup insets
         binding.collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
@@ -176,12 +176,12 @@ class SettingsFragment: Fragment(R.layout.settings_fragment) {
 
             val binding = CardThemeBinding.bind(view)
 
-            binding.cardView.setCardBackgroundColor(view.context.colorAttr(R.attr.colorAccent, resolvedTheme))
+            binding.cardView.setCardBackgroundColor(view.context.colorAttr(com.google.android.material.R.attr.colorAccent, resolvedTheme))
 
             binding.themeNameTextView.text = theme.themeName
 
             (view as MaterialCardView).apply {
-                strokeColor = if (theme == themeEngine.currentTheme) requireContext().colorAttr(R.attr.colorAccent) else ContextCompat.getColor(context, android.R.color.transparent)
+                strokeColor = if (theme == themeEngine.currentTheme) requireContext().colorAttr(com.google.android.material.R.attr.colorAccent) else ContextCompat.getColor(context, android.R.color.transparent)
                 setOnClickListener {
                     viewModel.onThemeChanged(theme)
                 }

@@ -140,7 +140,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                     val aboutAppMarginBottom = (peekHeight * proportion) / 2f
 
                     navigationView.updatePadding(bottom = bottomNavPaddingBottom.toInt())
-                    aboutAppCell.updateLayoutParams<MarginLayoutParams> { bottomMargin = aboutAppMarginBottom.toInt() }
+                    binding.aboutAppCell.updateLayoutParams<MarginLayoutParams> { bottomMargin = aboutAppMarginBottom.toInt() }
 
                     onSheetScrollListener?.onScrolled(proportion)
                 }
@@ -257,7 +257,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     }
 
     private fun setupInstancesRecycler() {
-        @ColorInt val placeholderColor = context.colorAttr(R.attr.colorOnSurface)
+        @ColorInt val placeholderColor = context.colorAttr(com.google.android.material.R.attr.colorOnSurface)
 
         binding.instancesRecyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -319,7 +319,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
 
     private fun renderBottomNavigationContent(state: HomeState) {
         // Load Account
-        @ColorInt val placeholderColor = context.colorAttr(R.attr.colorOnSurface)
+        @ColorInt val placeholderColor = context.colorAttr(com.google.android.material.R.attr.colorOnSurface)
 
         GlideApp.with(this)
                 .load(state.currentUser!!.avatar)

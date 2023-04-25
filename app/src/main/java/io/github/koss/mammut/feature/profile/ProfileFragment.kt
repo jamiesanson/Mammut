@@ -103,7 +103,7 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
 
             binding.toolbar.inflateMenu(R.menu.user_profile_menu)
             binding.toolbar.menu.forEach {
-                it.icon?.setTint(requireContext().colorAttr(R.attr.colorOnSurface))
+                it.icon?.setTint(requireContext().colorAttr(com.google.android.material.R.attr.colorOnSurface))
                 it.icon?.setTintMode(PorterDuff.Mode.SRC_IN)
             }
             binding.toolbar.setOnMenuItemClickListener { item ->
@@ -196,7 +196,7 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
     }
 
     private fun bindAccount(account: Account) {
-        @ColorInt val color = requireContext().colorAttr(R.attr.colorPrimaryTransparency)
+        @ColorInt val color = requireContext().colorAttr(io.github.koss.mammut.base.R.attr.colorPrimaryTransparency)
 
         // Notification image
         GlideApp.with(binding.profileImageView)

@@ -29,8 +29,7 @@ fun Context.colorAttr(@AttrRes id: Int, theme: Resources.Theme = getTheme()): In
 }
 
 
-@Dimension
-fun Context.dimenAttr(@DimenRes id: Int): Int {
+fun Context.dimenAttr(@Dimension id: Int): Int {
     val typedValue = theme.obtainStyledAttributes(intArrayOf(id))
     val size = typedValue.getDimensionPixelSize(0, -1)
     typedValue.recycle()

@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
         // Publish state
         store.subscribe {
             (store.getState() as? HomeState)?.let {
-                stateRelay.offer(it)
+                stateRelay.trySend(it).isSuccess
             }
         }
 
@@ -74,6 +74,8 @@ class HomeViewModel @Inject constructor(
                     event.getContentIfNotHandled()
                     store.dispatch(OnOffscreenItemCountChanged(contents.newCount))
                 }
+
+                else -> {}
             }
         }
 

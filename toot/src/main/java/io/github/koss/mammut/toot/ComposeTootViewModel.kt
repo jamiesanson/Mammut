@@ -4,8 +4,8 @@ import android.content.Context
 import android.text.SpannableStringBuilder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.emoji.EmojiRenderer
@@ -25,9 +25,9 @@ class ComposeTootViewModel @Inject constructor(
 
     val model: LiveData<TootModel> = MutableLiveData()
 
-    val renderedStatus: LiveData<SpannableStringBuilder> = Transformations.switchMap(model, ::renderStatus)
+    val renderedStatus: LiveData<SpannableStringBuilder> =  model.switchMap(::renderStatus)
 
-    val renderedContentWarning: LiveData<SpannableStringBuilder> = Transformations.switchMap(model, ::renderContentWarning)
+    val renderedContentWarning: LiveData<SpannableStringBuilder> = model.switchMap(::renderContentWarning)
 
     val submissionState: LiveData<SubmissionState> = MutableLiveData()
 

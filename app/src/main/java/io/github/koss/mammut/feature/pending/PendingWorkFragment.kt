@@ -38,7 +38,7 @@ class PendingWorkFragment : Fragment(R.layout.pending_work_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        binding.toolbar.navigationIcon?.setTint(view.context.colorAttr(R.attr.colorControlNormal))
+        binding.toolbar.navigationIcon?.setTint(view.context.colorAttr(com.google.android.material.R.attr.colorControlNormal))
 
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()

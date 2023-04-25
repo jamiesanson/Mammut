@@ -179,7 +179,7 @@ class MediaViewHolder(
 
 
             @ColorInt val color = ElevationOverlayProvider(itemView.context)
-                    .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.context.dip(8).toFloat())
+                    .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.context.dip(8f).toFloat())
 
             // Initial conditions
             sensitiveContentFrameLayout.isVisible = true

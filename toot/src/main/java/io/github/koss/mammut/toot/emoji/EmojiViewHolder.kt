@@ -19,7 +19,7 @@ class EmojiViewHolder(
     private val binding = ViewHolderEmojiBinding.bind(itemView)
 
     fun bind(emoji: Emoji, clickCallback: (Emoji) -> Unit) {
-        val color = itemView.context.colorAttr(R.attr.colorOnSurface)
+        val color = itemView.context.colorAttr(com.google.android.material.R.attr.colorOnSurface)
 
         GlideApp.with(itemView)
                 .load(emoji.url)

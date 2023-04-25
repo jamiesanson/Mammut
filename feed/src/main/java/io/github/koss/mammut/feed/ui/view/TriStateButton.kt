@@ -59,7 +59,7 @@ class TriStateButton @JvmOverloads constructor(
         }
 
         binding.imageView.setImageDrawable(activeDrawable)
-        binding.imageView.setColorFilter(context.colorAttr(R.attr.colorAccent))
+        binding.imageView.setColorFilter(context.colorAttr(com.google.android.material.R.attr.colorAccent))
         binding.progressBar.isVisible = false
     }
 
@@ -90,7 +90,7 @@ class TriStateButton @JvmOverloads constructor(
                     width = context.dip(24f)
                 }
                 imageView.setImageDrawable(activeDrawable)
-                imageView.setColorFilter(context.colorAttr(R.attr.colorAccent))
+                imageView.setColorFilter(context.colorAttr(com.google.android.material.R.attr.colorAccent))
             }
         }
 
@@ -105,7 +105,7 @@ class TriStateButton @JvmOverloads constructor(
                     width = context.dip(24f)
                 }
                 imageView.setImageDrawable(inactiveDrawable)
-                imageView.setColorFilter(context.colorAttr(R.attr.colorControlNormalTransparent))
+                imageView.setColorFilter(context.colorAttr(io.github.koss.mammut.base.R.attr.colorControlNormalTransparent))
             }
         }
 

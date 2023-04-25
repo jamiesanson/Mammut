@@ -19,15 +19,16 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import io.github.koss.mammut.base.R
+import java.util.Locale
 
 /**
  * Floating action button containing "Add DrinkTable" text
  */
 class ExpandableFloatingActionButton @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-): LinearLayout(context, attrs, defStyleAttr) {
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     private var animating: Boolean = false
 
@@ -40,14 +41,23 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
 
     init {
         context.theme.obtainStyledAttributes(
-                attrs,
-                R.styleable.ExpandableFloatingActionButton,
-                0, 0).apply {
+            attrs,
+            R.styleable.ExpandableFloatingActionButton,
+            0, 0
+        ).apply {
 
             if (getBoolean(R.styleable.ExpandableFloatingActionButton_small, false)) {
-                LayoutInflater.from(context).inflate(R.layout.button_expandable_fab_small, this@ExpandableFloatingActionButton, true)
+                LayoutInflater.from(context).inflate(
+                    R.layout.button_expandable_fab_small,
+                    this@ExpandableFloatingActionButton,
+                    true
+                )
             } else {
-                LayoutInflater.from(context).inflate(R.layout.button_expandable_fab, this@ExpandableFloatingActionButton, true)
+                LayoutInflater.from(context).inflate(
+                    R.layout.button_expandable_fab,
+                    this@ExpandableFloatingActionButton,
+                    true
+                )
             }
 
             rootView = findViewById(R.id.constraintLayout)
@@ -55,9 +65,14 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
             iconImageView = findViewById(R.id.expandableFabImageView)
 
             try {
-                textView.text = getString(R.styleable.ExpandableFloatingActionButton_buttonText)?.capitalize()
-                val color = getColor(R.styleable.ExpandableFloatingActionButton_buttonAccentColor,
-                        ContextCompat.getColor(context, android.R.color.black))
+                textView.text =
+                    getString(R.styleable.ExpandableFloatingActionButton_buttonText)?.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                    }
+                val color = getColor(
+                    R.styleable.ExpandableFloatingActionButton_buttonAccentColor,
+                    ContextCompat.getColor(context, android.R.color.black)
+                )
 
                 textView.setTextColor(color)
                 iconImageView.setImageDrawable(getDrawable(R.styleable.ExpandableFloatingActionButton_buttonIcon))
@@ -79,7 +94,10 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
         clipToOutline = true
         isClickable = true
         isFocusable = true
-        stateListAnimator = AnimatorInflater.loadStateListAnimator(context, R.animator.expandable_fab_state_list_animator)
+        stateListAnimator = AnimatorInflater.loadStateListAnimator(
+            context,
+            R.animator.expandable_fab_state_list_animator
+        )
     }
 
     fun expand(duration: Long) {
@@ -118,7 +136,7 @@ class ExpandableFloatingActionButton @JvmOverloads constructor(
         }
     }
 
-    inner class CollapseListener: Transition.TransitionListener {
+    inner class CollapseListener : Transition.TransitionListener {
         override fun onTransitionEnd(transition: Transition) {
             animating = false
             transition.removeListener(this)

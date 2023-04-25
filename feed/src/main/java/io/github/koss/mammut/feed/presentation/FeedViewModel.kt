@@ -76,6 +76,7 @@ class FeedViewModel @Inject constructor(
         when (feedType) {
             FeedType.Home -> preferencesRepository.homeFeedLastPositionSeen = position
             FeedType.Local -> preferencesRepository.localFeedLastPositionSeen = position
+            else -> Unit
         }
     }
 
@@ -87,7 +88,7 @@ class FeedViewModel @Inject constructor(
         // Publish state
         store.subscribe {
             (store.getState() as? FeedState)?.let {
-                stateRelay.offer(it)
+                stateRelay.trySend(it)
             }
         }
     }
@@ -118,10 +119,9 @@ class FeedViewModel @Inject constructor(
 
             // Listen to paging events
             launch {
-                for (event in pagingManager.pagingRelay.openSubscription()) {
-                    when (event) {
-                        is ItemStreamed ->
-                            eventRelay.offer(io.github.koss.mammut.feed.presentation.event.ItemStreamed)
+                pagingManager.pagingRelay.collect { event ->
+                    if (event is ItemStreamed) {
+                        eventRelay.trySend(io.github.koss.mammut.feed.presentation.event.ItemStreamed)
                     }
                 }
             }
@@ -130,7 +130,7 @@ class FeedViewModel @Inject constructor(
 
     private fun onNavigationEvent(event: Navigation) {
         viewModelScope.launch {
-            eventRelay.offer(event)
+            eventRelay.trySend(event)
         }
     }
 

@@ -30,7 +30,7 @@ class StreamingSupportedFeedNetworkSource(
     override suspend fun activate() = coroutineScope {
         val streamBuilder = feedType.getStreamingBuilder(client) ?: return@coroutineScope
         val resultHandler = PublicStreamHandler {
-            resultsRelay.offer(it)
+            resultsRelay.trySend(it)
         }
 
         shutdownable = streamBuilder(resultHandler)

@@ -29,12 +29,12 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
     @ColorInt val primaryDarkColor = typedValue.data
 
-    theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true)
+    theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true)
     @ColorInt val lightAccentColor = typedValue.data
 
     Snackbar.make(window.decorView, message, length).apply {
         view.background.setTint(primaryDarkColor)
-        view.findViewById<TextView>(R.id.snackbar_text).setTextColor(lightAccentColor)
+        view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).setTextColor(lightAccentColor)
     }.show()
 }
 
