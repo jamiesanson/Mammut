@@ -41,7 +41,7 @@ ext {
     viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     // Navigation
-    def nav_version = "2.3.0"
+    def nav_version = "2.5.3"
     navFragment = "androidx.navigation:navigation-fragment:$nav_version"
     navUI = "androidx.navigation:navigation-ui:$nav_version"
     navFragmentKtx = "androidx.navigation:navigation-fragment-ktx:$nav_version"

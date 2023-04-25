@@ -6,9 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        // TODO - move this
-        def nav_version = "2.3.0-rc01"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath rootProject.ext.navSafeArgsPlugin
     }
 }
 
@@ -19,6 +17,7 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     namespace "io.github.koss.mammut.feed"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.data.models.InstanceAccessToken
-import kotlinx.android.parcel.RawValue
+import kotlinx.parcelize.RawValue
 
 @Entity
 data class InstanceRegistrationEntity(

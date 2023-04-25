@@ -12,7 +12,7 @@ import com.sys1yagi.mastodon4j.api.method.Accounts
 import com.sys1yagi.mastodon4j.api.method.Public
 import com.sys1yagi.mastodon4j.api.method.Streaming
 import com.sys1yagi.mastodon4j.api.method.Timelines
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 private const val KEY_HOME_FEED = "home"
 private const val KEY_LOCAL_FEED = "local"

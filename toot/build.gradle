@@ -6,13 +6,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        // TODO - move this
-        def nav_version = "2.3.0-rc01"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath rootProject.ext.navSafeArgsPlugin
     }
 }
 
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
@@ -40,7 +39,8 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        viewBinding true
+        buildConfig true
     }
 }
 
