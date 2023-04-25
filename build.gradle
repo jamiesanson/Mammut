@@ -1,6 +1,3 @@
-/**
- * Dependencies declared here are shared across modules.
- */
 ext {
     // App Versions
     versionName = "0.6-beta"

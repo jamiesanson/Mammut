@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
-    implementation project(":base")
-    implementation project(":data")
+    implementation projects.base
+    implementation projects.data
 
     implementation libs.kotlin.stdlib
     implementation libs.androidx.core

@@ -89,14 +89,14 @@ dependencies {
     implementation libs.firebase.crashlytics
     implementation libs.firebase.analytics
 
-    api project(":base")
-    api project(":instances")
-    api project(":toot")
-    api project(":feed")
-    api project(":data")
-    api project(":emoji")
-    api project(":notifications")
-    api project(":search")
+    api projects.base
+    api projects.instances
+    api projects.toot
+    api projects.feed
+    api projects.data
+    api projects.emoji
+    api projects.notifications
+    api projects.search
 
     api libs.kotlin.stdlib
     api libs.kotlinx.coroutines.core

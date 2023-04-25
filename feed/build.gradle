@@ -48,10 +48,10 @@ android {
 dependencies {
     coreLibraryDesugaring libs.desugar.jdk.libs
 
-    implementation project(":base")
-    implementation project(":data")
-    implementation project(":emoji")
-    api project(":paging")
+    implementation projects.base
+    implementation projects.data
+    implementation projects.emoji
+    api projects.paging
 
     implementation libs.androidx.room
 

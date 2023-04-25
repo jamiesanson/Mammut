@@ -44,9 +44,7 @@ android {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation project(":instances")
+    implementation projects.instances
 
     api libs.androidx.work
 
