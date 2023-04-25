@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.data.models.InstanceSearchResult
-import kotlinx.android.synthetic.main.instance_suggestion_layout.view.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
+import io.github.koss.mammut.databinding.InstanceSuggestionLayoutBinding
 
 class InstanceSuggestionAdapter(private val onResultSelected: (InstanceSearchResult) -> Unit) : ListAdapter<InstanceSearchResult, InstanceSuggestionAdapter.ViewHolder>(DIFF_CALLBACK) {
 
@@ -24,10 +23,11 @@ class InstanceSuggestionAdapter(private val onResultSelected: (InstanceSearchRes
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(result: InstanceSearchResult, onClick: () -> Unit) {
-            with (itemView) {
+            val binding = InstanceSuggestionLayoutBinding.bind(itemView)
+            with (binding) {
                 instanceNameTextView.text = result.name
                 usersCountTextView.text = "${result.users} Users"
-                onClick { onClick() }
+                root.setOnClickListener { onClick() }
             }
         }
     }

@@ -16,6 +16,7 @@ import com.github.ajalt.flexadapter.register
 import com.google.android.material.card.MaterialCardView
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.themes.Theme
@@ -36,8 +37,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.color
-import org.jetbrains.anko.colorAttr
 import javax.inject.Inject
 
 class SettingsFragment: Fragment(R.layout.settings_fragment) {
@@ -76,7 +75,7 @@ class SettingsFragment: Fragment(R.layout.settings_fragment) {
 
         // Setup close button
         binding.toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        binding.toolbar.navigationIcon?.setTint(view.colorAttr(R.attr.colorOnSurface))
+        binding.toolbar.navigationIcon?.setTint(requireContext().colorAttr(R.attr.colorOnSurface))
 
         // Setup insets
         binding.collapsingLayout.doOnApplyWindowInsets { layout, insets, _ ->
@@ -177,12 +176,12 @@ class SettingsFragment: Fragment(R.layout.settings_fragment) {
 
             val binding = CardThemeBinding.bind(view)
 
-            binding.cardView.setCardBackgroundColor(resolvedTheme.color(R.attr.colorAccent))
+            binding.cardView.setCardBackgroundColor(view.context.colorAttr(R.attr.colorAccent, resolvedTheme))
 
             binding.themeNameTextView.text = theme.themeName
 
             (view as MaterialCardView).apply {
-                strokeColor = if (theme == themeEngine.currentTheme) colorAttr(R.attr.colorAccent) else ContextCompat.getColor(context, android.R.color.transparent)
+                strokeColor = if (theme == themeEngine.currentTheme) requireContext().colorAttr(R.attr.colorAccent) else ContextCompat.getColor(context, android.R.color.transparent)
                 setOnClickListener {
                     viewModel.onThemeChanged(theme)
                 }

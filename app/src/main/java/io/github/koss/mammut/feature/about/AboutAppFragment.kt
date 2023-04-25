@@ -1,5 +1,6 @@
 package io.github.koss.mammut.feature.about
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.updatePadding
@@ -11,7 +12,6 @@ import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.databinding.AboutAppFragmentBinding
-import org.jetbrains.anko.support.v4.startActivity
 
 class AboutAppFragment: Fragment(R.layout.about_app_fragment) {
 
@@ -21,7 +21,7 @@ class AboutAppFragment: Fragment(R.layout.about_app_fragment) {
         super.onViewCreated(view, savedInstanceState)
         with (binding) {
             ossCell.setOnClickListener {
-                startActivity<OssLicensesMenuActivity>()
+                startActivity(Intent(context, OssLicensesMenuActivity::class.java))
             }
 
             contributorsCell.setOnClickListener {

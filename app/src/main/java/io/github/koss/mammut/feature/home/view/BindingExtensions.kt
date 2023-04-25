@@ -1,16 +1,16 @@
 package io.github.koss.mammut.feature.home.view
 
-import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.transition.doOnEnd
 import androidx.core.view.isVisible
+import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.data.models.domain.FeedType
 import io.github.koss.mammut.databinding.HomeFragmentBinding
-import org.jetbrains.anko.colorAttr
 
 fun HomeFragmentBinding.setupChooser(
         selectedFeedType: FeedType,
@@ -56,7 +56,7 @@ fun HomeFragmentBinding.openChooser() {
         startView = feedTypeButton
         endView = feedChooserCard
 
-        pathMotion = MaterialArcMotion()
+        setPathMotion(MaterialArcMotion())
 
         scrimColor = root.context.colorAttr(R.attr.colorControlNormalTransparent)
 
@@ -75,7 +75,7 @@ fun HomeFragmentBinding.closeChooser() {
         endView = feedTypeButton
         startView = feedChooserCard
 
-        pathMotion = MaterialArcMotion()
+        setPathMotion(MaterialArcMotion())
 
         scrimColor = root.context.colorAttr(R.attr.colorControlNormalTransparent)
     }
@@ -101,6 +101,7 @@ fun HomeFragmentBinding.bindFeedTypeButton(feedType: FeedType) {
                 setIconResource(R.drawable.ic_public_black_24dp)
                 setText(R.string.federated_feed_title)
             }
+            else -> {}
         }
     }
 }

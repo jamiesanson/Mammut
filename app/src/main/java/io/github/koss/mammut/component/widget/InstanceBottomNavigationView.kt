@@ -1,14 +1,20 @@
 package io.github.koss.mammut.component.widget
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.TextView
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.DimenRes
+import androidx.annotation.Px
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -17,6 +23,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.window.layout.WindowMetricsCalculator
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.github.ajalt.flexadapter.FlexAdapter
@@ -29,18 +36,24 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.BuildConfig
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.anko.colorAttr
+import io.github.koss.mammut.base.anko.dimen
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.behaviour
 import io.github.koss.mammut.data.extensions.fullAcct
 import io.github.koss.mammut.data.models.Account
 import io.github.koss.mammut.databinding.InstanceBottomNavigationViewBinding
 import io.github.koss.mammut.feature.home.presentation.state.HomeState
-import kotlinx.android.synthetic.main.instance_bottom_navigation_view.view.*
-import kotlinx.coroutines.*
-import org.jetbrains.anko.colorAttr
-import org.jetbrains.anko.dimen
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.displayMetrics
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class InstanceBottomNavigationView @JvmOverloads constructor(
         context: Context,
@@ -52,7 +65,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
 
     private var peekInsetAddition: Int  = 0
 
-    private var peekJob: Job = Job()
+    private var peekJob = Job()
 
     private var currentState: HomeState? = null
     private var initialised: Boolean = false
@@ -77,11 +90,12 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                 when (behaviour<BottomSheetBehavior<View>>()?.state) {
                     BottomSheetBehavior.STATE_EXPANDED -> collapse()
                     BottomSheetBehavior.STATE_COLLAPSED -> expand()
+                    else -> {}
                 }
             }
         }
 
-        val cornerRadius = dip(12f).toFloat()
+        val cornerRadius = context.dip(12f).toFloat()
 
         shapeAppearanceModel = ShapeAppearanceModel.Builder()
                 .setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius)
@@ -111,8 +125,9 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                     if (peekJob.children.any { it.isActive }) {
                         // Check to see that the user hasn't tried to swipe up the bottom sheet
                         val peekHeight = behaviour<BottomSheetBehavior<View>>()?.peekHeight
-                        val screenHeight = view.context.displayMetrics.heightPixels
-                        if (peekHeight != null && (screenHeight - view.y) > (view.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
+                        val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(view.context as Activity)
+                        val screenHeight = metrics.bounds.height()
+                        if (peekHeight != null && (screenHeight - view.y) > (view.context.dimen(R.dimen.profile_cell_height) + peekHeight + peekInsetAddition)) {
                             // Reset peak height and re-enable dimming
                             resetPeek()
                         } else {
@@ -169,14 +184,15 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun peekCurrentUser() {
         // Change the peek height of the bottom navigation, then change it back
         peekJob.cancelChildren()
 
         GlobalScope.launch(peekJob) {
             delay(200L)
-            val startingHeight = dimen(R.dimen.default_navigation_peek_height)
-            val additionalHeight = dimen(R.dimen.profile_cell_height)
+            val startingHeight = context.dimen(R.dimen.default_navigation_peek_height)
+            val additionalHeight = context.dimen(R.dimen.profile_cell_height)
 
             withContext(Dispatchers.Main) {
                 // Disable interactions
@@ -215,7 +231,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
                     // Reset the peek height of the bottom sheet
                     GlobalScope.launch(peekJob) {
                         withContext(Dispatchers.Main) {
-                            behaviour<BottomSheetBehavior<View>>()?.peekHeight = dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
+                            behaviour<BottomSheetBehavior<View>>()?.peekHeight = context.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
                         }
                     }
                 }
@@ -230,7 +246,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
 
     private fun resetPeek() {
         // Reset peak height and re-enable dimming
-        val peekHeight = dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
+        val peekHeight = context.dimen(R.dimen.default_navigation_peek_height) + peekInsetAddition
 
         if (behaviour<BottomSheetBehavior<View>>()?.peekHeight != peekHeight) {
             behaviour<BottomSheetBehavior<View>>()
@@ -241,7 +257,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     }
 
     private fun setupInstancesRecycler() {
-        @ColorInt val placeholderColor = colorAttr(R.attr.colorOnSurface)
+        @ColorInt val placeholderColor = context.colorAttr(R.attr.colorOnSurface)
 
         binding.instancesRecyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -260,7 +276,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
             register<Pair<Account, Boolean>>(layout = R.layout.card_account) { (account, selected), view, index ->
                 (view as MaterialCardView).apply {
                     if (selected) {
-                        strokeWidth = dip(2)
+                        strokeWidth = context.dip(2f)
                     } else {
                         strokeWidth = 0
                         setOnClickListener {
@@ -303,7 +319,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
 
     private fun renderBottomNavigationContent(state: HomeState) {
         // Load Account
-        @ColorInt val placeholderColor = colorAttr(R.attr.colorOnSurface)
+        @ColorInt val placeholderColor = context.colorAttr(R.attr.colorOnSurface)
 
         GlideApp.with(this)
                 .load(state.currentUser!!.avatar)
@@ -399,7 +415,7 @@ class InstanceBottomNavigationView @JvmOverloads constructor(
     private class BottomNavOutlineProvider: ViewOutlineProvider() {
 
         override fun getOutline(view: View?, outline: Outline?) {
-            outline?.setRoundRect(0,0, view!!.width, (view.height + view.context.dip(12)), view.context.dip(12).toFloat())
+            outline?.setRoundRect(0,0, view!!.width, (view.height + view.context.dip(12f)), view.context.dip(12f).toFloat())
         }
     }
 }
