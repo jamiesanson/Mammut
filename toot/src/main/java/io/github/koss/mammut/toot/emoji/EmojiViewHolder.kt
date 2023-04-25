@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.sys1yagi.mastodon4j.api.entity.Emoji
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.toot.R
 import io.github.koss.mammut.toot.databinding.ViewHolderEmojiBinding
-import org.jetbrains.anko.colorAttr
 
 class EmojiViewHolder(
         itemView: View

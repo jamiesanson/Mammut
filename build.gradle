@@ -10,9 +10,6 @@ ext {
     minSdkVersion = 23
     compileSdkVersion = 33
     targetSdkVersion = 33
-
-    // Anko - TODO: Remove
-    anko = "org.jetbrains.anko:anko:0.10.8"
 }
 
 buildscript {

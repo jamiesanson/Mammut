@@ -1,8 +1,13 @@
 package io.github.koss.mammut.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.work.*
+import androidx.lifecycle.map
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.Operation
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.await
 import io.github.koss.mammut.data.extensions.getUniqueWorkTag
 import io.github.koss.mammut.data.extensions.workTag
 import io.github.koss.mammut.data.models.Status
@@ -27,7 +32,7 @@ class TootRepository(
      * of the status.
      */
     fun getStatusStateLive(status: Status): LiveData<Pair<Status, StatusState>> =
-            Transformations.map(WorkManager.getInstance().getWorkInfosByTagLiveData(status.workTag)) {
+            WorkManager.getInstance().getWorkInfosByTagLiveData(status.workTag).map {
                 status.copy(
                         isFavourited = when {
                             it.containsSuccessfulBoost(status) -> true

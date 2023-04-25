@@ -17,6 +17,8 @@ import androidx.core.view.children
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +32,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.sys1yagi.mastodon4j.api.entity.Emoji
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import io.github.koss.mammut.base.dagger.SubcomponentFactory
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.util.findSubcomponentFactory
 import io.github.koss.mammut.base.util.observe
@@ -46,14 +48,11 @@ import io.github.koss.mammut.toot.model.SubmissionState
 import io.github.koss.mammut.toot.model.TootModel
 import io.github.koss.mammut.toot.model.iconRes
 import io.github.koss.mammut.toot.view.update
-import org.jetbrains.anko.colorAttr
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import javax.inject.Inject
 
 const val MAX_TOOT_LENGTH = 500
 
-class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
+class ComposeTootFragment : Fragment(R.layout.compose_toot_fragment) {
 
     private val binding by viewLifecycleLazy { ComposeTootFragmentBinding.bind(requireView()) }
 
@@ -70,20 +69,22 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
      */
     private val bottomMenuItems: List<Pair<ImageView, View>>
         get() = listOf(
-                    binding.insertEmojiButton to binding.emojiListRecyclerView,
-                    binding.privacyButton to binding.privacyLayout
-            )
+            binding.insertEmojiButton to binding.emojiListRecyclerView,
+            binding.privacyButton to binding.privacyLayout
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         findSubcomponentFactory()
-                .buildSubcomponent<ComposeTootModule, ComposeTootComponent>(ComposeTootModule(
-                        accessToken = args.accessToken,
-                        instanceName = args.instanceName
-                ))
-                .inject(this)
+            .buildSubcomponent<ComposeTootModule, ComposeTootComponent>(
+                ComposeTootModule(
+                    accessToken = args.accessToken,
+                    instanceName = args.instanceName
+                )
+            )
+            .inject(this)
 
-        viewModel = ViewModelProvider(context as FragmentActivity, factory).get(args.accessToken, ComposeTootViewModel::class.java)
+        viewModel = ViewModelProvider(context as FragmentActivity, factory)[args.accessToken, ComposeTootViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -129,10 +130,10 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
     }
 
     private fun onInputTextChanged(inputText: Spannable) =
-            binding.inputEditText.update(inputText)
+        binding.inputEditText.update(inputText)
 
     private fun onContentWarningChanged(contentWarning: Spannable) =
-            binding.contentWarningEditText.update(contentWarning)
+        binding.contentWarningEditText.update(contentWarning)
 
     private fun onSubmissionStateChanged(submissionState: SubmissionState?) {
         submissionState ?: return
@@ -147,6 +148,7 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
 
                 close()
             }
+
             submissionState.error != null -> {
                 // Show error
                 Snackbar.make(requireView(), submissionState.error, Snackbar.LENGTH_LONG)
@@ -160,22 +162,21 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
 
     private fun setupTootButton() {
         updateTootButton()
-        binding.tootButton.onClick {
+        binding.tootButton.setOnClickListener {
             viewModel.onSendTootClicked()
         }
     }
 
     private fun setupInputEditText() {
-        binding.inputEditText.textChangedListener {
-            afterTextChanged { text ->
-                val length = text?.length ?: 0
+        binding.inputEditText.doAfterTextChanged { text ->
+            val length = text?.length ?: 0
 
-                // Ensure counter is displayed at 90% of the MAX_TOOT_LENGTH
-                binding.inputTextInputLayout.isCounterEnabled = length.toFloat() / MAX_TOOT_LENGTH.toFloat() >= 0.9
+            // Ensure counter is displayed at 90% of the MAX_TOOT_LENGTH
+            binding.inputTextInputLayout.isCounterEnabled =
+                length.toFloat() / MAX_TOOT_LENGTH.toFloat() >= 0.9
 
-                updateTootButton()
-                viewModel.onStatusChanged(text?.toString() ?: "")
-            }
+            updateTootButton()
+            viewModel.onStatusChanged(text?.toString() ?: "")
         }
     }
 
@@ -186,18 +187,18 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
         val colorControlNormal = binding.toolbar.context.colorAttr(R.attr.colorOnSurface)
         binding.toolbar.inflateMenu(R.menu.menu_compose)
         binding.toolbar.menu.children
-                .forEach {
-                    it.icon.setTint(colorControlNormal)
-                    it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
-                }
+            .forEach {
+                it.icon?.setTint(colorControlNormal)
+                it.icon?.setTintMode(PorterDuff.Mode.SRC_IN)
+            }
         binding.toolbar.setOnMenuItemClickListener(::onMenuItemClicked)
 
         // Set up back button
         val navigationIcon = binding.toolbar.context
-                .getDrawable(R.drawable.ic_close_black_24dp)?.apply {
-                    setTint(colorControlNormal)
-                    setTintMode(PorterDuff.Mode.SRC_IN)
-                }
+            .getDrawable(R.drawable.ic_close_black_24dp)?.apply {
+                setTint(colorControlNormal)
+                setTintMode(PorterDuff.Mode.SRC_IN)
+            }
         binding.toolbar.navigationIcon = navigationIcon
         binding.toolbar.setNavigationOnClickListener {
             close()
@@ -208,11 +209,13 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
         binding.emojiListRecyclerView.adapter = EmojiAdapter {
             val contentWarningFocused = binding.contentWarningEditText.hasFocus()
             viewModel.onEmojiAdded(
-                    emoji = it,
-                    index = (if (contentWarningFocused) binding.contentWarningEditText else binding.inputEditText).selectionStart,
-                    isContentWarningFocussed = contentWarningFocused)
+                emoji = it,
+                index = (if (contentWarningFocused) binding.contentWarningEditText else binding.inputEditText).selectionStart,
+                isContentWarningFocussed = contentWarningFocused
+            )
         }
-        binding.emojiListRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3, RecyclerView.HORIZONTAL, false)
+        binding.emojiListRecyclerView.layoutManager =
+            GridLayoutManager(requireContext(), 3, RecyclerView.HORIZONTAL, false)
     }
 
     private fun setupPrivacySelector() {
@@ -222,7 +225,7 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
     }
 
     private fun setupContentWarnings() {
-        binding.contentWarningButton.onClick {
+        binding.contentWarningButton.setOnClickListener {
             TransitionManager.beginDelayedTransition(view as ViewGroup, AutoTransition().apply {
                 duration = 200L
             })
@@ -240,11 +243,9 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
                 binding.contentWarningEditText.requestFocus()
             }
         }
-        binding.contentWarningEditText.textChangedListener {
-            afterTextChanged { text ->
-                if (binding.contentWarningLayout.isVisible) {
-                    viewModel.onContentWarningChanged(text?.toString())
-                }
+        binding.contentWarningEditText.doAfterTextChanged { text ->
+            if (binding.contentWarningLayout.isVisible) {
+                viewModel.onContentWarningChanged(text?.toString())
             }
         }
     }
@@ -257,18 +258,18 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
     }
 
     private fun setupProfileCell(account: Account) {
-        @ColorInt val placeholderColor = requireView().colorAttr(R.attr.colorPrimaryLight)
+        @ColorInt val placeholderColor = requireContext().colorAttr(R.attr.colorPrimaryLight)
 
         Glide.with(requireView())
-                .load(account.avatar)
-                .thumbnail(
-                        Glide.with(requireView())
-                                .load(ColorDrawable(placeholderColor))
-                                .apply(RequestOptions.circleCropTransform())
-                )
-                .apply(RequestOptions.circleCropTransform())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(binding.profileImageView)
+            .load(account.avatar)
+            .thumbnail(
+                Glide.with(requireView())
+                    .load(ColorDrawable(placeholderColor))
+                    .apply(RequestOptions.circleCropTransform())
+            )
+            .apply(RequestOptions.circleCropTransform())
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .into(binding.profileImageView)
 
         binding.displayNameTextView.text = account.displayName
         binding.usernameTextView.text = account.fullAcct(args.instanceName)
@@ -281,11 +282,11 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
 
         // Make every other content view invisible then toggle the visibility of this one
         bottomMenuItems
-                .filterNot { it.first == imageViewClicked }
-                .forEach {
-                    it.first.isSelected = false
-                    it.second.isVisible = false
-                }
+            .filterNot { it.first == imageViewClicked }
+            .forEach {
+                it.first.isSelected = false
+                it.second.isVisible = false
+            }
 
         contentView.isVisible = !contentView.isVisible
         imageViewClicked.isSelected = !imageViewClicked.isSelected
@@ -296,19 +297,20 @@ class ComposeTootFragment: Fragment(R.layout.compose_toot_fragment) {
     }
 
     private fun onMenuItemClicked(menuItem: MenuItem): Boolean =
-            when (menuItem.itemId) {
-                R.id.delete_item -> {
-                    if (viewModel.hasBeenModified) {
-                        AlertDialog.Builder(requireContext())
-                                .setMessage(R.string.start_toot_again)
-                                .setPositiveButton(R.string.start_again) { _, _ -> viewModel.deleteTootContents() }
-                                .setNegativeButton(R.string.cancel) { _, _ -> }
-                                .show()
-                    }
-                    true
+        when (menuItem.itemId) {
+            R.id.delete_item -> {
+                if (viewModel.hasBeenModified) {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage(R.string.start_toot_again)
+                        .setPositiveButton(R.string.start_again) { _, _ -> viewModel.deleteTootContents() }
+                        .setNegativeButton(R.string.cancel) { _, _ -> }
+                        .show()
                 }
-                else -> false
+                true
             }
+
+            else -> false
+        }
 
     private fun close() {
         findNavController().popBackStack()

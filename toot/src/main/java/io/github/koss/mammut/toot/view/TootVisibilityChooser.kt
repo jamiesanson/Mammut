@@ -2,17 +2,15 @@ package io.github.koss.mammut.toot.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.sys1yagi.mastodon4j.api.entity.Status
 import io.github.koss.mammut.toot.R
+import io.github.koss.mammut.toot.databinding.LayoutPrivacyBinding
 import io.github.koss.mammut.toot.model.iconRes
-import kotlinx.android.synthetic.main.layout_privacy.view.*
-import kotlinx.android.synthetic.main.layout_privacy_cell.view.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class TootVisibilityChooser @JvmOverloads constructor(
         context: Context,
@@ -20,8 +18,10 @@ class TootVisibilityChooser @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
+    private val binding: LayoutPrivacyBinding
+
     init {
-        View.inflate(context, R.layout.layout_privacy, this)
+        binding = LayoutPrivacyBinding.inflate(LayoutInflater.from(context), this, true)
         bind()
     }
 
@@ -37,16 +37,16 @@ class TootVisibilityChooser @JvmOverloads constructor(
 
     private val cells
         get() = listOf(
-                privacyLayout.publicCell,
-                privacyLayout.unlistedCell,
-                privacyLayout.followersOnlyCell,
-                privacyLayout.directCell
+                binding.publicCell,
+                binding.unlistedCell,
+                binding.followersOnlyCell,
+                binding.directCell
         )
 
     private val listeners = arrayListOf<(Status.Visibility) -> Unit>()
 
     var selectedVisibility: Status.Visibility
-        get() = cells.zip(config).find { it.first.isSelected }!!.second.visibilityValue
+        get() = cells.zip(config).find { it.first.visibilityLayout.isSelected }!!.second.visibilityValue
         set(value) {
             if (!value.isAlreadySelected) {
                 TransitionManager.beginDelayedTransition(this, AutoTransition().apply {
@@ -68,7 +68,7 @@ class TootVisibilityChooser @JvmOverloads constructor(
                 iconImageView.setImageResource(config.visibilityValue.iconRes)
                 titleTextView.setText(config.titleId)
                 subtitleTextView.setText(config.subtitleId)
-                onClick {
+                setOnClickListener {
                     selectedVisibility = config.visibilityValue
                 }
             }

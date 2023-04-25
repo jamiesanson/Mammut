@@ -73,7 +73,5 @@ dependencies {
     implementation libs.androidx.lifecycle.runtime
     implementation libs.androidx.lifecycle.livedata
 
-    implementation rootProject.ext.anko
-
     implementation libs.glide
 }
