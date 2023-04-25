@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    namespace "io.github.koss.mammut.instances"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

@@ -25,6 +25,8 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
+    namespace "io.github.koss.mammut"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "io.github.koss.mammut"
@@ -81,8 +83,6 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
 
     implementation platform(rootProject.ext.firebaseBom)

@@ -7,6 +7,8 @@ apply plugin: 'kotlin-kapt'
 apply from: '../keys.gradle'
 
 android {
+    namespace "io.github.koss.mammut.data"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

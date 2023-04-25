@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace "io.github.koss.mammut.emoji"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

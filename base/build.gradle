@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace "io.github.koss.mammut.base"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

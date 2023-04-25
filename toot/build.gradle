@@ -19,6 +19,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
+    namespace "io.github.koss.mammut.toot"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
