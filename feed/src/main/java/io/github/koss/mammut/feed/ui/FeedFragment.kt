@@ -143,6 +143,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment), FeedCallbacks {
                         onReselected()
                     }
                 }
+
+                else -> {}
             }
         })
     }

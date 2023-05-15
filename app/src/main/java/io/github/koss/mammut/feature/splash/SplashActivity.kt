@@ -1,13 +1,18 @@
 package io.github.koss.mammut.feature.splash
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.github.koss.mammut.repo.RegistrationRepository
 import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.multiinstance.MultiInstanceActivity
 import io.github.koss.mammut.feature.joininstance.JoinInstanceActivity
-import kotlinx.coroutines.*
-import org.jetbrains.anko.startActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
@@ -26,9 +31,9 @@ class SplashActivity : AppCompatActivity(), CoroutineScope by GlobalScope {
 
             withContext(Dispatchers.Main) {
                 if (completedRegistrations.isNotEmpty()) {
-                    startActivity<MultiInstanceActivity>()
+                    startActivity(Intent(this@SplashActivity, MultiInstanceActivity::class.java))
                 } else {
-                    startActivity<JoinInstanceActivity>()
+                    startActivity(Intent(this@SplashActivity, JoinInstanceActivity::class.java))
                 }
 
                 finish()

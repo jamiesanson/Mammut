@@ -14,12 +14,8 @@ import io.github.koss.mammut.feed.ui.broken.BrokenTimelineViewHolder
 import io.github.koss.mammut.feed.ui.status.StatusViewHolder
 import io.github.koss.mammut.feed.util.FeedCallbacks
 import io.github.koss.paging.event.PagingRelay
-import kotlinx.android.extensions.LayoutContainer
 
-open class FeedItemViewHolder(
-    itemView: View,
-    override val containerView: View = itemView
-): RecyclerView.ViewHolder(itemView), LayoutContainer
+open class FeedItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
 class FeedAdapter(
         private val viewModelProvider: ViewModelProvider,
@@ -73,13 +69,6 @@ class FeedAdapter(
         super.onViewDetachedFromWindow(holder)
         when (holder) {
             is StatusViewHolder -> holder.detach()
-        }
-    }
-
-    override fun onViewRecycled(holder: FeedItemViewHolder) {
-        super.onViewRecycled(holder)
-        when (holder) {
-            is StatusViewHolder -> holder.recycle()
         }
     }
 

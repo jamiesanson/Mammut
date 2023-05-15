@@ -1,2 +1,14 @@
-include ':app', ':instances', ':toot', ':data', ':base', ':notifications', ':paging', ':feed', ':emoji'
+rootProject.name = "Mammut"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+include ':app'
+include ':instances'
+include ':toot'
+include ':data'
+include ':base'
+include ':notifications'
+include ':paging'
+include ':feed'
+include ':emoji'
 include ':search'

@@ -1,12 +1,14 @@
 apply plugin: 'com.android.library'
 
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 apply from: '../keys.gradle'
 
 android {
+    namespace "io.github.koss.mammut.data"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -27,38 +29,35 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation projects.instances
 
-    implementation project(":instances")
+    api libs.androidx.work
 
-    api rootProject.ext.workManager
+    implementation libs.androidx.room
+    kapt libs.androidx.room.compiler
 
-    implementation rootProject.ext.room
-    implementation rootProject.ext.roomKtx
-    kapt rootProject.ext.roomCompiler
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.androidx.lifecycle.runtime
+    implementation libs.androidx.lifecycle.livedata
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleLivedataKtx
+    implementation libs.kotlinx.coroutines.core
 
-    implementation rootProject.ext.coroutinesCore
-
-    implementation rootProject.ext.retrofit
-    implementation rootProject.ext.retrofitGsonConverter
-}
-
-androidExtensions {
-    experimental = true
+    implementation libs.retrofit
+    implementation libs.retrofit.gson
 }

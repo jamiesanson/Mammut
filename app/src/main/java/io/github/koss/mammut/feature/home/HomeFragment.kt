@@ -186,6 +186,7 @@ class HomeFragment: Fragment(R.layout.home_fragment), FeedTypeProvider, FullScre
                     FeedType.Home -> it.title = getString(R.string.home_feed_label)
                     FeedType.Local -> it.title = getString(R.string.local_feed_label)
                     FeedType.Federated -> it.title = getString(R.string.federated_feed_label)
+                    else -> {}
                 }
             }
         }

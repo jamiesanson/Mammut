@@ -95,8 +95,8 @@ class StatusViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
     private fun <T> LiveData<T>.asFlow() = channelFlow {
-        offer(value)
-        val observer = Observer<T> { t -> offer(t) }
+        trySend(value)
+        val observer = Observer<T> { t -> trySend(t) }
         withContext(Dispatchers.Main) {
             observeForever(observer)
         }

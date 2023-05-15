@@ -6,19 +6,18 @@ buildscript {
         jcenter()
     }
     dependencies {
-        // TODO - move this
-        def nav_version = "2.3.0-rc01"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath libs.androidx.navigation.safeargs
     }
 }
 
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
+    namespace "io.github.koss.mammut.feed"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -33,12 +32,12 @@ android {
     compileOptions {
         coreLibraryDesugaringEnabled true
 
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -47,56 +46,42 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    coreLibraryDesugaring libs.desugar.jdk.libs
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
+    implementation projects.base
+    implementation projects.data
+    implementation projects.emoji
+    api projects.paging
 
-    implementation project(":base")
-    implementation project(":data")
-    implementation project(":emoji")
-    api project(":paging")
+    implementation libs.androidx.room
 
-    implementation rootProject.ext.room
-    implementation rootProject.ext.roomKtx
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core
 
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.ktx
+    implementation libs.randux
 
-    implementation rootProject.ext.randux
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
 
-    implementation rootProject.ext.appCompat
-    implementation rootProject.ext.constraintLayout
+    implementation libs.material
 
-    implementation rootProject.ext.material
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
-    implementation rootProject.ext.navFragment
-    implementation rootProject.ext.navUI
-    implementation rootProject.ext.navFragmentKtx
-    implementation rootProject.ext.navUIKtx
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
+    implementation libs.dagger
+    kapt libs.dagger.compiler
 
-    implementation rootProject.ext.dagger
-    kapt rootProject.ext.daggerCompiler
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.androidx.lifecycle.runtime
+    implementation libs.androidx.lifecycle.livedata
+    implementation libs.androidx.lifecycle.viewmodel
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleKtx
-    implementation rootProject.ext.lifecycleJava8
-    implementation rootProject.ext.lifecycleLivedataKtx
+    implementation libs.exoplayer.core
+    implementation libs.exoplayer.ui
 
-    implementation rootProject.ext.viewModelKtx
-
-    implementation rootProject.ext.anko
-
-    implementation rootProject.ext.exoCore
-    implementation rootProject.ext.exoUi
-
-    implementation rootProject.ext.glide
-}
-
-androidExtensions {
-    experimental = true
+    implementation libs.glide
 }

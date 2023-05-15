@@ -41,12 +41,13 @@ class DefaultPagingManager<LocalModel, NetworkModel, DomainModel>(
         activatedJob = launch {
             // Observe events
             launch {
-                for (event in pagingRelay.openSubscription()) {
+                pagingRelay.collect { event ->
                     launch(loadParentJob) {
                         when (event) {
                             NoDataDisplayed -> loadFresh()
                             DataStartReached -> loadAtFront()
                             DataEndReached -> loadAtEnd()
+                            else -> {}
                         }
                     }
                 }

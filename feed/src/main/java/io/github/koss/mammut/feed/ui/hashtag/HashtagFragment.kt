@@ -2,8 +2,6 @@ package io.github.koss.mammut.feed.ui.hashtag
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -21,7 +19,6 @@ import io.github.koss.mammut.feed.dagger.FeedModule
 import io.github.koss.mammut.feed.databinding.HashtagFragmentBinding
 import io.github.koss.mammut.feed.ui.FeedFragment
 import io.github.koss.mammut.feed.ui.FeedFragmentArgs
-import kotlinx.android.synthetic.main.hashtag_fragment.*
 import javax.inject.Inject
 
 class HashtagFragment: Fragment(R.layout.hashtag_fragment) {
@@ -75,7 +72,7 @@ class HashtagFragment: Fragment(R.layout.hashtag_fragment) {
         }
 
         childFragmentManager.beginTransaction()
-                .replace(feedFragmentContainer.id, feedFragment)
+                .replace(binding.feedFragmentContainer.id, feedFragment)
                 .commitNow()
     }
 }

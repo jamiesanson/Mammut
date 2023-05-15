@@ -18,8 +18,6 @@ import io.github.koss.mammut.base.dagger.SubcomponentFactory
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.navigation.NavigationHub
 import io.github.koss.mammut.base.photoviewer.FullScreenPhotoViewer
-import org.jetbrains.anko.contentView
-import org.jetbrains.anko.textColor
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -31,12 +29,12 @@ fun Activity.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     theme.resolveAttribute(R.attr.colorPrimaryLight, typedValue, true)
     @ColorInt val primaryDarkColor = typedValue.data
 
-    theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true)
+    theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true)
     @ColorInt val lightAccentColor = typedValue.data
 
-    Snackbar.make(contentView!!, message, length).apply {
+    Snackbar.make(window.decorView, message, length).apply {
         view.background.setTint(primaryDarkColor)
-        view.findViewById<TextView>(R.id.snackbar_text).textColor = lightAccentColor
+        view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).setTextColor(lightAccentColor)
     }.show()
 }
 

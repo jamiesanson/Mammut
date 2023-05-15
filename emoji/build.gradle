@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace "io.github.koss.mammut.emoji"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -11,23 +12,23 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation rootProject.ext.kotlinRuntime
+    implementation libs.kotlin.stdlib
 
-    implementation rootProject.ext.coroutinesCore
+    implementation libs.kotlinx.coroutines.core
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.glide
+    implementation libs.glide
 }

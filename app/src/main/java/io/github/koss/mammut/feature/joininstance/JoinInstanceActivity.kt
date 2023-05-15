@@ -18,20 +18,17 @@ import io.github.koss.mammut.extension.applicationComponent
 import io.github.koss.mammut.feature.base.InputError
 import io.github.koss.mammut.feature.joininstance.dagger.JoinInstanceModule
 import io.github.koss.mammut.feature.joininstance.suggestion.InstanceSuggestionPopupWindow
-import kotlinx.android.synthetic.main.activity_join_instance.*
-import org.jetbrains.anko.contentView
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 import androidx.browser.customtabs.CustomTabsIntent
 import io.github.koss.mammut.R
 import io.github.koss.mammut.base.BaseActivity
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.util.observe
 import io.github.koss.mammut.base.util.provideViewModel
 import io.github.koss.mammut.base.util.snackbar
+import io.github.koss.mammut.databinding.ActivityJoinInstanceBinding
 import io.github.koss.mammut.feature.multiinstance.MultiInstanceActivity
 import io.github.koss.mammut.feature.webview.MammutWebViewFallback
-import org.jetbrains.anko.colorAttr
 import saschpe.android.customtabs.CustomTabsHelper
 
 class JoinInstanceActivity: BaseActivity() {
@@ -41,6 +38,8 @@ class JoinInstanceActivity: BaseActivity() {
     @Inject lateinit var viewModelFactory: MammutViewModelFactory
 
     private lateinit var resultsPopupWindow: InstanceSuggestionPopupWindow
+
+    private lateinit var binding: ActivityJoinInstanceBinding
 
     private var resultRecentlySelected: Boolean = false
 
@@ -52,7 +51,8 @@ class JoinInstanceActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_join_instance)
+        binding = ActivityJoinInstanceBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = provideViewModel(viewModelFactory)
         resultsPopupWindow = InstanceSuggestionPopupWindow(this, ::onResultSelected)
     }
@@ -60,7 +60,7 @@ class JoinInstanceActivity: BaseActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        instanceUrlTextInputLayout.editText?.addTextChangedListener(object : TextWatcher {
+        binding.instanceUrlTextInputLayout.editText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(query: Editable?) {
                 query?.let {
                     if (!resultRecentlySelected) {
@@ -75,10 +75,10 @@ class JoinInstanceActivity: BaseActivity() {
 
         })
 
-        joinInstanceButton.onClick {
-            if (instanceUrlTextInputLayout.editText?.text?.isEmpty() == true) {
+        binding.joinInstanceButton.setOnClickListener {
+            if (binding.instanceUrlTextInputLayout.editText?.text?.isEmpty() == true) {
                 showInputError(getString(R.string.error_empty_url))
-                return@onClick
+                return@setOnClickListener
             }
 
             processLogin()
@@ -105,7 +105,7 @@ class JoinInstanceActivity: BaseActivity() {
             registrationCompleteEvent.observe(this@JoinInstanceActivity) {
                 if (!it.hasBeenHandled) {
                     it.getContentIfNotHandled()
-                    startActivity<MultiInstanceActivity>()
+                    startActivity(Intent(this@JoinInstanceActivity, MultiInstanceActivity::class.java))
                     finish()
                 }
             }
@@ -133,7 +133,7 @@ class JoinInstanceActivity: BaseActivity() {
     private fun launchOauthUrl(url: String) {
         val customTabsIntent = CustomTabsIntent.Builder()
                 .addDefaultShareMenuItem()
-                .setToolbarColor(colorAttr(R.attr.colorSurface))
+                .setToolbarColor(colorAttr(com.google.android.material.R.attr.colorSurface))
                 .setShowTitle(true)
                 .build()
 
@@ -149,40 +149,44 @@ class JoinInstanceActivity: BaseActivity() {
         inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
         setBackgroundDrawable(null)
         height = ViewGroup.LayoutParams.WRAP_CONTENT
-        width = instanceUrlTextInputLayout.width
+        width = binding.instanceUrlTextInputLayout.width
 
         contentView = LayoutInflater.from(this@JoinInstanceActivity).inflate(R.layout.instance_suggestion_popup_window, null)
-        showAsDropDown(instanceUrlTextInputLayout.editText)
+        showAsDropDown(binding.instanceUrlTextInputLayout.editText)
         update()
     }
 
     private fun onResultSelected(result: InstanceSearchResult) {
         resultRecentlySelected = true
         resultsPopupWindow.dismiss()
-        instanceUrlTextInputLayout.editText?.setText(result.name)
+        binding.instanceUrlTextInputLayout.editText?.setText(result.name)
         processLogin()
     }
 
     private fun processLogin() {
-        instanceUrlTextInputLayout.editText?.text?.toString()?.let { url ->
+        binding.instanceUrlTextInputLayout.editText?.text?.toString()?.let { url ->
             onLoginClicked(url)
         } ?: showInstanceUrlEmptyError()
     }
 
     private fun showInstanceUrlEmptyError() {
-        instanceUrlTextInputLayout.error = getString(R.string.error_url_empty)
+        binding.instanceUrlTextInputLayout.error = getString(R.string.error_url_empty)
     }
 
     private fun startLoading() {
-        TransitionManager.beginDelayedTransition(contentView as ViewGroup, AutoTransition())
-        loadingGroup.visibility = View.VISIBLE
-        inputGroup.visibility = View.INVISIBLE
+        with (binding) {
+            TransitionManager.beginDelayedTransition(root, AutoTransition())
+            loadingGroup.visibility = View.VISIBLE
+            inputGroup.visibility = View.INVISIBLE
+        }
     }
 
     private fun stopLoading() {
-        TransitionManager.beginDelayedTransition(contentView as ViewGroup, AutoTransition())
-        loadingGroup.visibility = View.GONE
-        inputGroup.visibility = View.VISIBLE
+        with (binding) {
+            TransitionManager.beginDelayedTransition(root, AutoTransition())
+            loadingGroup.visibility = View.GONE
+            inputGroup.visibility = View.VISIBLE
+        }
     }
 
     private fun showError(message: String) {
@@ -190,7 +194,7 @@ class JoinInstanceActivity: BaseActivity() {
     }
 
     private fun showInputError(message: String) {
-        instanceUrlTextInputLayout.error = message
+        binding.instanceUrlTextInputLayout.error = message
     }
 
     private fun onLoginClicked(url: String) {

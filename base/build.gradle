@@ -1,9 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace "io.github.koss.mammut.base"
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -12,53 +13,48 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation projects.data
 
-    implementation project(":data")
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core
 
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.ktx
+    implementation libs.androidx.appcompat
 
-    implementation rootProject.ext.appCompat
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
+    implementation libs.androidx.constraintlayout
 
-    implementation rootProject.ext.constraintLayout
+    implementation libs.glide
+    implementation libs.glide.transformations
+    kapt libs.glide.compiler
 
-    implementation rootProject.ext.glide
-    implementation rootProject.ext.glideTransformations
-    kapt rootProject.ext.glideCompiler
+    implementation libs.mastodon4j
 
-    implementation rootProject.ext.mastodon4j
+    implementation libs.androidx.lifecycle.runtime
 
-    implementation rootProject.ext.lifecycle
-    implementation rootProject.ext.lifecycleJava8
+    implementation libs.dagger
 
-    implementation rootProject.ext.anko
-
-    implementation rootProject.ext.dagger
-
-    implementation rootProject.ext.material
+    implementation libs.material
     
-    implementation rootProject.ext.gestureView
+    implementation libs.gestureview
 
-    implementation rootProject.ext.navFragment
-    implementation rootProject.ext.navUI
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
-    api "dev.chrisbanes:insetter-ktx:0.2.0"
-}
-
-androidExtensions {
-    experimental = true
+    api libs.insetter.ktx
 }

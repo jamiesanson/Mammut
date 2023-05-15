@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.koss.mammut">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -17,9 +18,12 @@
         <activity
             android:name=".feature.multiinstance.MultiInstanceActivity"
             android:configChanges="orientation"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:exported="false"/>
 
-        <activity android:name=".feature.joininstance.JoinInstanceActivity">
+        <activity
+            android:name=".feature.joininstance.JoinInstanceActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -32,8 +36,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".feature.splash.SplashActivity"
-            android:theme="@style/Theme.Mammut.Splash">
+        <activity
+            android:name=".feature.splash.SplashActivity"
+            android:theme="@style/Theme.Mammut.Splash"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -42,21 +48,32 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".feature.webview.MammutWebViewActivity"
-            android:theme="@style/Theme.Mammut.WebView"/>
+        <activity
+            android:name=".feature.webview.MammutWebViewActivity"
+            android:theme="@style/Theme.Mammut.WebView"
+            android:exported="false"/>
 
-        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:exported="false"/>
 
-        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:exported="false"/>
 
-        <!-- Disable the WorkManagerInitializer such that we can use our own worker factory -->
         <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="${applicationId}.workmanager-init"
-            android:enabled="false"
-            android:exported="false" />
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
 
     </application>
 

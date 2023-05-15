@@ -11,6 +11,7 @@ import com.github.ajalt.flexadapter.FlexAdapter
 import com.github.ajalt.flexadapter.register
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.dagger.scope.ApplicationScope
 import io.github.koss.mammut.base.themes.ThemeEngine
 import io.github.koss.mammut.base.util.observe
@@ -18,7 +19,6 @@ import io.github.koss.mammut.base.util.viewLifecycleLazy
 import io.github.koss.mammut.databinding.PendingWorkFragmentBinding
 import io.github.koss.mammut.databinding.ViewHolderPendingWorkBinding
 import io.github.koss.mammut.extension.applicationComponent
-import org.jetbrains.anko.colorAttr
 import javax.inject.Inject
 
 class PendingWorkFragment : Fragment(R.layout.pending_work_fragment) {
@@ -38,7 +38,7 @@ class PendingWorkFragment : Fragment(R.layout.pending_work_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        binding.toolbar.navigationIcon?.setTint(view.colorAttr(R.attr.colorControlNormal))
+        binding.toolbar.navigationIcon?.setTint(view.context.colorAttr(com.google.android.material.R.attr.colorControlNormal))
 
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()

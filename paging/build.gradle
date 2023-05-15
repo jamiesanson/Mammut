@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "io.github.koss.mammut.paging"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -11,21 +12,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core
 
-    implementation rootProject.ext.kotlinRuntime
-    implementation rootProject.ext.ktx
-
-    implementation rootProject.ext.coroutinesCore
-    implementation rootProject.ext.coroutinesAndroid
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 }

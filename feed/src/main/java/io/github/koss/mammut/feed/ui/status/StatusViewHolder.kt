@@ -16,9 +16,9 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.sys1yagi.mastodon4j.api.entity.Attachment
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.base.util.GlideApp
 import io.github.koss.mammut.base.util.inflate
 import io.github.koss.mammut.feed.R
@@ -35,9 +35,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.colorAttr
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageResource
 
 @ExperimentalCoroutinesApi
 class StatusViewHolder(
@@ -46,7 +43,6 @@ class StatusViewHolder(
     private val callbacks: FeedCallbacks
 ) : FeedItemViewHolder(parent.inflate(R.layout.view_holder_feed_item)), CoroutineScope by GlobalScope {
 
-    private var exoPlayer: SimpleExoPlayer? = null
     private lateinit var viewModel: StatusViewModel
     private var job: Job? = null
 
@@ -92,10 +88,6 @@ class StatusViewHolder(
         job?.cancel()
     }
 
-    fun recycle() {
-        exoPlayer?.release()
-    }
-
     private fun applyOverrides(statusOverrides: StatusOverrides) {
         with (binding) {
             timeTextView.text = statusOverrides.submissionTime
@@ -119,7 +111,7 @@ class StatusViewHolder(
         when {
             viewState.displayAttachments.isEmpty() ->
                 attachmentsRecyclerView.isVisible = false
-            viewState.displayAttachments.isNotEmpty() ->
+            else ->
                 renderAttachments(viewState.displayAttachments, viewState.isSensitive)
         }
 
@@ -134,7 +126,7 @@ class StatusViewHolder(
         }
 
         @ColorInt val color = ElevationOverlayProvider(itemView.context)
-                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.dip(8).toFloat())
+                .compositeOverlayWithThemeSurfaceColorIfNeeded(itemView.context.dip(8f).toFloat())
 
         if ((itemView.context as AppCompatActivity).isDestroyed) return
 
@@ -197,8 +189,7 @@ class StatusViewHolder(
             if (hideImageView) attachmentsRecyclerView.isVisible = viewModel.isContentVisible
 
             // Change button icon
-            contentWarningVisibilityButton.imageResource =
-                if (viewModel.isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp
+            contentWarningVisibilityButton.setImageResource(if (viewModel.isContentVisible) R.drawable.ic_visibility_black_24dp else R.drawable.ic_visibility_off_black_24dp)
         }
 
         if (state.spoilerText.isNotEmpty()) {

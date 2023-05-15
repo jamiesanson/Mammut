@@ -13,6 +13,8 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import io.github.koss.mammut.base.anko.dimenAttr
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.base.dagger.scope.InstanceScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.util.*
@@ -25,8 +27,6 @@ import io.github.koss.mammut.search.presentation.state.Loading
 import io.github.koss.mammut.search.presentation.state.NoResults
 import io.github.koss.mammut.search.presentation.state.SearchState
 import io.github.koss.mammut.search.ui.SearchResultsAdapter
-import org.jetbrains.anko.dimenAttr
-import org.jetbrains.anko.support.v4.dip
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -77,12 +77,12 @@ class SearchFragment: Fragment(R.layout.search_fragment) {
 
         binding.searchResultsRecyclerView.doOnApplyWindowInsets { recyclerView, insets, _ ->
             recyclerView.updatePadding(
-                top = insets.systemWindowInsetTop + dip(56) + dip(8),
-                bottom = dip(96)
+                top = insets.systemWindowInsetTop + requireContext().dip(64f),
+                bottom = requireContext().dip(96f)
             )
 
             recyclerView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                val actionBarSize = requireContext().dimenAttr(R.attr.actionBarSize)
+                val actionBarSize = requireContext().dimenAttr(com.google.android.material.R.attr.actionBarSize)
                 topMargin = -(insets.systemWindowInsetTop + actionBarSize)
             }
         }

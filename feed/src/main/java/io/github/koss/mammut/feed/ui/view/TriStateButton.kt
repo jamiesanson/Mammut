@@ -12,10 +12,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import io.github.koss.mammut.base.anko.colorAttr
+import io.github.koss.mammut.base.anko.dip
 import io.github.koss.mammut.feed.R
-import kotlinx.android.synthetic.main.view_tristate_button.view.*
-import org.jetbrains.anko.colorAttr
-import org.jetbrains.anko.dip
+import io.github.koss.mammut.feed.databinding.ViewTristateButtonBinding
 
 /**
  * View subclass for handling a nice button animation when submitting boosts and retoots
@@ -25,6 +25,8 @@ class TriStateButton @JvmOverloads constructor(
     attributeSet: AttributeSet? = null,
     defStyleAttr: Int = 0
 ): FrameLayout(context, attributeSet, defStyleAttr) {
+
+    private val binding: ViewTristateButtonBinding
 
     enum class State {
         ACTIVE,
@@ -37,7 +39,7 @@ class TriStateButton @JvmOverloads constructor(
 
     var text: String = ""
         set(text) {
-            textView.text = text
+            ViewTristateButtonBinding.bind(this).textView.text = text
             field = text
         }
 
@@ -45,9 +47,7 @@ class TriStateButton @JvmOverloads constructor(
     private lateinit var inactiveDrawable: Drawable
 
     init {
-        LayoutInflater
-            .from(context)
-            .inflate(R.layout.view_tristate_button, this, true)
+        binding = ViewTristateButtonBinding.inflate(LayoutInflater.from(context), this, true)
 
         // Resolve drawables
         context.theme.obtainStyledAttributes(attributeSet, R.styleable.TriStateButton, 0, 0).use {
@@ -58,9 +58,9 @@ class TriStateButton @JvmOverloads constructor(
                 ?: throw IllegalArgumentException("activeIcon required")
         }
 
-        imageView.setImageDrawable(activeDrawable)
-        imageView.setColorFilter(colorAttr(R.attr.colorAccent))
-        progressBar.isVisible = false
+        binding.imageView.setImageDrawable(activeDrawable)
+        binding.imageView.setColorFilter(context.colorAttr(com.google.android.material.R.attr.colorAccent))
+        binding.progressBar.isVisible = false
     }
 
     fun updateState(newState: State, animate: Boolean = true) {
@@ -72,10 +72,10 @@ class TriStateButton @JvmOverloads constructor(
             // Disable clicking
             isEnabled = false
 
-            progressBar.visibility = View.VISIBLE
-            imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                height = dip(16)
-                width = dip(16)
+            binding.progressBar.visibility = View.VISIBLE
+            binding.imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = context.dip(16f)
+                width = context.dip(16f)
             }
         }
 
@@ -83,26 +83,30 @@ class TriStateButton @JvmOverloads constructor(
             // Disable clicking
             isEnabled = true
 
-            progressBar.visibility = View.INVISIBLE
-            imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                height = dip(24)
-                width = dip(24)
+            with(binding) {
+                progressBar.visibility = View.INVISIBLE
+                imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    height = context.dip(24f)
+                    width = context.dip(24f)
+                }
+                imageView.setImageDrawable(activeDrawable)
+                imageView.setColorFilter(context.colorAttr(com.google.android.material.R.attr.colorAccent))
             }
-            imageView.setImageDrawable(activeDrawable)
-            imageView.setColorFilter(colorAttr(R.attr.colorAccent))
         }
 
         if (newState == State.INACTIVE) {
             // Disable clicking
             isEnabled = true
 
-            progressBar.visibility = View.INVISIBLE
-            imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                height = dip(24)
-                width = dip(24)
+            with(binding) {
+                progressBar.visibility = View.INVISIBLE
+                imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    height = context.dip(24f)
+                    width = context.dip(24f)
+                }
+                imageView.setImageDrawable(inactiveDrawable)
+                imageView.setColorFilter(context.colorAttr(io.github.koss.mammut.base.R.attr.colorControlNormalTransparent))
             }
-            imageView.setImageDrawable(inactiveDrawable)
-            imageView.setColorFilter(colorAttr(R.attr.colorControlNormalTransparent))
         }
 
         currentState = newState

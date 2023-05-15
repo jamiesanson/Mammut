@@ -2,14 +2,13 @@
 
 package io.github.koss.paging.event
 
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.MutableSharedFlow
 
-class PagingRelay: BroadcastChannel<PagingEvent> by ConflatedBroadcastChannel() {
+class PagingRelay: MutableSharedFlow<PagingEvent> by MutableSharedFlow() {
 
-    fun endOfDataDisplayed() = offer(DataEndReached)
+    fun endOfDataDisplayed() = tryEmit(DataEndReached)
 
-    fun startOfDataDisplayed() = offer(DataStartReached)
+    fun startOfDataDisplayed() = tryEmit(DataStartReached)
 
-    fun onItemStreamed() = offer(ItemStreamed)
+    fun onItemStreamed() = tryEmit(ItemStreamed)
 }

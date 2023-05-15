@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import io.github.koss.mammut.R
+import io.github.koss.mammut.base.anko.colorAttr
 import io.github.koss.mammut.base.dagger.scope.ProfileScope
 import io.github.koss.mammut.base.dagger.viewmodel.MammutViewModelFactory
 import io.github.koss.mammut.base.photoviewer.FullScreenPhotoDelegate
@@ -40,8 +41,6 @@ import io.github.koss.mammut.feed.ui.FeedFragment
 import io.github.koss.mammut.feed.ui.FeedFragmentArgs
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
-import kotlinx.android.synthetic.main.profile_fragment.*
-import org.jetbrains.anko.colorAttr
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -104,8 +103,8 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
 
             binding.toolbar.inflateMenu(R.menu.user_profile_menu)
             binding.toolbar.menu.forEach {
-                it.icon.setTint(requireView().colorAttr(R.attr.colorOnSurface))
-                it.icon.setTintMode(PorterDuff.Mode.SRC_IN)
+                it.icon?.setTint(requireContext().colorAttr(com.google.android.material.R.attr.colorOnSurface))
+                it.icon?.setTintMode(PorterDuff.Mode.SRC_IN)
             }
             binding.toolbar.setOnMenuItemClickListener { item ->
                 return@setOnMenuItemClickListener when (item.itemId) {
@@ -170,7 +169,7 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
             binding.pager.setCurrentItem(tab.position, true)
         }.attach()
 
-        pager.adapter = pagerAdapter
+        binding.pager.adapter = pagerAdapter
     }
 
     private fun bindNetworkState(networkState: NetworkState) {
@@ -197,7 +196,7 @@ class ProfileFragment: Fragment(R.layout.profile_fragment), FullScreenPhotoViewe
     }
 
     private fun bindAccount(account: Account) {
-        @ColorInt val color = requireContext().colorAttr(R.attr.colorPrimaryTransparency)
+        @ColorInt val color = requireContext().colorAttr(io.github.koss.mammut.base.R.attr.colorPrimaryTransparency)
 
         // Notification image
         GlideApp.with(binding.profileImageView)

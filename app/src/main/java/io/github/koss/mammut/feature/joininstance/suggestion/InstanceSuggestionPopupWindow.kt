@@ -1,24 +1,34 @@
 package io.github.koss.mammut.feature.joininstance.suggestion
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupWindow
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.koss.mammut.data.models.InstanceSearchResult
-import kotlinx.android.synthetic.main.instance_suggestion_popup_window.view.*
+import io.github.koss.mammut.databinding.InstanceSuggestionPopupWindowBinding
 
-class InstanceSuggestionPopupWindow(context: Context, onInstanceSelected: (InstanceSearchResult) -> Unit) : PopupWindow(context) {
+class InstanceSuggestionPopupWindow(
+    context: Context,
+    onInstanceSelected: (InstanceSearchResult) -> Unit
+) : PopupWindow(InstanceSuggestionPopupWindowBinding.inflate(LayoutInflater.from(context)).root) {
 
     private val instanceSuggestionAdapter = InstanceSuggestionAdapter(onInstanceSelected)
 
+    private lateinit var binding: InstanceSuggestionPopupWindowBinding
+
     override fun setContentView(contentView: View?) {
         super.setContentView(contentView)
-        contentView?.suggestionsRecyclerView?.layoutManager = LinearLayoutManager(contentView?.context)
-        contentView?.suggestionsRecyclerView?.adapter = instanceSuggestionAdapter
+        contentView?.let {
+            binding = InstanceSuggestionPopupWindowBinding.bind(it)
+            binding.suggestionsRecyclerView.layoutManager =
+                LinearLayoutManager(contentView.context)
+            binding.suggestionsRecyclerView.adapter = instanceSuggestionAdapter
+        }
     }
 
     fun onNewResults(results: List<InstanceSearchResult>) {
         instanceSuggestionAdapter.submitList(results)
-        contentView?.suggestionsRecyclerView?.scrollToPosition(0)
+        binding.suggestionsRecyclerView.scrollToPosition(0)
     }
 }
